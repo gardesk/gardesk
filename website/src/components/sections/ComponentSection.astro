@@ -2,6 +2,7 @@
 import Badge from '../ui/Badge.astro';
 import Button from '../ui/Button.astro';
 import ImagePlaceholder from '../ui/ImagePlaceholder.astro';
+import ImageCarousel from '../ui/ImageCarousel.astro';
 
 interface Props {
   id: string;
@@ -15,6 +16,7 @@ interface Props {
   imageWidth?: number;
   imageHeight?: number;
   accentColor?: string;
+  images?: { src: string; alt: string }[];
 }
 
 const {
@@ -28,7 +30,8 @@ const {
   imageAlt,
   imageWidth = 640,
   imageHeight = 400,
-  accentColor = 'blue'
+  accentColor = 'blue',
+  images
 } = Astro.props;
 
 const isComingSoon = status === 'coming-soon';
@@ -55,14 +58,18 @@ const accentClasses: Record<string, string> = {
       'flex flex-col gap-12 items-center',
       imagePosition === 'left' ? 'lg:flex-row' : 'lg:flex-row-reverse'
     ]}>
-      <!-- Image placeholder -->
+      <!-- Image area -->
       <div class="flex-1 w-full max-w-xl lg:max-w-none">
-        <ImagePlaceholder
-          alt={imageAlt}
-          width={imageWidth}
-          height={imageHeight}
-          class="w-full"
-        />
+        {images && images.length > 0 ? (
+          <ImageCarousel images={images} class="w-full" />
+        ) : (
+          <ImagePlaceholder
+            alt={imageAlt}
+            width={imageWidth}
+            height={imageHeight}
+            class="w-full"
+          />
+        )}
       </div>
 
       <!-- Content -->

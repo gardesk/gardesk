@@ -4,11 +4,19 @@ import Button from '../ui/Button.astro';
 ---
 
 <section id="hero" class="snap-section relative flex items-center justify-center overflow-hidden">
-  <!-- Background gradient layers -->
-  <div class="absolute inset-0 bg-gradient-to-b from-gar-bg-deep via-gar-bg-primary to-gar-bg-deep"></div>
+  <!-- Background image with overlay -->
+  <div class="absolute inset-0">
+    <img
+      src="/images/gar1.png"
+      alt=""
+      class="absolute inset-0 w-full h-full object-cover"
+      loading="eager"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-gar-bg-deep/80 via-gar-bg-primary/70 to-gar-bg-deep/90"></div>
+  </div>
 
   <!-- Atmospheric overlay (parallax layer) -->
-  <div class="parallax-bg absolute inset-0 opacity-30" data-parallax="bg">
+  <div class="parallax-bg absolute inset-0 opacity-20" data-parallax="bg">
     <div class="absolute inset-0 bg-gradient-to-br from-gar-atmosphere-dark/40 via-transparent to-gar-accent-blue/10"></div>
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gar-accent-blue/5 rounded-full blur-3xl"></div>
     <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gar-accent-magenta/5 rounded-full blur-3xl"></div>
