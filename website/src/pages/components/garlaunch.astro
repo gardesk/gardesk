@@ -1,140 +1,1221 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
 
-const configExample = `# ~/.config/garlaunch/config.toml (planned)
+const garlaunchImages = [
+  { src: '/images/garlaunch1.png', alt: 'garlaunch application launcher' },
+];
 
-[general]
-# Default mode
-default_mode = "drun"
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
 
-# Maximum visible items
-max_items = 10
-
-[theme]
-# Use gartk theme
-theme = "dark"
-
-# Override specific colors
-background = "#1e1e2e"
-foreground = "#cdd6f4"
-selection = "#45475a"
-
-[modes.drun]
-# Directories to scan for .desktop files
-dirs = [
-  "/usr/share/applications",
-  "~/.local/share/applications"
-]
-
-[modes.script]
-# Default script timeout (seconds)
-timeout = 30`;
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'modes',
+    label: 'Modes',
+    children: [
+      { id: 'mode-drun', label: 'drun (Desktop Apps)' },
+      { id: 'mode-run', label: 'run (Commands)' },
+      { id: 'mode-window', label: 'window (Switcher)' },
+      { id: 'mode-script', label: 'script (Custom)' },
+    ]
+  },
+  {
+    id: 'fuzzy-search',
+    label: 'Fuzzy Search',
+  },
+  {
+    id: 'ui-rendering',
+    label: 'UI & Rendering',
+    children: [
+      { id: 'ui-window', label: 'Popup Window' },
+      { id: 'ui-input', label: 'Input Field' },
+      { id: 'ui-items', label: 'Item List' },
+      { id: 'ui-theme', label: 'Theming' },
+    ]
+  },
+  {
+    id: 'keyboard',
+    label: 'Keyboard Control',
+  },
+  {
+    id: 'daemon-ipc',
+    label: 'Daemon & IPC',
+    children: [
+      { id: 'ipc-daemon', label: 'Daemon Mode' },
+      { id: 'ipc-garlaunchctl', label: 'garlaunchctl' },
+      { id: 'ipc-protocol', label: 'IPC Protocol' },
+    ]
+  },
+  {
+    id: 'gar-integration',
+    label: 'gar Integration',
+  },
+  {
+    id: 'script-protocol',
+    label: 'Script Protocol',
+  },
+];
 ---
 
-<ComponentPageLayout
-  name="garlaunch"
-  tagline="Application Launcher"
-  description="A rofi-like application launcher with fuzzy search and multiple modes. Launch applications, run commands, switch windows, or interact with custom scripts."
-  status="beta"
-  accentColor="magenta"
-  features={[
-    'Fuzzy search powered by nucleo',
-    'Desktop entry mode (drun) for .desktop files',
-    'Command execution mode (run) for PATH binaries',
-    'Window switcher mode',
-    'Custom script mode with JSON protocol',
-    'Daemon mode with IPC control',
-    'Keyboard-driven interface',
-    'Built on gartk for consistent UI'
-  ]}
-  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garlaunch"
-  configExample={configExample}
-  configLanguage="toml"
-  githubUrl="https://github.com/gardesk/garlaunch"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Usage</h2>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch</span> <span class="text-gar-text-muted"># Launch in drun mode (default)</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode run</span> <span class="text-gar-text-muted"># Run command mode</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode window</span> <span class="text-gar-text-muted"># Window switcher</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode script --source ./myscript.sh</span> <span class="text-gar-text-muted"># Custom script</span></div>
-      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --daemon</span> <span class="text-gar-text-muted"># Run as daemon for IPC control</span></div>
-    </div>
-    <p class="mt-4 text-gar-text-secondary">
-      Bind garlaunch to a key in your gar configuration:
-    </p>
-    <div class="mt-4 rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <code class="text-gar-text-primary">gar.key(&#123; gar.mod, "d", gar.spawn("garlaunch") &#125;)</code>
-    </div>
-  </section>
+<BaseLayout title="garlaunch - gardesk" description="Application Launcher. A rofi-like fuzzy finder with desktop app mode, command mode, window switcher, and custom script support.">
+  <Header />
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Modes</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-magenta mb-2">drun</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Scans XDG application directories for .desktop files. Shows application name, description, and icon.
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-magenta">garlaunch</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Application Launcher</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A dmenu/rofi-inspired application launcher for X11 with fuzzy search powered by nucleo. garlaunch features multiple modes: launch desktop applications (drun), run PATH commands (run), switch windows (window), or execute custom scripts (script). Built on gartk for consistent rendering and theming across the gar desktop suite.
         </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garlaunch" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
       </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-magenta mb-2">run</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Lists executables from $PATH. Type to filter and press Enter to run.
-        </p>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garlaunchImages} />
       </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-magenta mb-2">window</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Shows open windows from EWMH-compliant window managers. Select to focus.
-        </p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-magenta mb-2">script</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Executes a script that outputs JSON items. Allows custom menus and actions.
-        </p>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'Fuzzy search with nucleo matcher',
+            'Smart case matching and normalization',
+            'Desktop entry mode (scans .desktop files)',
+            'Command execution mode (PATH binaries)',
+            'Window switcher mode (via gar IPC)',
+            'Custom script mode with JSON protocol',
+            'Daemon mode with IPC control',
+            'Popup window centered on primary monitor',
+            'Cairo/Pango rendering via gartk',
+            'Keyboard grab for exclusive input',
+            'Flatpak and Snap application support',
+            'Scrollable item list with selection highlight',
+            'garlaunchctl for external control',
+            'Fallback to direct launch without daemon'
+          ].map(feature => (
+            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-magenta" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Quick Start -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+        <div class="space-y-4">
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-magenta/20">
+            <h3 class="font-semibold text-gar-text-primary mb-2">Launch Applications</h3>
+            <MultiTerminal
+              commands={[
+                { command: 'garlaunch', comment: 'Default mode (drun)' },
+              ]}
+            />
+            <p class="text-sm text-gar-text-secondary mt-2">Type to search, Enter to launch, Escape to close.</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-magenta/20">
+            <h3 class="font-semibold text-gar-text-primary mb-2">Bind to Key in gar</h3>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-2">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Bind Mod+d to launch garlaunch
+gar.bind("mod+d", function()
+    gar.exec("garlaunch")
+end)
+
+-- Bind Mod+/ to window switcher
+gar.bind("mod+slash", function()
+    gar.exec("garlaunch --mode window")
+end)`}</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Installation & Usage</h3>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garlaunch using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garlaunch', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garlaunch && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Basic Usage</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garlaunch', comment: 'Launch in drun mode (desktop apps)' },
+              { command: 'garlaunch --mode run', comment: 'Run mode (PATH commands)' },
+              { command: 'garlaunch --mode window', comment: 'Window switcher' },
+              { command: 'garlaunch --mode script --source ./myscript.sh', comment: 'Custom script' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Run as Daemon (Optional)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run garlaunch as a daemon for IPC control via garlaunchctl:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garlaunch --daemon &', comment: 'Start daemon in background' },
+              { command: 'garlaunchctl show', comment: 'Show launcher via IPC' },
+              { command: 'garlaunchctl toggle --mode window', comment: 'Toggle window switcher' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Keyboard Shortcuts</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Type</td><td class="py-2 px-3">Fuzzy search items</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Enter</td><td class="py-2 px-3">Activate selected item</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Escape</td><td class="py-2 px-3">Close launcher</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Up / Down</td><td class="py-2 px-3">Navigate items</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Page Up / Down</td><td class="py-2 px-3">Navigate by page (10 items)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Left / Right</td><td class="py-2 px-3">Move cursor in input</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Home / End</td><td class="py-2 px-3">Jump to start/end of input</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Backspace</td><td class="py-2 px-3">Delete character before cursor</td></tr>
+                <tr><td class="py-2 px-3 font-mono">Delete</td><td class="py-2 px-3">Delete character after cursor</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <div class="p-4 rounded-lg bg-gar-accent-yellow/10 border border-gar-accent-yellow/30 mb-6">
+            <p class="text-gar-text-primary text-sm font-semibold mb-2">Note</p>
+            <p class="text-gar-text-secondary text-sm">
+              garlaunch currently uses gartk theming and doesn't have a dedicated config file yet. Command-line arguments control behavior.
+            </p>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Command-Line Options</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">--mode MODE</td><td class="py-2 px-3">Set mode: drun, run, window, script (default: drun)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">--prompt TEXT</td><td class="py-2 px-3">Custom prompt text (default: "Search:")</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">--source PATH</td><td class="py-2 px-3">Script source for script mode</td></tr>
+                <tr><td class="py-2 px-3 font-mono">--daemon</td><td class="py-2 px-3">Run as daemon (IPC server mode)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garlaunchctl Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">show [--mode MODE] [--source PATH]</td><td class="py-2 px-3">Show launcher</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">hide</td><td class="py-2 px-3">Hide launcher</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">toggle [--mode MODE]</td><td class="py-2 px-3">Toggle visibility</td></tr>
+                <tr><td class="py-2 px-3 font-mono">status</td><td class="py-2 px-3">Get daemon status</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Environment Variables</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Variable</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Purpose</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">RUST_LOG</td><td class="py-2 px-3">Set log level (debug, info, warn, error)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">XDG_RUNTIME_DIR</td><td class="py-2 px-3">IPC socket location (fallback: /tmp)</td></tr>
+                <tr><td class="py-2 px-3 font-mono">PATH</td><td class="py-2 px-3">Used for run mode executable discovery</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch is an application launcher for X11 inspired by dmenu and rofi. It features fuzzy search, multiple modes, and extensibility via custom scripts.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>gartk Integration:</strong> Uses gartk-x11 for window management, gartk-render for Cairo/Pango rendering</li>
+                <li><strong>nucleo Matching:</strong> Fast fuzzy matching with smart case sensitivity</li>
+                <li><strong>Mode System:</strong> Pluggable modes (drun, run, window, script)</li>
+                <li><strong>Event Loop:</strong> X11 event handling with keyboard grab</li>
+                <li><strong>IPC Server:</strong> Unix socket for external control (daemon mode)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">$XDG_RUNTIME_DIR/garlaunch.sock</td><td class="py-2 px-3">IPC socket (daemon mode)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">$XDG_RUNTIME_DIR/gar.sock</td><td class="py-2 px-3">gar IPC socket (window mode)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">/usr/share/applications</td><td class="py-2 px-3">System .desktop files</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-magenta">~/.local/share/applications</td><td class="py-2 px-3">User .desktop files</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Modes -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Modes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch supports four modes, each providing a different set of items to search and select.
+              </p>
+            </div>
+
+            <!-- drun Mode -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">drun (Desktop Apps)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Desktop entry mode parses .desktop files from XDG application directories.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Search Paths</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary mb-4">
+                <div>• <code class="text-gar-accent-blue">~/.local/share/applications</code> (user apps)</div>
+                <div>• <code class="text-gar-accent-blue">/usr/share/applications</code> (system apps)</div>
+                <div>• <code class="text-gar-accent-blue">/usr/local/share/applications</code> (local apps)</div>
+                <div>• <code class="text-gar-accent-blue">~/.local/share/flatpak/exports/share/applications</code> (user Flatpak)</div>
+                <div>• <code class="text-gar-accent-blue">/var/lib/flatpak/exports/share/applications</code> (system Flatpak)</div>
+                <div>• <code class="text-gar-accent-blue">/var/lib/snapd/desktop/applications</code> (Snap apps)</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Parsing Rules</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Uses freedesktop_entry_parser crate</li>
+                <li>Skips entries with NoDisplay=true or Hidden=true</li>
+                <li>Requires Name and Exec attributes</li>
+                <li>Extracts Comment for description, Icon for icon name</li>
+                <li>Cleans Exec field codes (%f, %F, %u, %U, etc.)</li>
+                <li>Deduplicates entries (first path wins)</li>
+                <li>Sorts alphabetically by name</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Exec Field Cleaning</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Desktop entry Exec fields contain field codes (%f = single file, %F = multiple files, etc.). garlaunch strips these:
+              </p>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div><code class="text-gar-accent-blue">firefox %u</code> → <code class="text-gar-accent-orange">firefox</code></div>
+                <div><code class="text-gar-accent-blue">code %F</code> → <code class="text-gar-accent-orange">code</code></div>
+                <div><code class="text-gar-accent-blue">echo %%</code> → <code class="text-gar-accent-orange">echo %</code></div>
+              </div>
+            </div>
+
+            <!-- run Mode -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">run (Commands)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Command execution mode lists all executables from $PATH.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Discovery Process</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Splits $PATH by colon (:)</li>
+                <li>Scans each directory for files</li>
+                <li>Checks executable permission (mode & 0o111)</li>
+                <li>Skips directories and hidden files (starting with .)</li>
+                <li>Deduplicates (first in PATH wins)</li>
+                <li>Sorts alphabetically</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Execution</h4>
+              <p class="text-gar-text-secondary mb-4">
+                When you select an item, garlaunch executes it via shell (sh -c) to support pipes, redirects, and environment expansion.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Use Cases</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2">
+                <li>Quick command execution without terminal</li>
+                <li>Launch GUI apps without .desktop files</li>
+                <li>Run scripts from ~/bin or ~/.local/bin</li>
+              </ul>
+            </div>
+
+            <!-- window Mode -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">window (Switcher)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Window switcher mode shows all windows from gar window manager.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gar Integration</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Connects to gar via Unix socket ($XDG_RUNTIME_DIR/gar.sock)</li>
+                <li>Sends get_windows IPC request</li>
+                <li>Parses JSON response with window list</li>
+                <li>Displays title, class, instance, workspace</li>
+                <li>On selection, sends focus_window IPC request</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Info</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Field</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">id</td><td class="py-2 px-3">Window ID (u32)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">title</td><td class="py-2 px-3">Window title (_NET_WM_NAME)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">class</td><td class="py-2 px-3">WM_CLASS class</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">instance</td><td class="py-2 px-3">WM_CLASS instance</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">workspace</td><td class="py-2 px-3">Workspace number</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">focused</td><td class="py-2 px-3">Currently focused (bool)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Requirements</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Window mode requires gar window manager to be running. If gar.sock doesn't exist, mode loads zero items.
+              </p>
+            </div>
+
+            <!-- script Mode -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">script (Custom)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Script mode executes an external script that provides items via JSON protocol.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Protocol Overview</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary mb-4">
+                <div>1. garlaunch spawns script with stdin/stdout pipes</div>
+                <div>2. Script outputs JSON with items</div>
+                <div>3. User selects an item</div>
+                <div>4. garlaunch sends selection to script stdin</div>
+                <div>5. Script outputs action (launch, close, switch, custom)</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Initial Items Message</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">Script stdout (on start)</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "items": [
+    {
+      "id": "item1",
+      "name": "First Item",
+      "description": "Optional description",
+      "icon": "optional-icon-name",
+      "data": {"custom": "data"}
+    },
+    {
+      "id": "item2",
+      "name": "Second Item"
+    }
+  ]
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Selection Message</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">garlaunch → Script stdin (on selection)</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "selected": {
+    "id": "item1",
+    "name": "First Item",
+    "description": "Optional description",
+    "icon": "optional-icon-name",
+    "data": {"custom": "data"}
+  }
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Action Response</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">Script stdout (after selection)</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Launch a command
+{"action": "launch", "command": "firefox"}
+
+// Close launcher
+{"action": "close"}
+
+// Switch to another mode
+{"action": "switch", "mode": "drun"}
+
+// Custom action (returns to caller)
+{"action": "custom", "data": {"foo": "bar"}}`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Fuzzy Search -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Fuzzy Search</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch uses the nucleo matcher for fast fuzzy searching with smart behavior.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Smart Case:</strong> Lowercase query matches case-insensitive, uppercase forces case-sensitive</li>
+                <li><strong>Normalization:</strong> Handles diacritics and unicode normalization</li>
+                <li><strong>Multi-Field:</strong> Matches against both name and description</li>
+                <li><strong>Scoring:</strong> Results sorted by match quality</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Matching Algorithm</h4>
+              <p class="text-gar-text-secondary mb-4">
+                For each item, nucleo computes a score based on:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Character positions (earlier matches score higher)</li>
+                <li>Consecutive characters (word starts preferred)</li>
+                <li>CamelCase boundaries</li>
+                <li>Query coverage (more chars matched = better score)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Examples</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div>Query: <code class="text-gar-accent-blue">fire</code></div>
+                <div class="ml-4">Matches: <span class="text-gar-accent-orange">Fire</span>fox, <span class="text-gar-accent-orange">Fire</span> Alarm, Code<span class="text-gar-accent-orange">fire</span></div>
+                <div class="ml-4">Best: Firefox (word start)</div>
+                <div class="mt-2">Query: <code class="text-gar-accent-blue">fxbr</code></div>
+                <div class="ml-4">Matches: <span class="text-gar-accent-orange">F</span>irefo<span class="text-gar-accent-orange">x Br</span>owser</div>
+                <div class="ml-4">Fuzzy match across words</div>
+              </div>
+            </div>
+
+            <!-- UI & Rendering -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">UI & Rendering</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch uses gartk for X11 window management and Cairo/Pango rendering.
+              </p>
+            </div>
+
+            <!-- Popup Window -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Popup Window</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The launcher appears as a centered popup window.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Configuration</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Type:</strong> Popup window (override-redirect)</li>
+                <li><strong>Size:</strong> 600x400 pixels</li>
+                <li><strong>Position:</strong> Centered on primary monitor, upper third vertically</li>
+                <li><strong>Properties:</strong> Transparent background support, no decorations</li>
+                <li><strong>Input:</strong> Keyboard grab for exclusive input</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Monitor Detection</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Uses gartk_x11::primary_monitor() to detect the primary monitor via RandR extension. Window centered on this monitor's geometry.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keyboard Grab</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The window grabs keyboard focus exclusively (window.grab_keyboard()). This prevents input from reaching other windows. Grab released when launcher closes.
+              </p>
+            </div>
+
+            <!-- Input Field -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Input Field</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The input field shows the search query with a prompt and blinking cursor.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Components</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Prompt:</strong> "Search:" (customizable via --prompt)</li>
+                <li><strong>Input Text:</strong> User's current query</li>
+                <li><strong>Cursor:</strong> 2px wide vertical bar at cursor position</li>
+                <li><strong>Background:</strong> Rounded rectangle with theme.input_background color</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Cursor Movement</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Cursor tracks character position (not byte index). Supports Left/Right arrow keys, Home/End for jump to start/end.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Text Editing</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2">
+                <li>Char key: Insert at cursor, advance cursor</li>
+                <li>Backspace: Delete char before cursor</li>
+                <li>Delete: Delete char after cursor</li>
+                <li>Space: Insert space at cursor</li>
+              </ul>
+            </div>
+
+            <!-- Item List -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Item List</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Below the input field is a scrollable list of filtered items.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Layout</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Max Visible:</strong> 10 items at once</li>
+                <li><strong>Scrolling:</strong> Scroll offset adjusts when selection moves out of view</li>
+                <li><strong>Selection:</strong> Highlighted with theme.item_selected_background</li>
+                <li><strong>Item Height:</strong> Font size + 2× item padding</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Item Rendering</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Name:</strong> Left-aligned, theme.font_size, vertically centered</li>
+                <li><strong>Description:</strong> Right of name, 85% font size, ellipsized if too long</li>
+                <li><strong>Colors:</strong> Selected items use theme.item_selected_foreground</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Item Counter</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Bottom-right corner shows "X/Y" where X = visible filtered items, Y = total items.
+              </p>
+            </div>
+
+            <!-- Theming -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Theming</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch uses gartk Theme system for consistent appearance.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Theme Colors</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Property</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Usage</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">border</td><td class="py-2 px-3">Window border color</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">input_background</td><td class="py-2 px-3">Input field background</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">input_foreground</td><td class="py-2 px-3">Input text color</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">input_placeholder</td><td class="py-2 px-3">Prompt text color</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">input_cursor</td><td class="py-2 px-3">Cursor color</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">item_foreground</td><td class="py-2 px-3">Item text color</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">item_selected_background</td><td class="py-2 px-3">Selected item background</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">item_selected_foreground</td><td class="py-2 px-3">Selected item text</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">item_description</td><td class="py-2 px-3">Description text color</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Current Behavior</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Currently uses Theme::dark() hardcoded. Future versions will support custom themes via config file or gartk theme system integration.
+              </p>
+            </div>
+
+            <!-- Keyboard Control -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keyboard Control</h3>
+              <p class="text-gar-text-secondary mb-4">
+                All interaction is keyboard-driven through gartk's event system.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Handling Flow</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary mb-4">
+                <div>1. X11 KeyPress event received</div>
+                <div>2. gartk EventLoop converts to InputEvent::Key</div>
+                <div>3. App::handle_key() matches key</div>
+                <div>4. Action performed (edit input, navigate, activate, quit)</div>
+                <div>5. UI re-rendered if needed</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Navigation Keys</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Up</td><td class="py-2 px-3">Select previous item</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Down</td><td class="py-2 px-3">Select next item</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">PageUp</td><td class="py-2 px-3">Select previous 10 items</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">PageDown</td><td class="py-2 px-3">Select next 10 items</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Action Keys</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Enter</td><td class="py-2 px-3">Activate selected item</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Escape</td><td class="py-2 px-3">Close launcher</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">Tab</td><td class="py-2 px-3">(Reserved for mode switching)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Daemon & IPC -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon & IPC</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch can run as a daemon to provide IPC control via garlaunchctl.
+              </p>
+            </div>
+
+            <!-- Daemon Mode -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                In daemon mode, garlaunch listens for IPC commands and spawns launcher instances.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Event Loop</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary mb-4">
+                <div>1. Create IPC server (Unix socket)</div>
+                <div>2. Poll for new connections (50ms interval)</div>
+                <div>3. Check command channel (non-blocking)</div>
+                <div>4. On Show/Toggle: spawn garlaunch process</div>
+                <div>5. On Hide: (not yet implemented)</div>
+                <div>6. On Status: respond with daemon state</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Process Spawning</h4>
+              <p class="text-gar-text-secondary mb-4">
+                When a show/toggle command arrives, daemon spawns a new garlaunch process with appropriate --mode argument. Each launcher instance runs independently.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+              <p class="text-gar-text-secondary mb-4">
+                $XDG_RUNTIME_DIR/garlaunch.sock (fallback: /tmp/garlaunch.sock)
+              </p>
+            </div>
+
+            <!-- garlaunchctl -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">garlaunchctl</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunchctl is a control client for sending commands to the daemon.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Commands</h4>
+              <div class="space-y-3 mb-4">
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">show [--mode MODE] [--source PATH]</div>
+                  <div class="text-sm text-gar-text-secondary">Show launcher in specified mode</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">hide</div>
+                  <div class="text-sm text-gar-text-secondary">Hide launcher (not yet implemented)</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">toggle [--mode MODE]</div>
+                  <div class="text-sm text-gar-text-secondary">Toggle launcher visibility</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">status</div>
+                  <div class="text-sm text-gar-text-secondary">Query daemon status</div>
+                </div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Fallback Behavior</h4>
+              <p class="text-gar-text-secondary mb-4">
+                If daemon isn't running (socket not found or connection refused), garlaunchctl spawns garlaunch directly for show/toggle commands. This provides graceful degradation.
+              </p>
+            </div>
+
+            <!-- IPC Protocol -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                JSON messages over Unix socket.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Request Format</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "show",
+  "args": {
+    "mode": "drun",
+    "source": null
+  }
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{
+  "success": true,
+  "data": null,
+  "error": null
+}
+
+// Error
+{
+  "success": false,
+  "data": null,
+  "error": "Daemon not running"
+}`}</code></pre>
+              </div>
+            </div>
+
+            <!-- gar Integration -->
+            <div slot="doc-17">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gar Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlaunch integrates with gar window manager for window switching mode.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">GarClient</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The GarClient struct handles IPC communication with gar via Unix socket.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Path</h4>
+              <p class="text-gar-text-secondary mb-4">
+                $XDG_RUNTIME_DIR/gar.sock (fallback: /tmp/gar.sock)
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">IPC Methods</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Method</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Request</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Response</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">get_windows</td><td class="py-2 px-3">{"command": "get_windows"}</td><td class="py-2 px-3">Array of WindowInfo</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">focus_window</td><td class="py-2 px-3">{"command": "focus_window", "args": {"id": 123}}</td><td class="py-2 px-3">Success/error</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Availability Check</h4>
+              <p class="text-gar-text-secondary mb-4">
+                GarClient::is_available() checks if gar.sock exists. Window mode silently loads zero items if gar isn't running.
+              </p>
+            </div>
+
+            <!-- Script Protocol -->
+            <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Script Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                External scripts provide custom menus via JSON over stdin/stdout.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Example Script</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">example.sh</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+
+# Output items
+cat <<EOF
+{
+  "items": [
+    {"id": "1", "name": "Option 1", "description": "First choice"},
+    {"id": "2", "name": "Option 2", "description": "Second choice"},
+    {"id": "3", "name": "Close", "description": "Close menu"}
+  ]
+}
+EOF
+
+# Read selection
+read -r selection
+
+# Parse selection and output action
+item_id=$(echo "$selection" | jq -r '.selected.id')
+
+case "$item_id" in
+  1)
+    echo '{"action": "launch", "command": "notify-send \\"Option 1 selected\\""}'
+    ;;
+  2)
+    echo '{"action": "launch", "command": "notify-send \\"Option 2 selected\\""}'
+    ;;
+  3)
+    echo '{"action": "close"}'
+    ;;
+esac`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Usage</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'chmod +x example.sh', comment: 'Make executable' },
+                  { command: 'garlaunch --mode script --source ./example.sh', comment: 'Run script mode' },
+                ]}
+              />
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using garlaunch in different scenarios.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Quick App Launcher (Mod+d)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Standard rofi/dmenu replacement bound to Mod+d:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.bind("mod+d", function()
+    gar.exec("garlaunch")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Switcher (Mod+/)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Quick window switching similar to Alt+Tab:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.bind("mod+slash", function()
+    gar.exec("garlaunch --mode window")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon with garlaunchctl</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run daemon at session start for faster launches:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Start daemon once
+gar.exec_once("garlaunch --daemon")
+
+-- Use garlaunchctl for instant launch
+gar.bind("mod+d", function()
+    gar.exec("garlaunchctl show")
+end)
+
+gar.bind("mod+slash", function()
+    gar.exec("garlaunchctl show --mode window")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Power Menu Script</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a power menu with shutdown/reboot/logout options:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/scripts/power-menu.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+cat <<EOF
+{
+  "items": [
+    {"id": "logout", "name": "Logout", "description": "End session"},
+    {"id": "reboot", "name": "Reboot", "description": "Restart system"},
+    {"id": "shutdown", "name": "Shutdown", "description": "Power off"}
+  ]
+}
+EOF
+
+read -r selection
+action=$(echo "$selection" | jq -r '.selected.id')
+
+case "$action" in
+  logout)
+    echo '{"action": "launch", "command": "pkill gar"}'
+    ;;
+  reboot)
+    echo '{"action": "launch", "command": "systemctl reboot"}'
+    ;;
+  shutdown)
+    echo '{"action": "launch", "command": "systemctl poweroff"}'
+    ;;
+esac`}</code></pre>
+          </div>
+          <MultiTerminal
+            commands={[
+              { command: 'chmod +x ~/.config/gar/scripts/power-menu.sh', comment: 'Make executable' },
+            ]}
+            class="mb-4"
+          />
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.bind("mod+shift+e", function()
+    gar.exec("garlaunch --mode script --source ~/.config/gar/scripts/power-menu.sh")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Clipboard History Script</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Show clipboard history from clipman:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">clipboard-menu.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+items=$(clipman show-history | jq -Rs 'split("\\n") | map(select(length > 0)) | to_entries | map({"id": (.key | tostring), "name": .value})')
+echo "{\\"items\\": $items}"
+
+read -r selection
+text=$(echo "$selection" | jq -r '.selected.name')
+echo "$text" | xclip -selection clipboard
+echo '{"action": "close"}'`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Command Runner with History</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use run mode for quick command execution:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Mod+r for run mode
+gar.bind("mod+r", function()
+    gar.exec("garlaunch --mode run --prompt 'Run:'")
+end)`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garlaunch window doesn't appear</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check display and X11 connection:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $DISPLAY', comment: 'Should show :0 or similar' },
+                  { command: 'xdpyinfo | head', comment: 'Test X11 connection' },
+                  { command: 'RUST_LOG=debug garlaunch', comment: 'Run with debug logging' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">No desktop applications found (drun mode)</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify .desktop file locations:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls /usr/share/applications', comment: 'System applications' },
+                  { command: 'ls ~/.local/share/applications', comment: 'User applications' },
+                  { command: 'RUST_LOG=garlaunch=debug garlaunch', comment: 'See which files are loaded' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Window mode shows no windows</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check gar connection:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -l $XDG_RUNTIME_DIR/gar.sock', comment: 'Verify gar socket exists' },
+                  { command: 'pgrep gar', comment: 'Check if gar is running' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Window mode requires gar window manager to be running.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Script mode fails</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Debug script issues:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'chmod +x ./myscript.sh', comment: 'Ensure script is executable' },
+                  { command: './myscript.sh', comment: 'Test script directly' },
+                  { command: 'echo "{}" | ./myscript.sh', comment: 'Test with selection input' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Script must output valid JSON on first line.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garlaunchctl connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check daemon status:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garlaunch', comment: 'Check if daemon running' },
+                  { command: 'ls -l $XDG_RUNTIME_DIR/garlaunch.sock', comment: 'Check socket exists' },
+                  { command: 'garlaunch --daemon &', comment: 'Start daemon' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                garlaunchctl falls back to direct launch if daemon isn't running.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Keyboard input not working</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check keyboard grab:</p>
+              <p class="text-gar-text-secondary text-sm">
+                If another application has keyboard grab, garlaunch may fail to grab input. Close other applications with grabs (like other launchers, screen lockers).
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Fuzzy search not finding items</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Search tips:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary text-sm space-y-2">
+                <li>Try abbreviations (e.g., "fx" for Firefox)</li>
+                <li>Use lowercase for case-insensitive search</li>
+                <li>Check item names with debug logging</li>
+                <li>nucleo matches against both name and description</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Application won't launch</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check Exec command:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'grep Exec /usr/share/applications/firefox.desktop', comment: 'Inspect .desktop file' },
+                  { command: 'which firefox', comment: 'Verify command exists' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Commands are executed via sh -c, so shell syntax (pipes, redirects) works.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Enable verbose logging</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=garlaunch=trace garlaunch', comment: 'Maximum verbosity' },
+                  { command: 'RUST_LOG=debug garlaunch --mode drun', comment: 'Debug specific mode' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
       </div>
     </div>
-  </section>
+  </main>
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Control with garlaunchctl</h2>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl show</span> <span class="text-gar-text-muted"># Show launcher (drun mode)</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl show --mode window</span> <span class="text-gar-text-muted"># Show window switcher</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl toggle</span> <span class="text-gar-text-muted"># Toggle visibility</span></div>
-      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl status</span> <span class="text-gar-text-muted"># Check daemon status</span></div>
-    </div>
-    <p class="mt-4 text-sm text-gar-text-muted">
-      If the daemon isn't running, garlaunchctl will spawn garlaunch directly.
-    </p>
-  </section>
-
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Keyboard Shortcuts</h2>
-    <ul class="space-y-2 font-mono text-sm">
-      <li class="flex gap-4">
-        <span class="text-gar-accent-magenta w-32">Enter</span>
-        <span class="text-gar-text-secondary">Activate selected item</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-magenta w-32">Escape</span>
-        <span class="text-gar-text-secondary">Close launcher</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-magenta w-32">Up / Down</span>
-        <span class="text-gar-text-secondary">Navigate items</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-magenta w-32">Page Up / Down</span>
-        <span class="text-gar-text-secondary">Navigate by page</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-magenta w-32">Home / End</span>
-        <span class="text-gar-text-secondary">Move cursor in input</span>
-      </li>
-    </ul>
-  </section>
-</ComponentPageLayout>
+  <Footer />
+</BaseLayout>
