@@ -1,131 +1,1391 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
 
-const configExample = `# /etc/gardm/config.toml
+const gardmImages = [
+  { src: '/images/gardm1.png', alt: 'gardm display manager greeter' },
+];
 
-[general]
-# Default session to launch
-default_session = "gar"
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
 
-# Auto-login (use with caution)
-auto_login = false
-auto_login_user = ""
-
-[greeter]
-# Background image
-background = "/usr/share/gardm/backgrounds/default.png"
-
-# Theme colors
-background_color = "#14171e"
-foreground_color = "#abb2bf"
-accent_color = "#61afef"
-
-# Font settings
-font = "Inter"
-font_size = 14
-
-[sessions]
-# Session directories to scan
-dirs = [
-  "/usr/share/xsessions",
-  "/usr/share/wayland-sessions"
-]
-
-[security]
-# Minimum UID to display
-min_uid = 1000
-
-# Maximum UID to display
-max_uid = 65534
-
-# Hide users matching these shells
-hide_shells = ["/usr/sbin/nologin", "/bin/false"]`;
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'arch-daemon', label: 'gardmd Daemon' },
+      { id: 'arch-greeter', label: 'gardm-greeter UI' },
+      { id: 'arch-ipc', label: 'IPC Protocol' },
+    ]
+  },
+  {
+    id: 'session-management',
+    label: 'Session Management',
+    children: [
+      { id: 'session-x11', label: 'X11 Sessions' },
+      { id: 'session-wayland', label: 'Wayland Sessions' },
+      { id: 'session-lifecycle', label: 'Session Lifecycle' },
+      { id: 'session-discovery', label: 'Session Discovery' },
+    ]
+  },
+  {
+    id: 'authentication',
+    label: 'Authentication',
+    children: [
+      { id: 'auth-pam', label: 'PAM Integration' },
+      { id: 'auth-flow', label: 'Auth Flow' },
+      { id: 'auth-security', label: 'Security Features' },
+    ]
+  },
+  {
+    id: 'x-server',
+    label: 'X Server Management',
+  },
+  {
+    id: 'vt-management',
+    label: 'VT Management',
+  },
+  {
+    id: 'power-management',
+    label: 'Power Management',
+  },
+  {
+    id: 'greeter-ui',
+    label: 'Greeter UI',
+    children: [
+      { id: 'greeter-rendering', label: 'Rendering' },
+      { id: 'greeter-widgets', label: 'Widgets' },
+      { id: 'greeter-accessibility', label: 'Accessibility' },
+    ]
+  },
+];
 ---
 
-<ComponentPageLayout
-  name="gardm"
-  tagline="Display Manager"
-  description="A system-level display manager with a graphical greeter. gardm manages user login sessions with a clean, modern interface and seamless integration with the gar desktop."
-  status="beta"
-  accentColor="cyan"
-  features={[
-    'Graphical greeter with modern UI',
-    'PAM-based authentication',
-    'Session selection (X11 and Wayland)',
-    'Multi-user support',
-    'Auto-login capability',
-    'Systemd service integration',
-    'Configurable theming',
-    'User avatar support',
-    'Last session memory',
-    'Accessible design'
-  ]}
-  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=gardm"
-  configExample={configExample}
-  configLanguage="toml"
-  githubUrl="https://github.com/gardesk/gardm"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Architecture</h2>
-    <p class="text-gar-text-secondary mb-4">
-      gardm consists of two components:
-    </p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-cyan mb-2">gardmd</h3>
-        <p class="text-sm text-gar-text-secondary">
-          The daemon process that runs as root, managing X server startup, user sessions, and authentication.
+<BaseLayout title="gardm - gardesk" description="Display Manager. A system-level display manager for the gar desktop environment with modern greeter, PAM authentication, and X11/Wayland session support.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-cyan">gardm</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Display Manager</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A system-level display manager with graphical greeter for the gar desktop environment. gardm manages X server lifecycle, user authentication via PAM, session launching, and VT allocation. Features a modern Cairo/Pango-rendered login UI with user list, session selection, power management, and garbg wallpaper integration.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/gardm" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={gardmImages} />
+      </div>
+
+      <!-- Warning Box -->
+      <div class="mb-12 p-4 rounded-lg bg-gar-accent-yellow/10 border border-gar-accent-yellow/30">
+        <p class="text-gar-text-primary text-sm font-semibold mb-2">System-Level Component</p>
+        <p class="text-gar-text-secondary text-sm">
+          gardm is a system-level display manager that runs as root and replaces your existing display manager (GDM, SDDM, LightDM). Test in a VM or ensure you have TTY access (Ctrl+Alt+F2) before deployment.
         </p>
       </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-cyan mb-2">gardm-greeter</h3>
-        <p class="text-sm text-gar-text-secondary">
-          The graphical login interface that runs as a dedicated user, communicating with the daemon via IPC.
-        </p>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'Two-process architecture (daemon + greeter)',
+            'PAM authentication with state machine',
+            'X11 session support (keeps X server running)',
+            'Wayland session support (direct VT access)',
+            'X server lifecycle management (Xorg spawning)',
+            'VT allocation and switching (ioctl-based)',
+            'User session forking with privilege dropping',
+            'systemd-logind session registration',
+            'Unix socket IPC (JSON protocol)',
+            'Power management (shutdown, reboot, suspend)',
+            'Session discovery from .desktop files',
+            'User enumeration with avatar support',
+            'garbg wallpaper integration with blur',
+            'Accessibility options (high contrast, large text)',
+            'Fade-out transition on login',
+            'systemd service integration (Type=notify)'
+          ].map(feature => (
+            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-cyan" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Architecture Diagram -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Architecture</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-cyan/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-gar-accent-cyan" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+              </svg>
+              <h3 class="font-semibold text-gar-text-primary">gardmd (Daemon)</h3>
+            </div>
+            <p class="text-sm text-gar-text-secondary">Runs as root, manages X server, spawns greeter, handles PAM auth, forks user sessions. IPC server at /run/gardm.sock.</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-cyan/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-gar-accent-cyan" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <h3 class="font-semibold text-gar-text-primary">gardm-greeter (UI)</h3>
+            </div>
+            <p class="text-sm text-gar-text-secondary">Graphical login interface with Cairo/Pango rendering. User list, session selector, power buttons. Connects to daemon via IPC.</p>
+          </div>
+        </div>
+        <div class="p-4 rounded-lg bg-gar-bg-primary border border-gar-text-muted/20">
+          <h4 class="text-sm font-semibold text-gar-text-primary mb-3">Process Flow</h4>
+          <div class="space-y-2 text-sm text-gar-text-secondary font-mono">
+            <div>systemd → gardmd (starts X server on VT) → spawns gardm-greeter</div>
+            <div>greeter → IPC → gardmd (CreateSession, Authenticate, StartSession)</div>
+            <div>gardmd → fork/exec → user session (PAM open_session, drop privileges)</div>
+            <div>session ends → gardmd kills greeter → restart loop</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Installation & Setup</h3>
+
+          <div class="p-4 rounded-lg bg-gar-accent-yellow/10 border border-gar-accent-yellow/30 mb-6">
+            <p class="text-gar-text-primary text-sm font-semibold mb-2">Critical Warning</p>
+            <p class="text-gar-text-secondary text-sm">
+              gardm replaces your system display manager. Test in a VM first or ensure you have TTY backup access. If installation fails, you can recover from TTY (Ctrl+Alt+F2).
+            </p>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Install gardm</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use the unified installer which handles dependencies, builds, and system integration:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=gardm', comment: 'Install via script (recommended)' },
+              { command: 'cd ~/.local/src/gardesk/gardm && cargo build --release -p gardmd -p gardm-greeter', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Disable Current Display Manager</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Disable any existing display manager before enabling gardm:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo systemctl disable gdm', comment: 'GNOME Display Manager' },
+              { command: 'sudo systemctl disable sddm', comment: 'Simple Desktop Display Manager' },
+              { command: 'sudo systemctl disable lightdm', comment: 'LightDM' },
+              { command: 'sudo systemctl status display-manager.service', comment: 'Check current DM' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Enable gardm Service</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Enable gardm as the system display manager:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo systemctl enable gardm', comment: 'Enable gardm service' },
+              { command: 'sudo systemctl start gardm', comment: 'Start now (will replace current X session)' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Configure (Optional)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create system configuration:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo mkdir -p /etc/gardm', comment: 'Create config directory' },
+              { command: 'sudo $EDITOR /etc/gardm/config.toml', comment: 'Edit daemon config' },
+              { command: 'sudo $EDITOR /etc/gardm/greeter.toml', comment: 'Edit greeter config' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Reboot</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Reboot to start gardm at boot:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo reboot', comment: 'Reboot system' },
+            ]}
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Recovery Procedure</h4>
+          <p class="text-gar-text-secondary mb-4">
+            If gardm fails to start, recover from TTY:
+          </p>
+          <div class="space-y-2 text-sm text-gar-text-secondary">
+            <div class="flex items-center gap-2">
+              <span class="text-gar-accent-cyan">1.</span>
+              <span>Press Ctrl+Alt+F2 to switch to TTY2</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gar-accent-cyan">2.</span>
+              <span>Login with your username and password</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gar-accent-cyan">3.</span>
+              <span>Run: <code class="text-gar-accent-orange">sudo systemctl disable gardm</code></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gar-accent-cyan">4.</span>
+              <span>Run: <code class="text-gar-accent-orange">sudo systemctl enable gdm</code> (or your previous DM)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gar-accent-cyan">5.</span>
+              <span>Run: <code class="text-gar-accent-orange">sudo reboot</code></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            gardm uses two TOML configuration files: daemon config at <code class="text-gar-accent-cyan">/etc/gardm/config.toml</code> and greeter config at <code class="text-gar-accent-cyan">/etc/gardm/greeter.toml</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/gardm/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-96"><code class="text-sm text-gar-text-primary font-mono">{`# ═══════════════════════════════════════════
+# gardm daemon configuration
+# Display manager daemon settings
+# ═══════════════════════════════════════════
+
+[general]
+# Default session to launch (without .desktop extension)
+# This is used if no session is explicitly selected
+default_session = "gar"
+
+# Path to greeter executable
+greeter = "/usr/bin/gardm-greeter"
+
+# VT to use (0 = auto-select using VT_OPENQRY ioctl)
+vt = 0
+
+# X11 display number
+display = ":0"
+
+[greeter]
+# Blur radius for background screenshot
+blur_radius = 20
+
+# Background brightness (0.0 = black, 1.0 = original)
+blur_brightness = 0.7
+
+# Show power buttons (shutdown, reboot, suspend)
+show_power_buttons = true
+
+# Show session selector dropdown
+show_session_selector = true
+
+# Use garbg's current wallpaper as background
+use_garbg_wallpaper = true
+
+# Fallback wallpaper path if garbg not available
+fallback_wallpaper = "/usr/share/gardm/backgrounds/default.jpg"
+
+[security]
+# Allow empty passwords (NOT recommended)
+allow_empty_password = false
+
+# Lock greeter after N failed attempts (0 = disabled)
+lockout_attempts = 5
+
+# Lockout duration in seconds
+lockout_duration = 300`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Greeter Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/gardm/greeter.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-96"><code class="text-sm text-gar-text-primary font-mono">{`# ═══════════════════════════════════════════
+# gardm greeter configuration
+# Graphical login UI settings
+# ═══════════════════════════════════════════
+
+[visual]
+# Blur radius for background (0 = no blur)
+blur_radius = 25.0
+
+# Background brightness (0.0-1.0, lower = darker)
+brightness = 0.6
+
+# Corner radius for UI elements
+corner_radius = 16.0
+
+# Fade-out duration in milliseconds when starting session
+fade_duration_ms = 200
+
+[garbg]
+# Whether to use garbg wallpaper as background
+enabled = true
+
+# Fallback wallpaper if garbg not available
+fallback = "/usr/share/gardm/backgrounds/default.jpg"
+
+[theme]
+# Font family
+font_family = "Sans"
+
+# Normal text size
+font_size_normal = 14
+
+# Large text size
+font_size_large = 16
+
+# Primary color (hex format)
+color_primary = "#61afef"
+
+# Background color
+color_background = "#1e2127"
+
+# Text color
+color_text = "#abb2bf"
+
+# Error color
+color_error = "#e06c75"
+
+[accessibility]
+# High contrast mode (increases contrast for visibility)
+high_contrast = false
+
+# Large text mode (increases font sizes)
+large_text = false
+
+# Reduce motion (disables fade transitions)
+reduce_motion = false`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">PAM Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The installer creates <code class="text-gar-accent-cyan">/etc/pam.d/gardm</code> automatically:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/pam.d/gardm</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#%PAM-1.0
+# gardm display manager PAM configuration
+
+# Authentication
+auth        required      pam_unix.so
+
+# Account management
+account     required      pam_unix.so
+
+# Password management
+password    required      pam_unix.so
+
+# Session management - pam_systemd registers with logind
+-session    optional      pam_systemd.so
+session     required      pam_unix.so`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardm is a system-level display manager for X11 and Wayland sessions. It consists of two processes: gardmd (daemon running as root) and gardm-greeter (graphical UI). Communication happens via JSON over Unix socket.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Components</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>gardmd:</strong> Daemon managing X server, VTs, authentication, and sessions</li>
+                <li><strong>gardm-greeter:</strong> Graphical login UI with Cairo/Pango rendering</li>
+                <li><strong>gardm-ipc:</strong> Shared IPC protocol library</li>
+                <li><strong>PAM:</strong> Authentication via pam crate</li>
+                <li><strong>systemd-logind:</strong> Session registration and power management</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/usr/bin/gardmd</td><td class="py-2 px-3">Display manager daemon</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/usr/bin/gardm-greeter</td><td class="py-2 px-3">Graphical greeter</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/etc/gardm/config.toml</td><td class="py-2 px-3">Daemon configuration</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/etc/gardm/greeter.toml</td><td class="py-2 px-3">Greeter configuration</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/etc/pam.d/gardm</td><td class="py-2 px-3">PAM service configuration</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-cyan">/run/gardm.sock</td><td class="py-2 px-3">IPC Unix socket</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-cyan">/usr/lib/systemd/system/gardm.service</td><td class="py-2 px-3">systemd service file</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Architecture -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Architecture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardm uses a two-process architecture for security and stability.
+              </p>
+            </div>
+
+            <!-- gardmd Daemon -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gardmd Daemon</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The daemon runs as root and manages system-level operations.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Responsibilities</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Start and manage X server (Xorg) on allocated VT</li>
+                <li>Spawn greeter process on X display</li>
+                <li>Handle IPC server at /run/gardm.sock</li>
+                <li>Process PAM authentication requests</li>
+                <li>Fork user sessions with privilege dropping</li>
+                <li>Manage X11 vs Wayland session differences</li>
+                <li>Coordinate VT switching</li>
+                <li>Handle power actions via systemd-logind</li>
+                <li>Enumerate sessions and users</li>
+                <li>Send sd-notify signals to systemd</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Main Loop</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div>1. Start X server on VT</div>
+                <div>2. Start IPC server</div>
+                <div>3. Notify systemd ready</div>
+                <div>4. Spawn greeter process</div>
+                <div>5. Wait for IPC connection from greeter</div>
+                <div>6. Handle auth requests (CreateSession → Authenticate → StartSession)</div>
+                <div>7. On successful auth: kill greeter, fork user session</div>
+                <div>8. Wait for session to end</div>
+                <div>9. Return to step 4 (restart greeter)</div>
+              </div>
+            </div>
+
+            <!-- gardm-greeter UI -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gardm-greeter UI</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The greeter is a graphical application running on the X display managed by gardmd.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Responsibilities</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Create fullscreen X11 window</li>
+                <li>Render login UI using Cairo/Pango</li>
+                <li>Handle keyboard and mouse input</li>
+                <li>Connect to daemon via /run/gardm.sock</li>
+                <li>Send IPC requests (CreateSession, Authenticate, StartSession)</li>
+                <li>Display user list with avatars</li>
+                <li>Show session selector dropdown</li>
+                <li>Render power buttons</li>
+                <li>Load and blur background wallpaper</li>
+                <li>Animate fade-out transition on success</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rendering Pipeline</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div>1. Create Cairo ImageSurface (fullscreen)</div>
+                <div>2. Draw blurred background</div>
+                <div>3. Render widgets (user list, login form, session selector, power buttons)</div>
+                <div>4. Apply fade opacity if transitioning</div>
+                <div>5. Copy surface to X11 window via put_image</div>
+                <div>6. Repeat at ~60fps</div>
+              </div>
+            </div>
+
+            <!-- IPC Protocol -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Communication between greeter and daemon uses JSON messages over Unix socket at /run/gardm.sock.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Requests (Greeter → Daemon)</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Create auth session for user
+{"type": "create_session", "username": "alice"}
+
+// Provide password
+{"type": "authenticate", "response": "secret123"}
+
+// Start user session
+{
+  "type": "start_session",
+  "cmd": ["gar-session.sh"],
+  "session_type": "x11",
+  "env": []
+}
+
+// Cancel authentication
+{"type": "cancel_session"}
+
+// Power actions
+{"type": "shutdown"}
+{"type": "reboot"}
+{"type": "suspend"}
+
+// List available sessions
+{"type": "list_sessions"}
+
+// List available users
+{"type": "list_users"}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Responses (Daemon → Greeter)</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"type": "success"}
+
+// PAM prompt
+{"type": "auth_prompt", "prompt": "Password:", "echo": false}
+
+// PAM info message
+{"type": "auth_info", "message": "Welcome"}
+
+// Auth failed
+{"type": "auth_error", "message": "Incorrect password"}
+
+// General error
+{"type": "error", "message": "Session not found"}
+
+// Sessions list
+{
+  "type": "sessions",
+  "sessions": [
+    {
+      "id": "gar",
+      "name": "gar",
+      "comment": "Tiling window manager",
+      "exec": "gar-session.sh",
+      "session_type": "x11"
+    }
+  ]
+}
+
+// Users list
+{
+  "type": "users",
+  "users": [
+    {
+      "name": "alice",
+      "full_name": "Alice Smith",
+      "home": "/home/alice",
+      "avatar": "/home/alice/.face"
+    }
+  ]
+}`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Session Management -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Management</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardm supports both X11 and Wayland sessions with different startup procedures.
+              </p>
+            </div>
+
+            <!-- X11 Sessions -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">X11 Sessions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                X11 sessions reuse the X server started by gardmd.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Procedure</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>X server keeps running (started at daemon init)</li>
+                <li>gardmd forks child process</li>
+                <li>Child authenticates with PAM and opens session</li>
+                <li>Child drops privileges to target user (setuid/setgid)</li>
+                <li>Child sets environment (DISPLAY, XAUTHORITY, XDG_SESSION_TYPE=x11)</li>
+                <li>Child execve session command (e.g., gar-session.sh)</li>
+                <li>Parent waits for child to exit</li>
+                <li>When session ends, restart greeter</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Environment Variables</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Variable</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Example Value</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">DISPLAY</td><td class="py-2 px-3">:0</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">XAUTHORITY</td><td class="py-2 px-3">/home/user/.Xauthority</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">XDG_SESSION_TYPE</td><td class="py-2 px-3">x11</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">XDG_CURRENT_DESKTOP</td><td class="py-2 px-3">gar</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">XDG_SESSION_DESKTOP</td><td class="py-2 px-3">gar</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">XDG_VTNR</td><td class="py-2 px-3">1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Wayland Sessions -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Wayland Sessions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Wayland sessions need direct VT access, so X server is stopped first.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Procedure</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>gardmd stops X server (calls XServer::drop())</li>
+                <li>Changes TTY ownership to target user (chown /dev/ttyN)</li>
+                <li>Opens TTY as root and holds fd</li>
+                <li>Forks child process</li>
+                <li>Child calls setsid() to create new session leader</li>
+                <li>Child authenticates with PAM and opens session</li>
+                <li>Child drops privileges to target user</li>
+                <li>Child sets controlling TTY (TIOCSCTTY ioctl)</li>
+                <li>Child dups TTY fd to stdin/stdout/stderr</li>
+                <li>Child sets environment (XDG_SESSION_TYPE=wayland, no DISPLAY)</li>
+                <li>Child execve compositor (e.g., Hyprland, Sway)</li>
+                <li>Parent waits for child to exit</li>
+                <li>When session ends, restart X server and greeter</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Why Stop X Server?</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Wayland compositors need exclusive VT access and DRM master. Running X server blocks the VT. gardmd must stop X before starting the compositor, then restart X when returning to the greeter.
+              </p>
+            </div>
+
+            <!-- Session Lifecycle -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Lifecycle</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The session lifecycle follows a fork/exec pattern with PAM session management.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Fork/Exec Flow</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary font-mono mb-4">
+                <div>Parent (gardmd, running as root):</div>
+                <div class="ml-4">→ fork()</div>
+                <div class="ml-4">→ wait for child</div>
+                <div></div>
+                <div>Child (still root):</div>
+                <div class="ml-4">→ setsid() [Wayland only]</div>
+                <div class="ml-4">→ PAM create client</div>
+                <div class="ml-4">→ PAM authenticate</div>
+                <div class="ml-4">→ PAM open_session (registers with logind)</div>
+                <div class="ml-4">→ initgroups() (set supplementary groups)</div>
+                <div class="ml-4">→ setgid(user_gid)</div>
+                <div class="ml-4">→ setuid(user_uid)</div>
+                <div class="ml-4">→ chdir(home)</div>
+                <div class="ml-4">→ setup TTY [Wayland only]</div>
+                <div class="ml-4">→ execve(session_cmd)</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">PAM Session</h4>
+              <p class="text-gar-text-secondary mb-4">
+                PAM open_session is critical for systemd-logind registration. This creates /run/user/UID, sets up user bus, and grants device access (GPU, input devices). Without PAM session, Wayland compositors fail.
+              </p>
+            </div>
+
+            <!-- Session Discovery -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Discovery</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardmd discovers available sessions by parsing .desktop files from standard directories.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Search Directories</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div><strong>X11 sessions:</strong></div>
+                <div class="ml-4 font-mono">/usr/share/xsessions</div>
+                <div class="ml-4 font-mono">/usr/local/share/xsessions</div>
+                <div class="mt-2"><strong>Wayland sessions:</strong></div>
+                <div class="ml-4 font-mono">/usr/share/wayland-sessions</div>
+                <div class="ml-4 font-mono">/usr/local/share/wayland-sessions</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Desktop File Format</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">/usr/share/xsessions/gar.desktop</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Desktop Entry]
+Name=gar
+Comment=Tiling window manager for X11
+Exec=gar-session.sh
+Type=Application`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Authentication -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Authentication</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardm uses PAM (Pluggable Authentication Modules) for user authentication with a state machine.
+              </p>
+            </div>
+
+            <!-- PAM Integration -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">PAM Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardmd uses the pam crate for authentication. The PAM service is "gardm" (/etc/pam.d/gardm).
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Two-Phase Authentication</h4>
+              <p class="text-gar-text-secondary mb-4">
+                PAM authentication happens twice:
+              </p>
+              <div class="space-y-2 text-sm text-gar-text-secondary mb-4">
+                <div><strong>Phase 1:</strong> In gardmd (async, verify-only)</div>
+                <div class="ml-4">→ Creates PAM client with username/password</div>
+                <div class="ml-4">→ Calls pam.authenticate()</div>
+                <div class="ml-4">→ Returns success/failure to greeter</div>
+                <div class="ml-4">→ Password stored temporarily for phase 2</div>
+                <div></div>
+                <div><strong>Phase 2:</strong> In child process (blocking, with session)</div>
+                <div class="ml-4">→ Creates PAM client with username/password</div>
+                <div class="ml-4">→ Calls pam.authenticate()</div>
+                <div class="ml-4">→ Calls pam.open_session() (registers with logind)</div>
+                <div class="ml-4">→ Keeps PAM client alive (std::mem::forget)</div>
+                <div class="ml-4">→ Session closed when process exits</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Why Two Phases?</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Phase 1 verifies credentials quickly (async). Phase 2 happens in the child process after fork, so pam_systemd can correctly register the session with the child's PID as session leader.
+              </p>
+            </div>
+
+            <!-- Auth Flow -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Auth Flow</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The authentication flow is a state machine with three states.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Auth States</h4>
+              <div class="space-y-3 mb-4">
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">Idle</div>
+                  <div class="text-sm text-gar-text-secondary">No active authentication session</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">AwaitingPassword { username }</div>
+                  <div class="text-sm text-gar-text-secondary">Session created, waiting for password input</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">Authenticated { username, password }</div>
+                  <div class="text-sm text-gar-text-secondary">Credentials verified, ready for StartSession</div>
+                </div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Flow Diagram</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary font-mono">
+                <div>Greeter: CreateSession(username="alice")</div>
+                <div>Daemon:  Idle → AwaitingPassword</div>
+                <div>Daemon:  AuthPrompt("Password:", echo=false)</div>
+                <div></div>
+                <div>Greeter: Authenticate(response="secret123")</div>
+                <div>Daemon:  Spawn PAM verify task (blocking thread)</div>
+                <div>Daemon:  AwaitingPassword → Authenticated [on success]</div>
+                <div>Daemon:  Success</div>
+                <div></div>
+                <div>Greeter: StartSession(cmd=["gar-session.sh"], type="x11")</div>
+                <div>Daemon:  take_authenticated() → (username, password)</div>
+                <div>Daemon:  Fork child, pass credentials</div>
+                <div>Daemon:  Authenticated → Idle</div>
+                <div>Daemon:  Success</div>
+              </div>
+            </div>
+
+            <!-- Security Features -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Security Features</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Failed Attempt Tracking</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Configurable lockout after N failed attempts (config: security.lockout_attempts). Greeter displays lockout timer and blocks authentication during cooldown.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Empty Password Blocking</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Can reject empty passwords via config (security.allow_empty_password = false).
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Privilege Separation</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Greeter runs as unprivileged process. Only gardmd runs as root. IPC provides privilege boundary.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Password Handling</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Passwords transmitted via IPC (local Unix socket only). Not stored on disk. Passed to child process via memory, used for PAM, then dropped.
+              </p>
+            </div>
+
+            <!-- X Server Management -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">X Server Management</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gardmd spawns and manages Xorg server lifecycle.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Xorg Command</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`/usr/bin/Xorg :0 vt1 \\
+  -keeptty \\
+  -noreset \\
+  -novtswitch \\
+  -nolisten tcp \\
+  -auth /dev/null`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Flags Explained</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Flag</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">-keeptty</td><td class="py-2 px-3">Keep using the VT (don't close TTY)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">-noreset</td><td class="py-2 px-3">Don't reset when last client exits</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">-novtswitch</td><td class="py-2 px-3">Disable VT switching via Ctrl+Alt+Fn</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">-nolisten tcp</td><td class="py-2 px-3">No TCP connections (local only)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">-auth /dev/null</td><td class="py-2 px-3">No initial auth file (managed later)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Readiness Check</h4>
+              <p class="text-gar-text-secondary mb-4">
+                After spawning Xorg, gardmd polls for readiness using x11rb::connect() with 10-second timeout. Once connection succeeds, X server is considered ready for greeter.
+              </p>
+            </div>
+
+            <!-- VT Management -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">VT Management</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Virtual Terminal allocation and switching via Linux ioctl syscalls.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">VT Allocation</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gardmd finds an unused VT using VT_OPENQRY ioctl on /dev/tty0. Returns first available VT number (typically 1 or 7).
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`fn find_unused_vt() -> Result<u32> {
+    let console = OpenOptions::new().read(true).write(true).open("/dev/tty0")?;
+    let mut vt: libc::c_int = 0;
+    unsafe { libc::ioctl(console.as_raw_fd(), VT_OPENQRY, &mut vt) };
+    Ok(vt as u32)
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">VT Switching</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Uses VT_ACTIVATE and VT_WAITACTIVE ioctls to switch to the allocated VT.
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`fn switch_to_vt(vt: u32) -> Result<()> {
+    let console = OpenOptions::new().read(true).write(true).open("/dev/tty0")?;
+    let fd = console.as_raw_fd();
+    unsafe {
+        libc::ioctl(fd, VT_ACTIVATE, vt as libc::c_int);
+        libc::ioctl(fd, VT_WAITACTIVE, vt as libc::c_int);
+    }
+    Ok(())
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">TTY Ownership</h4>
+              <p class="text-gar-text-secondary mb-4">
+                For Wayland sessions, gardmd changes /dev/ttyN ownership to the target user with chown(). This allows the compositor to open the TTY for direct KMS/DRM access.
+              </p>
+            </div>
+
+            <!-- Power Management -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Power Management</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Power actions (shutdown, reboot, suspend) via systemd-logind D-Bus API.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Methods</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">D-Bus Method</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Shutdown</td><td class="py-2 px-3 font-mono">org.freedesktop.login1.Manager.PowerOff</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Reboot</td><td class="py-2 px-3 font-mono">org.freedesktop.login1.Manager.Reboot</td></tr>
+                    <tr><td class="py-2 px-3">Suspend</td><td class="py-2 px-3 font-mono">org.freedesktop.login1.Manager.Suspend</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Permission Check</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Can check if actions are allowed using CanPowerOff, CanReboot, CanSuspend methods. Returns "yes", "no", "challenge", or "na".
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Interactive Flag</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Power methods take interactive boolean parameter. gardmd uses false (no polkit prompt). Requires appropriate polkit policy for passwordless power actions at login screen.
+              </p>
+            </div>
+
+            <!-- Greeter UI -->
+            <div slot="doc-17">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Greeter UI</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The greeter UI is built with Cairo for rendering and Pango for text layout.
+              </p>
+            </div>
+
+            <!-- Rendering -->
+            <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rendering</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Rendering uses Cairo ImageSurface with manual frame copying to X11.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rendering Stack</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary">
+                <div>1. <strong>Cairo Context:</strong> 2D graphics rendering</div>
+                <div>2. <strong>Pango Layout:</strong> Text rendering and layout</div>
+                <div>3. <strong>Image Surface:</strong> ARGB32 framebuffer (full screen size)</div>
+                <div>4. <strong>X11 PutImage:</strong> Copy framebuffer to window</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Frame Loop</h4>
+              <div class="space-y-2 text-sm text-gar-text-secondary font-mono mb-4">
+                <div>loop {</div>
+                <div class="ml-4">// Clear and render background</div>
+                <div class="ml-4">render_background(&ctx, &blurred_image)</div>
+                <div class="ml-4"></div>
+                <div class="ml-4">// Render UI widgets</div>
+                <div class="ml-4">user_list.render(&ctx, &pango_ctx, &theme)</div>
+                <div class="ml-4">login_form.render(&ctx, &pango_ctx, &theme)</div>
+                <div class="ml-4">session_selector.render(&ctx, &pango_ctx, &theme)</div>
+                <div class="ml-4">power_buttons.render(&ctx)</div>
+                <div class="ml-4"></div>
+                <div class="ml-4">// Copy to X11 window</div>
+                <div class="ml-4">window.put_image(surface.data())</div>
+                <div class="ml-4"></div>
+                <div class="ml-4">// Handle events</div>
+                <div class="ml-4">process_x11_events()</div>
+                <div class="ml-4"></div>
+                <div class="ml-4">sleep(16ms) // ~60fps</div>
+                <div>}</div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Background Blur</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Greeter attempts to use garbg wallpaper, falls back to configured path. Image is loaded, blurred via Gaussian blur (downsample-blur-upsample), and brightness-adjusted.
+              </p>
+            </div>
+
+            <!-- Widgets -->
+            <div slot="doc-19">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Widgets</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The greeter UI consists of modular widgets.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Widget Types</h4>
+              <div class="space-y-3">
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">UserList</div>
+                  <div class="text-sm text-gar-text-secondary mb-2">Displays available users with avatars. Auto-selects first user. Click to switch user.</div>
+                  <div class="text-xs font-mono text-gar-text-muted">Position: Above login form</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">LoginForm</div>
+                  <div class="text-sm text-gar-text-secondary mb-2">Username and password input fields with login button. Keyboard navigation, cursor positioning, text selection.</div>
+                  <div class="text-xs font-mono text-gar-text-muted">Position: Centered on primary monitor</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">SessionSelector</div>
+                  <div class="text-sm text-gar-text-secondary mb-2">Dropdown showing available sessions from .desktop files. Click to expand, select X11 or Wayland session.</div>
+                  <div class="text-xs font-mono text-gar-text-muted">Position: Below login form</div>
+                </div>
+                <div class="p-3 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                  <div class="font-semibold text-gar-text-primary mb-1">PowerButtons</div>
+                  <div class="text-sm text-gar-text-secondary mb-2">Icons for shutdown, reboot, suspend. Tooltips on hover. Sends power IPC requests to daemon.</div>
+                  <div class="text-xs font-mono text-gar-text-muted">Position: Bottom-right corner</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accessibility -->
+            <div slot="doc-20">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Accessibility</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Greeter supports accessibility options configured in greeter.toml.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Options</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Effect</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">high_contrast</td><td class="py-2 px-3">Increases contrast for better visibility</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">large_text</td><td class="py-2 px-3">Increases all font sizes</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">reduce_motion</td><td class="py-2 px-3">Disables fade-out animation</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">/etc/gardm/greeter.toml</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[accessibility]
+high_contrast = false
+large_text = false
+reduce_motion = false`}</code></pre>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using and configuring gardm.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Adding a Custom Session</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a .desktop file for your session:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'sudo $EDITOR /usr/share/xsessions/mysession.desktop', comment: 'For X11 session' },
+              { command: 'sudo $EDITOR /usr/share/wayland-sessions/mysession.desktop', comment: 'For Wayland session' },
+            ]}
+            class="mb-4"
+          />
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/usr/share/xsessions/mysession.desktop</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Desktop Entry]
+Name=My Custom Session
+Comment=My custom desktop environment
+Exec=/usr/local/bin/my-session-start.sh
+Type=Application`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Debugging gardm Issues</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Check gardm logs:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'sudo journalctl -u gardm -f', comment: 'Follow gardm service logs' },
+              { command: 'sudo journalctl -u gardm --since "5 minutes ago"', comment: 'Recent logs' },
+              { command: 'RUST_LOG=debug sudo systemctl restart gardm', comment: 'Enable debug logging' },
+            ]}
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Testing gardm in Xephyr</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Test gardm safely in nested X:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'Xephyr :1 -screen 1920x1080 &', comment: 'Start nested X server' },
+              { command: 'DISPLAY=:1 gardmd --no-x --test-mode', comment: 'Run daemon in test mode' },
+              { command: 'DISPLAY=:1 gardm-greeter', comment: 'Run greeter in nested display' },
+            ]}
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Custom Wallpaper</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Set a specific wallpaper for greeter:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/gardm/greeter.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[garbg]
+enabled = false
+fallback = "/usr/share/backgrounds/my-wallpaper.png"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Theme</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Customize greeter colors:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/gardm/greeter.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[theme]
+font_family = "JetBrains Mono"
+font_size_normal = 14
+color_primary = "#bd93f9"      # Purple accent
+color_background = "#282a36"   # Dracula background
+color_text = "#f8f8f2"         # Light text
+color_error = "#ff5555"        # Red errors`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Switching Back to Previous DM</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Restore your previous display manager:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'sudo systemctl disable gardm', comment: 'Disable gardm' },
+              { command: 'sudo systemctl enable gdm', comment: 'Enable GDM (or sddm/lightdm)' },
+              { command: 'sudo systemctl start gdm', comment: 'Start immediately' },
+            ]}
+          />
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">gardm service won't start</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check service status and logs:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'sudo systemctl status gardm', comment: 'Check service status' },
+                  { command: 'sudo journalctl -xeu gardm', comment: 'View detailed logs' },
+                  { command: 'ls -l /usr/bin/gardmd /usr/bin/gardm-greeter', comment: 'Verify binaries exist' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Ensure PAM config exists: <code class="text-gar-accent-cyan">ls -l /etc/pam.d/gardm</code>
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Black screen / X server fails to start</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check X server logs:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat /var/log/Xorg.0.log | grep EE', comment: 'Check for X errors' },
+                  { command: 'sudo journalctl -u gardm | grep "X server"', comment: 'gardm X server logs' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Verify Xorg is installed: <code class="text-gar-accent-cyan">which Xorg</code>
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Greeter not appearing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check if greeter process started:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ps aux | grep gardm-greeter', comment: 'Check if greeter running' },
+                  { command: 'echo $DISPLAY', comment: 'Verify display is set' },
+                  { command: 'DISPLAY=:0 xdpyinfo', comment: 'Test X connection' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Cannot authenticate / PAM errors</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify PAM configuration:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat /etc/pam.d/gardm', comment: 'Check PAM config' },
+                  { command: 'sudo journalctl -u gardm | grep -i pam', comment: 'PAM-related logs' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Ensure PAM config includes pam_unix.so or pam_systemd.so.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Session starts but immediately ends</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check session command and logs:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat /usr/share/xsessions/gar.desktop', comment: 'Verify session Exec command' },
+                  { command: 'which gar-session.sh', comment: 'Check if session script exists' },
+                  { command: 'sudo journalctl -u gardm | grep "session"', comment: 'Session start/end logs' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Verify session command is executable and has correct shebang.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Wayland session fails to start</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check TTY ownership and session logs:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -l /dev/tty1', comment: 'Check TTY ownership' },
+                  { command: 'loginctl show-session', comment: 'Verify logind session' },
+                  { command: 'sudo journalctl -u gardm | grep -i wayland', comment: 'Wayland session logs' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Ensure compositor has permissions and pam_systemd is configured.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Power buttons don't work</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check systemd-logind permissions:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'systemctl status systemd-logind', comment: 'Verify logind running' },
+                  { command: 'loginctl show-seat seat0 | grep CanPowerOff', comment: 'Check permissions' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                May require polkit policy for passwordless power actions. Check <code class="text-gar-accent-cyan">/etc/polkit-1/rules.d/</code>
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">IPC connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check socket exists and permissions:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -l /run/gardm.sock', comment: 'Verify socket exists' },
+                  { command: 'sudo systemctl restart gardm', comment: 'Restart to recreate socket' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Stuck at greeter / can't login to TTY</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Emergency recovery:</p>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 text-sm mt-3">
+                <li>Reboot system</li>
+                <li>At GRUB, select "Advanced options"</li>
+                <li>Boot to single-user mode or recovery mode</li>
+                <li>Run: <code class="text-gar-accent-orange">systemctl disable gardm</code></li>
+                <li>Run: <code class="text-gar-accent-orange">systemctl enable gdm</code> (or previous DM)</li>
+                <li>Reboot</li>
+              </ol>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Enable verbose logging</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">For maximum debug output:</p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mt-3">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">/etc/systemd/system/gardm.service.d/override.conf</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-3 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Service]
+Environment="RUST_LOG=gardmd=trace,gardm_greeter=trace"`}</code></pre>
+              </div>
+              <MultiTerminal
+                commands={[
+                  { command: 'sudo systemctl daemon-reload', comment: 'Reload systemd' },
+                  { command: 'sudo systemctl restart gardm', comment: 'Restart with debug logging' },
+                  { command: 'sudo journalctl -u gardm -f', comment: 'Follow logs' },
+                ]}
+                class="mt-3"
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
       </div>
     </div>
-  </section>
+  </main>
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Installation</h2>
-    <div class="p-4 rounded-lg bg-gar-accent-yellow/10 border border-gar-accent-yellow/30 mb-4">
-      <p class="text-gar-accent-yellow text-sm">
-        <strong>Note:</strong> gardm requires system-wide installation and root privileges. Test in a VM or with TTY backup access.
-      </p>
-    </div>
-    <p class="text-gar-text-secondary mb-4">
-      After installation, enable gardm as your display manager:
-    </p>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo systemctl disable gdm sddm lightdm</span> <span class="text-gar-text-muted"># Disable current DM</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo systemctl enable gardm</span></div>
-      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo reboot</span></div>
-    </div>
-  </section>
-
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Files</h2>
-    <ul class="space-y-2 font-mono text-sm">
-      <li class="flex gap-4">
-        <span class="text-gar-accent-cyan">/usr/bin/gardmd</span>
-        <span class="text-gar-text-muted">Display manager daemon</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-cyan">/usr/bin/gardm-greeter</span>
-        <span class="text-gar-text-muted">Graphical greeter</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-cyan">/etc/gardm/config.toml</span>
-        <span class="text-gar-text-muted">Configuration file</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-cyan">/etc/pam.d/gardm</span>
-        <span class="text-gar-text-muted">PAM configuration</span>
-      </li>
-      <li class="flex gap-4">
-        <span class="text-gar-accent-cyan">/usr/lib/systemd/system/gardm.service</span>
-        <span class="text-gar-text-muted">Systemd service</span>
-      </li>
-    </ul>
-  </section>
-</ComponentPageLayout>
+  <Footer />
+</BaseLayout>
