@@ -9,6 +9,8 @@
 #   - garbg: Wallpaper daemon with animation support
 #   - garlock: Screen locker with PAM authentication
 #   - gardm: Display manager with graphical greeter
+#   - garlaunch: Application launcher with fuzzy search
+#   - gartk: Shared UI toolkit library
 #
 # Usage:
 #   curl -fsSL https://gar.dev/install.sh | bash
@@ -23,7 +25,7 @@ set -euo pipefail
 # ─────────────────────────────────────────────────────────────────────────────
 
 INSTALLER_VERSION="1.0.0"
-REPO_URL="https://github.com/mfwolffe/gardesk"
+REPO_URL="https://github.com/gardesk/gardesk"
 BRANCH="trunk"
 
 # Installation paths (can be overridden with GAR_PREFIX env var)
@@ -42,6 +44,8 @@ INSTALL_GARBAR=false
 INSTALL_GARBG=false
 INSTALL_GARLOCK=false
 INSTALL_GARDM=false
+INSTALL_GARLAUNCH=false
+INSTALL_GARTK=false
 
 # Options
 SKIP_DEPS=false
@@ -323,9 +327,11 @@ show_component_menu() {
     echo -e "  ${CYAN}3)${NC} garbg      ${DIM}-${NC} Wallpaper daemon with animations"
     echo -e "  ${CYAN}4)${NC} garlock    ${DIM}-${NC} Screen locker with PAM auth"
     echo -e "  ${CYAN}5)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
+    echo -e "  ${CYAN}6)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
+    echo -e "  ${CYAN}7)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch)${NC}"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
-    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-4, recommended for most users)"
+    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-4,6, recommended for most users)"
     echo -e "  ${MAGENTA}Q)${NC} Quit"
     echo ""
 }
@@ -337,6 +343,7 @@ prompt_components() {
         INSTALL_GARBAR=true
         INSTALL_GARBG=true
         INSTALL_GARLOCK=true
+        INSTALL_GARLAUNCH=true
         return 0
     fi
 
@@ -352,6 +359,8 @@ prompt_components() {
     INSTALL_GARBG=false
     INSTALL_GARLOCK=false
     INSTALL_GARDM=false
+    INSTALL_GARLAUNCH=false
+    INSTALL_GARTK=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -359,18 +368,23 @@ prompt_components() {
         3) INSTALL_GARBG=true ;;
         4) INSTALL_GARLOCK=true ;;
         5) INSTALL_GARDM=true ;;
+        6) INSTALL_GARLAUNCH=true ;;
+        7) INSTALL_GARTK=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARBAR=true
             INSTALL_GARBG=true
             INSTALL_GARLOCK=true
             INSTALL_GARDM=true
+            INSTALL_GARLAUNCH=true
+            INSTALL_GARTK=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
             INSTALL_GARBAR=true
             INSTALL_GARBG=true
             INSTALL_GARLOCK=true
+            INSTALL_GARLAUNCH=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -385,6 +399,8 @@ prompt_components() {
                     3) INSTALL_GARBG=true ;;
                     4) INSTALL_GARLOCK=true ;;
                     5) INSTALL_GARDM=true ;;
+                    6) INSTALL_GARLAUNCH=true ;;
+                    7) INSTALL_GARTK=true ;;
                 esac
             done
             ;;
@@ -393,9 +409,16 @@ prompt_components() {
     # Ensure at least one component is selected
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ]; then
+       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         log_error "No components selected"
         return 1
+    fi
+
+    # garlaunch requires gartk - auto-select if needed
+    if [ "$INSTALL_GARLAUNCH" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garlaunch requires gartk, adding to installation"
+        INSTALL_GARTK=true
     fi
 }
 
@@ -408,6 +431,8 @@ show_selection_summary() {
     [ "$INSTALL_GARBG" = true ] && echo -e "  ${GREEN}•${NC} garbg (wallpaper daemon)"
     [ "$INSTALL_GARLOCK" = true ] && echo -e "  ${GREEN}•${NC} garlock (screen locker)"
     [ "$INSTALL_GARDM" = true ] && echo -e "  ${YELLOW}•${NC} gardm (display manager)"
+    [ "$INSTALL_GARLAUNCH" = true ] && echo -e "  ${GREEN}•${NC} garlaunch (application launcher)"
+    [ "$INSTALL_GARTK" = true ] && echo -e "  ${DIM}•${NC} gartk (UI toolkit library)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -668,6 +693,66 @@ install_gardm() {
     fi
 }
 
+install_gartk() {
+    log_step "Building gartk (UI toolkit)..."
+
+    cd "$BUILD_DIR/gartk"
+    cargo build --release
+
+    # gartk is a library crate, no binaries to install
+    # It will be built as part of garlaunch's dependencies
+    # We just verify it compiles
+
+    echo -e "${GREEN}  ✓ gartk built successfully${NC}"
+    log_info "  gartk is a library used by garlaunch"
+}
+
+install_garlaunch() {
+    log_step "Building garlaunch (application launcher)..."
+
+    cd "$BUILD_DIR/garlaunch"
+    cargo build --release
+
+    log_info "Installing garlaunch binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garlaunch "$BIN_DIR/garlaunch"
+    sudo install -Dm755 target/release/garlaunchctl "$BIN_DIR/garlaunchctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garlaunch"
+    if [ ! -f "$HOME/.config/garlaunch/config.toml" ]; then
+        log_info "Creating default garlaunch config..."
+        cat << 'EOF' > "$HOME/.config/garlaunch/config.toml"
+# garlaunch configuration
+# See https://gar.dev/components/garlaunch for options
+
+[general]
+# Default mode when launching without arguments
+default_mode = "drun"
+
+# Maximum visible items in the list
+max_items = 10
+
+[theme]
+# Use gartk theme (dark, light, or high_contrast)
+theme = "dark"
+
+[modes.drun]
+# Directories to scan for .desktop files
+dirs = [
+  "/usr/share/applications",
+  "~/.local/share/applications"
+]
+
+[modes.script]
+# Default script timeout (seconds)
+timeout = 30
+EOF
+    fi
+
+    echo -e "${GREEN}  ✓ garlaunch installed successfully${NC}"
+    log_info "  Bind to a key: gar.key({ gar.mod, \"d\", gar.spawn(\"garlaunch\") })"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -728,21 +813,30 @@ parse_args() {
                         garbg) INSTALL_GARBG=true ;;
                         garlock) INSTALL_GARLOCK=true ;;
                         gardm) INSTALL_GARDM=true ;;
+                        garlaunch) INSTALL_GARLAUNCH=true ;;
+                        gartk) INSTALL_GARTK=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARBAR=true
                             INSTALL_GARBG=true
                             INSTALL_GARLOCK=true
                             INSTALL_GARDM=true
+                            INSTALL_GARLAUNCH=true
+                            INSTALL_GARTK=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
                             INSTALL_GARBAR=true
                             INSTALL_GARBG=true
                             INSTALL_GARLOCK=true
+                            INSTALL_GARLAUNCH=true
                             ;;
                     esac
                 done
+                # Auto-add gartk if garlaunch is selected
+                if [ "$INSTALL_GARLAUNCH" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 shift
                 ;;
             --help|-h)
@@ -755,7 +849,7 @@ parse_args() {
                 echo "  --no-deps           Skip dependency installation"
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
-                echo "                      (gar,garbar,garbg,garlock,gardm,all,desktop)"
+                echo "                      (gar,garbar,garbg,garlock,gardm,garlaunch,gartk,all,desktop)"
                 echo "  --help              Show this help message"
                 echo ""
                 echo "Environment variables:"
@@ -804,7 +898,8 @@ main() {
     # Component selection (if not specified via CLI)
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ]; then
+       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         prompt_components
     fi
 
@@ -840,6 +935,8 @@ main() {
     [ "$INSTALL_GARBG" = true ] && install_garbg
     [ "$INSTALL_GARLOCK" = true ] && install_garlock
     [ "$INSTALL_GARDM" = true ] && install_gardm
+    [ "$INSTALL_GARTK" = true ] && install_gartk
+    [ "$INSTALL_GARLAUNCH" = true ] && install_garlaunch
 
     # PATH setup
     setup_path
@@ -873,7 +970,13 @@ main() {
         echo ""
     fi
 
-    echo -e "${DIM}Documentation: https://gar.dev/docs${NC}"
+    if [ "$INSTALL_GARLAUNCH" = true ]; then
+        echo "  Bind garlaunch to a key in ~/.config/gar/init.lua:"
+        echo "     gar.key({ gar.mod, \"d\", gar.spawn(\"garlaunch\") })"
+        echo ""
+    fi
+
+    echo -e "${DIM}Documentation: https://gar.dev${NC}"
     echo ""
 }
 
