@@ -1,96 +1,1317 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
 
-const configExample = `# ~/.config/garbg/config.toml
+const garbgImages = [
+  { src: '/images/garbg1.png', alt: 'garbg wallpaper daemon - slideshow mode' },
+  { src: '/images/garbg2.png', alt: 'garbg wallpaper daemon - animated wallpaper' },
+  { src: '/images/garbg3.png', alt: 'garbg wallpaper daemon - multi-monitor setup' },
+];
 
-[daemon]
-# Cache settings
-cache_dir = "~/.cache/garbg"
-max_cache_size = "500MB"
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
 
-[source]
-# Local directory
-type = "directory"
-path = "~/Pictures/Wallpapers"
-recursive = true
-
-# Or HTTP source
-# type = "http"
-# url = "https://example.com/wallpapers/"
-
-# Or S3 source
-# type = "s3"
-# bucket = "my-wallpapers"
-# region = "us-east-1"
-
-[display]
-# Scaling mode: fill, fit, center, tile
-mode = "fill"
-
-# Animation settings for GIFs
-animation = true
-frame_rate = 30
-
-[rotation]
-# Rotate wallpaper automatically
-enabled = true
-interval = "30m"
-random = true`;
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'sources',
+    label: 'Sources',
+    children: [
+      { id: 'sources-local', label: 'Local Files' },
+      { id: 'sources-http', label: 'HTTP/HTTPS' },
+      { id: 'sources-github', label: 'GitHub' },
+      { id: 'sources-s3', label: 'S3 Storage' },
+    ]
+  },
+  {
+    id: 'scaling',
+    label: 'Scaling Modes',
+  },
+  {
+    id: 'animation',
+    label: 'Animation',
+    children: [
+      { id: 'animation-gif', label: 'Animated GIF' },
+      { id: 'animation-webp', label: 'Animated WebP' },
+      { id: 'animation-video', label: 'Video Support' },
+    ]
+  },
+  {
+    id: 'slideshow',
+    label: 'Slideshow',
+  },
+  {
+    id: 'multimonitor',
+    label: 'Multi-Monitor',
+  },
+  {
+    id: 'caching',
+    label: 'Caching System',
+  },
+  {
+    id: 'daemon',
+    label: 'Daemon Mode',
+  },
+];
 ---
 
-<ComponentPageLayout
-  name="garbg"
-  tagline="Wallpaper Daemon"
-  description="A multi-source wallpaper daemon with caching and animation support. Load backgrounds from local files, HTTP endpoints, or S3-compatible storage with intelligent caching."
-  status="stable"
-  accentColor="magenta"
-  features={[
-    'Local file and directory support',
-    'HTTP/HTTPS remote image fetching',
-    'S3-compatible cloud storage (AWS, MinIO)',
-    'Directory index scraping',
-    'LRU cache with blake3 hashing',
-    'Animated GIF and WebP support',
-    'Optional video playback via ffmpeg',
-    'Frame pre-rendering with ring buffer',
-    'Workspace-aware wallpaper switching',
-    'Systemd user service integration'
-  ]}
-  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbg"
-  configExample={configExample}
-  configLanguage="toml"
-  githubUrl="https://github.com/gardesk/garbg"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Usage</h2>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg daemon</span> <span class="text-gar-text-muted"># Start the daemon</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg set ~/wallpaper.png</span> <span class="text-gar-text-muted"># Set a specific wallpaper</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg next</span> <span class="text-gar-text-muted"># Next wallpaper in rotation</span></div>
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg prev</span> <span class="text-gar-text-muted"># Previous wallpaper</span></div>
-      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg random</span> <span class="text-gar-text-muted"># Random wallpaper from source</span></div>
-    </div>
-  </section>
+<BaseLayout title="garbg - gardesk" description="Wallpaper Daemon. A multi-source wallpaper daemon with caching, animation, and slideshow support.">
+  <Header />
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Supported Formats</h2>
-    <div class="flex flex-wrap gap-2">
-      {['PNG', 'JPEG', 'GIF', 'WebP', 'APNG', 'BMP', 'TIFF', 'MP4*', 'WebM*'].map(format => (
-        <span class="px-3 py-1 rounded-full text-sm bg-gar-bg-secondary border border-gar-text-muted/20 text-gar-text-primary">
-          {format}
-        </span>
-      ))}
-    </div>
-    <p class="mt-4 text-sm text-gar-text-muted">* Video formats require ffmpeg-next feature</p>
-  </section>
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-magenta">garbg</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Wallpaper Daemon</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A multi-source wallpaper daemon with intelligent caching, animated image support, and slideshow capabilities. Load backgrounds from local files, HTTP endpoints, GitHub repositories, or S3-compatible storage with automatic scaling and multi-monitor support.
+        </p>
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Systemd Service</h2>
-    <p class="text-gar-text-secondary mb-4">
-      Enable garbg as a user service for automatic startup:
-    </p>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">systemctl --user enable --now garbg</span></div>
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garbg" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garbgImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'Local files and directories with recursive scanning',
+            'HTTP/HTTPS remote image fetching',
+            'GitHub repository integration with API support',
+            'S3-compatible cloud storage (AWS, MinIO)',
+            'LRU disk cache with blake3 hashing',
+            'Animated GIF, WebP, and APNG playback',
+            'Optional video wallpapers via ffmpeg',
+            'Five scaling modes: fill, fit, stretch, center, tile',
+            'Per-monitor wallpaper configuration',
+            'Slideshow mode with shuffle and intervals',
+            'Double-buffered animation rendering',
+            'Systemd user service integration'
+          ].map(feature => (
+            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-magenta" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Supported Formats -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Supported Formats</h2>
+        <div class="flex flex-wrap gap-2 mb-4">
+          {['PNG', 'JPEG', 'WebP', 'GIF', 'APNG', 'BMP', 'TIFF'].map(format => (
+            <span class="px-3 py-1 rounded-full text-sm bg-gar-bg-secondary border border-gar-accent-magenta/30 text-gar-text-primary">
+              {format}
+            </span>
+          ))}
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {['MP4*', 'WebM*', 'MKV*', 'AVI*'].map(format => (
+            <span class="px-3 py-1 rounded-full text-sm bg-gar-bg-secondary border border-gar-text-muted/20 text-gar-text-secondary">
+              {format}
+            </span>
+          ))}
+        </div>
+        <p class="mt-3 text-sm text-gar-text-muted">* Video formats require the <code class="text-gar-accent-magenta">video</code> feature (ffmpeg-next)</p>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get up and running with garbg in just a few steps. This guide covers installation, basic usage, and essential commands.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garbg using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbg', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garbg && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Set Your First Wallpaper</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Set a wallpaper directly from the command line:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbg set ~/Pictures/wallpaper.png', comment: 'Set a static wallpaper' },
+              { command: 'garbg set ~/Pictures/wallpaper.png -m fit', comment: 'Set with fit scaling' },
+              { command: 'garbg set ~/Pictures/animated.gif --animate', comment: 'Set an animated wallpaper' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Start a Slideshow</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Rotate through wallpapers from a directory:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbg set ~/Pictures -r --interval 5m', comment: 'Slideshow with shuffle, 5 min interval' },
+              { command: 'garbg next', comment: 'Skip to next wallpaper' },
+              { command: 'garbg prev', comment: 'Go to previous wallpaper' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Start the Daemon</h4>
+          <p class="text-gar-text-secondary mb-4">
+            For persistent wallpapers and advanced features, run the daemon:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbg daemon', comment: 'Run in foreground' },
+              { command: 'garbg daemon -d', comment: 'Daemonize (run in background)' },
+              { command: 'systemctl --user enable --now garbg', comment: 'Or use systemd service' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Essential Commands</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg set &lt;source&gt;</td><td class="py-2 px-3">Set wallpaper from any source</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg next</td><td class="py-2 px-3">Next wallpaper in playlist</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg prev</td><td class="py-2 px-3">Previous wallpaper</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg pause</td><td class="py-2 px-3">Pause animations/slideshow</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg resume</td><td class="py-2 px-3">Resume playback</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg status</td><td class="py-2 px-3">Show current status</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garbg reload</td><td class="py-2 px-3">Reload configuration</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">garbg list &lt;source&gt;</td><td class="py-2 px-3">List images from source</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garbg uses TOML for configuration. The config file is located at <code class="text-gar-accent-magenta">~/.config/garbg/config.toml</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Minimal Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbg/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Minimal garbg configuration
+
+[general]
+mode = "fill"  # Scaling mode
+
+[default]
+source = "~/Pictures/Wallpapers"
+
+[default.slideshow]
+enabled = true
+interval = "10m"
+shuffle = true`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbg/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-96"><code class="text-sm text-gar-text-primary font-mono">{`# ═══════════════════════════════════════════
+# garbg configuration
+# ═══════════════════════════════════════════
+
+[general]
+mode = "fill"  # Default scaling: fill, fit, stretch, center, tile
+
+# ═══════════════════════════════════════════
+# Animation Settings
+# ═══════════════════════════════════════════
+
+[animation]
+enabled = true           # Enable animated GIF/WebP/APNG playback
+max_fps = 60            # Maximum frame rate (0 = unlimited)
+pause_on_idle = true    # Pause animations when screen locked
+
+# ═══════════════════════════════════════════
+# Cache Settings
+# ═══════════════════════════════════════════
+
+[cache]
+directory = ""          # Custom cache dir (default: ~/.cache/garbg)
+max_size_mb = 1024      # Maximum cache size in MB
+max_age_days = 30       # Delete cached items older than this
+
+# ═══════════════════════════════════════════
+# Default Wallpaper Source
+# ═══════════════════════════════════════════
+
+[default]
+source = "~/Pictures/Wallpapers"
+mode = "fill"
+
+[default.slideshow]
+enabled = true
+interval = "10m"        # Duration: "30s", "5m", "1h"
+shuffle = true          # Randomize order
+
+# ═══════════════════════════════════════════
+# Per-Monitor Configuration
+# ═══════════════════════════════════════════
+
+[[monitors]]
+name = "DP-1"
+source = "~/Pictures/primary-monitor"
+mode = "fill"
+
+[monitors.slideshow]
+enabled = true
+interval = "15m"
+shuffle = true
+
+[[monitors]]
+name = "HDMI-1"
+source = "~/Pictures/secondary-monitor"
+mode = "fit"
+
+# ═══════════════════════════════════════════
+# Per-Workspace Configuration
+# ═══════════════════════════════════════════
+
+[[workspaces]]
+id = 1
+source = "~/Pictures/workspace1.png"
+mode = "fill"
+
+[[workspaces]]
+id = 2
+source = "github://username/repo/wallpapers"
+mode = "fill"
+
+# ═══════════════════════════════════════════
+# Remote Source Examples
+# ═══════════════════════════════════════════
+
+# HTTP source (uncomment to use)
+# [default]
+# source = "https://example.com/wallpapers/"
+# mode = "fill"
+
+# GitHub source
+# [default]
+# source = "github://owner/repo/path/to/wallpapers"
+# mode = "fill"
+
+# S3 source (requires --features s3)
+# [default]
+# source = "s3://bucket-name/prefix"
+# mode = "fill"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options Reference</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">general.mode</td><td class="py-2 px-3">string</td><td class="py-2 px-3">fill</td><td class="py-2 px-3">Default scaling mode</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">animation.enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable animated playback</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">animation.max_fps</td><td class="py-2 px-3">int</td><td class="py-2 px-3">60</td><td class="py-2 px-3">Max frame rate (0=unlimited)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">animation.pause_on_idle</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Pause when screen locked</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">cache.directory</td><td class="py-2 px-3">string</td><td class="py-2 px-3">~/.cache/garbg</td><td class="py-2 px-3">Cache directory path</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">cache.max_size_mb</td><td class="py-2 px-3">int</td><td class="py-2 px-3">1024</td><td class="py-2 px-3">Max cache size in MB</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">cache.max_age_days</td><td class="py-2 px-3">int</td><td class="py-2 px-3">30</td><td class="py-2 px-3">Max age for cached items</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">default.source</td><td class="py-2 px-3">string</td><td class="py-2 px-3">""</td><td class="py-2 px-3">Default wallpaper source URI</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">slideshow.enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Enable slideshow rotation</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">slideshow.interval</td><td class="py-2 px-3">duration</td><td class="py-2 px-3">5m</td><td class="py-2 px-3">Time between rotations</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">slideshow.shuffle</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Randomize playlist order</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbg is a wallpaper daemon for X11 written in Rust. It supports multiple image sources, animated wallpapers, slideshow mode, and per-monitor configuration with an intelligent caching system.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Async Runtime:</strong> Tokio for non-blocking I/O and concurrent operations</li>
+                <li><strong>Image Processing:</strong> image crate for decoding, Lanczos3 for high-quality scaling</li>
+                <li><strong>X11 Backend:</strong> x11rb with RandR extension for multi-monitor support</li>
+                <li><strong>Caching:</strong> LRU disk cache with blake3 hashing and ETag support</li>
+                <li><strong>IPC:</strong> JSON over Unix domain sockets</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">~/.config/garbg/config.toml</td><td class="py-2 px-3">Configuration file</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">~/.cache/garbg/</td><td class="py-2 px-3">Cache directory</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">~/.cache/garbg/state.json</td><td class="py-2 px-3">Playlist state file</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">~/.cache/garbg/index.json</td><td class="py-2 px-3">Cache index file</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">$XDG_RUNTIME_DIR/garbg.sock</td><td class="py-2 px-3">IPC socket</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-magenta">$XDG_RUNTIME_DIR/garbg.pid</td><td class="py-2 px-3">PID file (daemon mode)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Sources -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Wallpaper Sources</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbg supports multiple source types for loading wallpapers. Each source type has its own URI format.
+              </p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Source</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">URI Format</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Local file</td><td class="py-2 px-3 font-mono text-xs">/path/to/image.png, ~/Pictures/bg.jpg</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Local directory</td><td class="py-2 px-3 font-mono text-xs">~/Pictures/Wallpapers</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">HTTP/HTTPS</td><td class="py-2 px-3 font-mono text-xs">https://example.com/image.png</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">HTTP directory</td><td class="py-2 px-3 font-mono text-xs">https://example.com/images/</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">GitHub</td><td class="py-2 px-3 font-mono text-xs">github://owner/repo/path</td></tr>
+                    <tr><td class="py-2 px-3">S3</td><td class="py-2 px-3 font-mono text-xs">s3://bucket/prefix</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Sources - Local Files -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Local Files</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Load wallpapers from local filesystem paths. Supports single files and directories.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Single file
+garbg set ~/Pictures/wallpaper.png
+garbg set /home/user/Pictures/bg.jpg
+
+# Directory (lists all images)
+garbg set ~/Pictures/Wallpapers
+
+# With shuffle for directory
+garbg set ~/Pictures/Wallpapers -r
+
+# Shell expansion supported
+garbg set ~/Pictures/*.png`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Directory Behavior</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Recursively scans subdirectories</li>
+                <li>Filters by supported image extensions</li>
+                <li>Sorted alphabetically by default</li>
+                <li>Use <code class="text-gar-accent-magenta">-r</code> flag to shuffle</li>
+              </ul>
+            </div>
+
+            <!-- Sources - HTTP -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">HTTP/HTTPS Sources</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Fetch wallpapers from remote HTTP/HTTPS URLs. Supports direct image URLs and directory indexes.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Direct image URL
+garbg set https://example.com/wallpaper.png
+
+# Apache/nginx directory index
+garbg set https://example.com/wallpapers/
+
+# With slideshow
+garbg set https://example.com/wallpapers/ -r --interval 10m`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Automatic caching with ETag support</li>
+                <li>Directory index parsing (Apache/nginx autoindex)</li>
+                <li>User-Agent: <code class="text-gar-accent-magenta">garbg/0.1</code></li>
+                <li>Follows redirects</li>
+              </ul>
+
+              <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-text-primary">Tip:</strong> Remote images are cached locally. Use <code class="text-gar-accent-magenta">garbg --clear-cache</code> to clear the cache if images seem stale.
+                </p>
+              </div>
+            </div>
+
+            <!-- Sources - GitHub -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">GitHub Sources</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Load wallpapers directly from GitHub repositories using the GitHub API.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# GitHub URI format
+garbg set github://owner/repo/path/to/wallpapers
+
+# Single file
+garbg set github://username/dotfiles/wallpapers/bg.png
+
+# Directory listing
+garbg set github://awesome-wallpapers/collection/nature -r
+
+# Web URL is auto-converted
+garbg set https://github.com/owner/repo/tree/main/wallpapers`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rate Limiting</h4>
+              <p class="text-gar-text-secondary mb-4">
+                GitHub API has rate limits for unauthenticated requests. Set a personal access token for higher limits:
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'export GITHUB_TOKEN="ghp_xxxxxxxxxxxx"', comment: 'Set GitHub token' },
+                  { command: 'garbg set github://owner/repo/wallpapers', comment: 'Higher rate limit' },
+                ]}
+              />
+            </div>
+
+            <!-- Sources - S3 -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">S3 Storage</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Load wallpapers from S3-compatible storage (AWS S3, MinIO, etc.). Requires the <code class="text-gar-accent-magenta">s3</code> feature.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Build with S3 support
+cargo build --release --features s3
+
+# S3 URI format
+garbg set s3://bucket-name/prefix/
+
+# Custom endpoint (MinIO, etc.)
+garbg set s3://custom-endpoint.com/bucket/prefix`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Authentication</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Configure credentials via standard AWS SDK environment variables:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`export AWS_ACCESS_KEY_ID="your-access-key"
+export AWS_SECRET_ACCESS_KEY="your-secret-key"
+export AWS_REGION="us-east-1"
+
+# Or use AWS profiles
+export AWS_PROFILE="my-profile"`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Scaling Modes -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Scaling Modes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Five scaling modes are available for fitting images to your screen.
+              </p>
+
+              <div class="overflow-x-auto mb-6">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Mode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Behavior</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">fill</td><td class="py-2 px-3">Scale to cover entire screen, crop excess (default)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">fit</td><td class="py-2 px-3">Scale to fit within screen, letterbox if needed</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">stretch</td><td class="py-2 px-3">Stretch to exact screen size (ignores aspect ratio)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">center</td><td class="py-2 px-3">Display at original size, centered (no scaling)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">tile</td><td class="py-2 px-3">Tile image to fill screen (no scaling)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Command line usage
+garbg set ~/bg.png -m fill
+garbg set ~/bg.png -m fit
+garbg set ~/bg.png --mode stretch
+
+# Config file
+[general]
+mode = "fill"
+
+# Per-monitor override
+[[monitors]]
+name = "DP-1"
+mode = "fit"`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Animation -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animation</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbg supports animated wallpapers using GIF, WebP, and APNG formats, with optional video support.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Animation Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Double-buffered rendering for smooth playback</li>
+                <li>Pre-scaled frames cached in memory</li>
+                <li>Configurable max FPS cap</li>
+                <li>Adaptive frame skipping when system falls behind</li>
+                <li>Pause on idle/lock support</li>
+              </ul>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Play animated wallpaper
+garbg set ~/animated.gif --animate
+garbg set ~/animated.webp -a
+
+# With FPS limit
+garbg set ~/animated.gif --animate --max-fps 30
+
+# Config settings
+[animation]
+enabled = true
+max_fps = 60
+pause_on_idle = true`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Animation - GIF -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animated GIF</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Full support for animated GIF playback with proper frame timing.
+              </p>
+
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Frame timing extracted from GIF metadata</li>
+                <li>Zero-delay frames default to 100ms (10 FPS)</li>
+                <li>Infinite looping support</li>
+                <li>Transparency handling</li>
+              </ul>
+
+              <MultiTerminal
+                commands={[
+                  { command: 'garbg set ~/animated.gif --animate', comment: 'Play animated GIF' },
+                  { command: 'garbg set ~/animated.gif -a --max-fps 30', comment: 'With FPS cap' },
+                ]}
+              />
+            </div>
+
+            <!-- Animation - WebP -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animated WebP</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Support for animated WebP images with automatic animation detection.
+              </p>
+
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Automatic detection of animated vs static WebP</li>
+                <li>Frame timing from WebP metadata</li>
+                <li>Better compression than GIF</li>
+              </ul>
+
+              <MultiTerminal
+                commands={[
+                  { command: 'garbg set ~/animated.webp --animate', comment: 'Play animated WebP' },
+                ]}
+              />
+            </div>
+
+            <!-- Animation - Video -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Video Support</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Optional video wallpaper support via ffmpeg. Requires building with the <code class="text-gar-accent-magenta">video</code> feature.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Build with video support (default)
+cargo build --release
+
+# Build without video support
+cargo build --release --no-default-features
+
+# Supported codecs
+# - H.264
+# - VP9
+# - VP8
+# - AV1`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Containers</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>MP4 (H.264 codec)</li>
+                <li>WebM (VP9, VP8)</li>
+                <li>MKV (Matroska)</li>
+                <li>AVI</li>
+              </ul>
+
+              <div class="mt-4 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-text-primary">Note:</strong> Audio is always muted for video wallpapers.
+                </p>
+              </div>
+            </div>
+
+            <!-- Slideshow -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Slideshow Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Automatically rotate through wallpapers at configurable intervals.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Command line slideshow
+garbg set ~/Pictures -r --interval 5m
+garbg set ~/Pictures --interval 30s --random
+
+# Duration format (humantime)
+# "30s" - 30 seconds
+# "5m"  - 5 minutes
+# "1h"  - 1 hour
+# "1h30m" - 1 hour 30 minutes
+
+# Config file
+[default.slideshow]
+enabled = true
+interval = "10m"
+shuffle = true`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Slideshow Controls</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'garbg next', comment: 'Skip to next wallpaper' },
+                  { command: 'garbg prev', comment: 'Go to previous' },
+                  { command: 'garbg pause', comment: 'Pause slideshow' },
+                  { command: 'garbg resume', comment: 'Resume slideshow' },
+                  { command: 'garbg toggle', comment: 'Toggle pause state' },
+                ]}
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Shuffle Behavior</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Images shuffled when playlist created with <code class="text-gar-accent-magenta">-r</code> flag</li>
+                <li>Re-shuffle applied on wrap-around (after last image)</li>
+                <li>Playlist state persists across daemon restarts</li>
+              </ul>
+            </div>
+
+            <!-- Multi-Monitor -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Multi-Monitor</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Configure different wallpapers for each monitor using RandR monitor names.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Set wallpaper for specific monitor
+garbg set-monitor DP-1 ~/bg1.png
+garbg set-monitor HDMI-1 ~/bg2.png -m fit
+
+# Query monitors
+garbg query monitors
+
+# Config file per-monitor
+[[monitors]]
+name = "DP-1"
+source = "~/Pictures/primary"
+mode = "fill"
+
+[monitors.slideshow]
+enabled = true
+interval = "15m"
+
+[[monitors]]
+name = "HDMI-1"
+source = "~/Pictures/secondary"
+mode = "fit"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Finding Monitor Names</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'xrandr --query | grep " connected"', comment: 'List connected monitors' },
+                  { command: 'garbg query monitors', comment: 'Query via garbg (JSON output)' },
+                ]}
+              />
+            </div>
+
+            <!-- Caching -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Caching System</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbg uses an intelligent LRU disk cache for remote images with blake3 hashing.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Cache Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>LRU eviction when size limit exceeded</li>
+                <li>blake3 hashing of URIs for cache keys</li>
+                <li>Subdirectory sharding for performance</li>
+                <li>ETag support for conditional HTTP requests</li>
+                <li>Automatic expiry based on max_age_days</li>
+              </ul>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Cache configuration
+[cache]
+directory = "~/.cache/garbg"  # Default location
+max_size_mb = 1024            # 1 GB max
+max_age_days = 30             # Expire after 30 days`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Cache Management</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -la ~/.cache/garbg/', comment: 'View cache directory' },
+                  { command: 'du -sh ~/.cache/garbg/', comment: 'Check cache size' },
+                  { command: 'rm -rf ~/.cache/garbg/*', comment: 'Clear cache manually' },
+                ]}
+              />
+            </div>
+
+            <!-- Daemon Mode -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Run garbg as a daemon for persistent wallpapers and advanced features.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Persistent playlist state across restarts</li>
+                <li>IPC command handling</li>
+                <li>Per-monitor wallpapers</li>
+                <li>Animation playback</li>
+                <li>Slideshow with auto-rotation</li>
+                <li>Event subscription system</li>
+                <li>PID file management</li>
+              </ul>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Start daemon
+garbg daemon                    # Foreground
+garbg daemon -d                 # Daemonize (background)
+garbg daemon -c /path/config    # Custom config path
+
+# Signal handling
+# SIGHUP  → Reload configuration
+# SIGTERM → Graceful shutdown
+# SIGINT  → Graceful shutdown`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Systemd Service</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.config/systemd/user/garbg.service</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Unit]
+Description=garbg wallpaper daemon
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/garbg daemon
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target`}</code></pre>
+              </div>
+
+              <MultiTerminal
+                commands={[
+                  { command: 'systemctl --user enable --now garbg', comment: 'Enable and start service' },
+                  { command: 'systemctl --user status garbg', comment: 'Check status' },
+                  { command: 'systemctl --user restart garbg', comment: 'Restart daemon' },
+                ]}
+              />
+            </div>
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using garbg with gar and other gardesk components.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Startup with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Start garbg automatically when gar launches:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Start garbg daemon on session startup
+gar.exec_once("garbg daemon")
+
+-- Set initial wallpaper
+gar.exec_once("garbg set ~/Pictures/Wallpapers -r --interval 15m")`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keybindings for Wallpaper Control</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Wallpaper navigation
+gar.bind("mod+bracketright", function()
+    gar.exec("garbg next")
+end)
+gar.bind("mod+bracketleft", function()
+    gar.exec("garbg prev")
+end)
+
+-- Random wallpaper
+gar.bind("mod+shift+w", function()
+    gar.exec("garbg random")
+end)
+
+-- Pause/resume slideshow
+gar.bind("mod+ctrl+w", function()
+    gar.exec("garbg toggle")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Per-Workspace Wallpapers</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Configure different wallpapers for each workspace:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbg/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[[workspaces]]
+id = 1
+source = "~/Pictures/work.png"
+mode = "fill"
+
+[[workspaces]]
+id = 2
+source = "~/Pictures/browser.png"
+mode = "fill"
+
+[[workspaces]]
+id = 9
+source = "~/Pictures/music.png"
+mode = "fill"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">GitHub Wallpaper Collection</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use a GitHub repository as your wallpaper source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'export GITHUB_TOKEN="ghp_xxxx"', comment: 'Set token for higher rate limits' },
+              { command: 'garbg set github://dharmx/walls/anime -r --interval 30m', comment: 'Use community collection' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Multi-Monitor Different Slideshows</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbg/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Primary monitor - landscape photos
+[[monitors]]
+name = "DP-1"
+source = "~/Pictures/landscapes"
+mode = "fill"
+
+[monitors.slideshow]
+enabled = true
+interval = "10m"
+shuffle = true
+
+# Secondary monitor - static wallpaper
+[[monitors]]
+name = "HDMI-1"
+source = "~/Pictures/secondary-static.png"
+mode = "fit"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Time-Based Wallpapers</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use cron to change wallpapers based on time of day:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">crontab -e</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Morning wallpaper (6 AM)
+0 6 * * * DISPLAY=:0 garbg set ~/Pictures/morning.png
+
+# Afternoon wallpaper (12 PM)
+0 12 * * * DISPLAY=:0 garbg set ~/Pictures/afternoon.png
+
+# Evening wallpaper (6 PM)
+0 18 * * * DISPLAY=:0 garbg set ~/Pictures/evening.png
+
+# Night wallpaper (10 PM)
+0 22 * * * DISPLAY=:0 garbg set ~/Pictures/night.png`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Animated Desktop</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Set an animated GIF or WebP as your wallpaper:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garbg set ~/animated/chill.gif --animate --max-fps 30', comment: 'Play at 30 FPS' },
+              { command: 'garbg pause', comment: 'Pause to save resources' },
+              { command: 'garbg resume', comment: 'Resume playback' },
+            ]}
+          />
+        </div>
+
+        <!-- IPC Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garbg exposes a Unix domain socket for inter-process communication. Use CLI commands or send JSON directly.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <MultiTerminal
+            commands={[
+              { command: 'echo $XDG_RUNTIME_DIR/garbg.sock', comment: 'Primary socket path' },
+              { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garbg.sock', comment: 'Check socket exists' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Command Reference</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Set</td><td class="py-2 px-3">Set wallpaper from source</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">SetWorkspace</td><td class="py-2 px-3">Set wallpaper for specific workspace</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">SetMonitor</td><td class="py-2 px-3">Set wallpaper for specific monitor</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Next</td><td class="py-2 px-3">Advance to next wallpaper</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Prev</td><td class="py-2 px-3">Go to previous wallpaper</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Random</td><td class="py-2 px-3">Jump to random wallpaper</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Reload</td><td class="py-2 px-3">Reload configuration</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Pause</td><td class="py-2 px-3">Pause animations/slideshow</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Resume</td><td class="py-2 px-3">Resume playback</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Toggle</td><td class="py-2 px-3">Toggle pause state</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Status</td><td class="py-2 px-3">Get current status</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">List</td><td class="py-2 px-3">List images from source</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">ClearCache</td><td class="py-2 px-3">Clear disk cache</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">QueryMonitors</td><td class="py-2 px-3">Query connected monitors</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-magenta">QueryCurrent</td><td class="py-2 px-3">Query current wallpaper info</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-magenta">Subscribe</td><td class="py-2 px-3">Subscribe to events</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Send JSON objects over the socket for scripting:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Request examples</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Set wallpaper
+{"Set": {"source": "~/Pictures/bg.png", "mode": "Fill", "shuffle": false, "animate": false, "max_fps": 60}}
+
+// Navigate playlist
+{"Next": {"monitor": null}}
+{"Prev": {"monitor": null}}
+
+// Control playback
+{"Pause": null}
+{"Resume": null}
+{"Toggle": null}
+
+// Query state
+{"Status": null}
+{"QueryMonitors": null}
+{"QueryCurrent": null}
+
+// List source
+{"List": {"source": "~/Pictures"}}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Response format</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"success": true, "data": null}
+
+// Success with data
+{"success": true, "data": {
+  "source": "~/Pictures",
+  "current_index": 5,
+  "total": 42,
+  "paused": false
+}}
+
+// Error
+{"success": false, "error": "Daemon not running"}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Event Types</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Event</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">WallpaperChanged</td><td class="py-2 px-3">Wallpaper changed on a monitor</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">SourceUpdated</td><td class="py-2 px-3">Source playlist updated</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">AnimationState</td><td class="py-2 px-3">Animation paused/resumed</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">SlideshowAdvanced</td><td class="py-2 px-3">Slideshow moved to next image</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">Error</td><td class="py-2 px-3">Error occurred</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Scripting Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">current-wallpaper.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+# Get current wallpaper info
+SOCK="\${XDG_RUNTIME_DIR:-/tmp}/garbg.sock"
+
+echo '{"QueryCurrent": null}' | nc -U "$SOCK" | jq -r '.data.source'`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Wallpaper not appearing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify DISPLAY is set and X11 is running:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $DISPLAY', comment: 'Should show :0 or similar' },
+                  { command: 'xdpyinfo | head -5', comment: 'Test X11 connection' },
+                  { command: 'DISPLAY=:0 garbg set ~/bg.png', comment: 'Explicitly set DISPLAY' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Daemon not running</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check if daemon is running and socket exists:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garbg', comment: 'Check if process is running' },
+                  { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garbg.*', comment: 'Check socket and PID files' },
+                  { command: 'garbg daemon -d', comment: 'Start daemon in background' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Images not loading from remote source</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check network and cache:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'curl -I https://example.com/image.png', comment: 'Test network access' },
+                  { command: 'garbg -v set https://example.com/image.png', comment: 'Run with verbose logging' },
+                  { command: 'rm -rf ~/.cache/garbg/*', comment: 'Clear cache if corrupted' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">GitHub rate limited</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Set a personal access token for higher limits:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'export GITHUB_TOKEN="ghp_xxxxxxxxxxxx"', comment: 'Set token' },
+                  { command: 'garbg set github://owner/repo/path', comment: 'Try again' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Create a token at <code class="text-gar-accent-magenta">github.com/settings/tokens</code> (no scopes needed for public repos).
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Animation stuttering</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Reduce FPS or check system resources:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garbg set ~/animated.gif -a --max-fps 30', comment: 'Lower FPS cap' },
+                  { command: 'top -p $(pgrep garbg)', comment: 'Check CPU usage' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Try smaller GIFs or reduce screen resolution for better performance.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Video wallpapers not working</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Ensure garbg was built with video support:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cargo build --release --features video', comment: 'Build with video support' },
+                  { command: 'ffmpeg -version', comment: 'Check ffmpeg is installed' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Configuration not loading</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Validate TOML syntax:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat ~/.config/garbg/config.toml | tomlv', comment: 'Validate with tomlv' },
+                  { command: 'garbg -v daemon', comment: 'Check for parse errors in verbose mode' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Multi-monitor not working</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check monitor names match exactly:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xrandr --query | grep " connected"', comment: 'Get exact monitor names' },
+                  { command: 'garbg query monitors', comment: 'Query garbg monitor detection' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Monitor names in config must match xrandr output exactly (e.g., "DP-1", "HDMI-1").
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Enable debug logging</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Get detailed output for debugging:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garbg -v set ~/bg.png', comment: 'Verbose flag' },
+                  { command: 'RUST_LOG=garbg=debug garbg daemon', comment: 'Full debug logging' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
     </div>
-  </section>
-</ComponentPageLayout>
+  </main>
+
+  <Footer />
+</BaseLayout>
