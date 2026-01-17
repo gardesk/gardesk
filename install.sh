@@ -7,6 +7,7 @@
 #   - gar: Tiling window manager with Lua config
 #   - garbar: Status bar with Cairo/Pango rendering
 #   - garbg: Wallpaper daemon with animation support
+#   - garshot: Screenshot utility with blur selection overlay
 #   - garlock: Screen locker with PAM authentication
 #   - gardm: Display manager with graphical greeter
 #   - garlaunch: Application launcher with fuzzy search
@@ -43,6 +44,7 @@ BUILD_DIR="${GAR_BUILD_DIR:-$HOME/.local/src/gardesk}"
 INSTALL_GAR=false
 INSTALL_GARBAR=false
 INSTALL_GARBG=false
+INSTALL_GARSHOT=false
 INSTALL_GARLOCK=false
 INSTALL_GARDM=false
 INSTALL_GARLAUNCH=false
@@ -327,14 +329,15 @@ show_component_menu() {
     echo -e "  ${CYAN}1)${NC} gar        ${DIM}-${NC} Tiling window manager with Lua config ${GREEN}[recommended]${NC}"
     echo -e "  ${CYAN}2)${NC} garbar     ${DIM}-${NC} Status bar with async modules"
     echo -e "  ${CYAN}3)${NC} garbg      ${DIM}-${NC} Wallpaper daemon with animations"
-    echo -e "  ${CYAN}4)${NC} garlock    ${DIM}-${NC} Screen locker with PAM auth"
-    echo -e "  ${CYAN}5)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
-    echo -e "  ${CYAN}6)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
-    echo -e "  ${CYAN}7)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
-    echo -e "  ${CYAN}8)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch, garclip-picker)${NC}"
+    echo -e "  ${CYAN}4)${NC} garshot    ${DIM}-${NC} Screenshot utility with blur selection"
+    echo -e "  ${CYAN}5)${NC} garlock    ${DIM}-${NC} Screen locker with PAM auth"
+    echo -e "  ${CYAN}6)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
+    echo -e "  ${CYAN}7)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
+    echo -e "  ${CYAN}8)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
+    echo -e "  ${CYAN}9)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch, garclip-picker)${NC}"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
-    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-4,6-7, recommended for most users)"
+    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-5,7-8, recommended for most users)"
     echo -e "  ${MAGENTA}Q)${NC} Quit"
     echo ""
 }
@@ -345,6 +348,7 @@ prompt_components() {
         INSTALL_GAR=true
         INSTALL_GARBAR=true
         INSTALL_GARBG=true
+        INSTALL_GARSHOT=true
         INSTALL_GARLOCK=true
         INSTALL_GARLAUNCH=true
         INSTALL_GARCLIP=true
@@ -361,6 +365,7 @@ prompt_components() {
     INSTALL_GAR=false
     INSTALL_GARBAR=false
     INSTALL_GARBG=false
+    INSTALL_GARSHOT=false
     INSTALL_GARLOCK=false
     INSTALL_GARDM=false
     INSTALL_GARLAUNCH=false
@@ -371,15 +376,17 @@ prompt_components() {
         1) INSTALL_GAR=true ;;
         2) INSTALL_GARBAR=true ;;
         3) INSTALL_GARBG=true ;;
-        4) INSTALL_GARLOCK=true ;;
-        5) INSTALL_GARDM=true ;;
-        6) INSTALL_GARLAUNCH=true ;;
-        7) INSTALL_GARCLIP=true ;;
-        8) INSTALL_GARTK=true ;;
+        4) INSTALL_GARSHOT=true ;;
+        5) INSTALL_GARLOCK=true ;;
+        6) INSTALL_GARDM=true ;;
+        7) INSTALL_GARLAUNCH=true ;;
+        8) INSTALL_GARCLIP=true ;;
+        9) INSTALL_GARTK=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARBAR=true
             INSTALL_GARBG=true
+            INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
             INSTALL_GARDM=true
             INSTALL_GARLAUNCH=true
@@ -390,6 +397,7 @@ prompt_components() {
             INSTALL_GAR=true
             INSTALL_GARBAR=true
             INSTALL_GARBG=true
+            INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
             INSTALL_GARLAUNCH=true
             INSTALL_GARCLIP=true
@@ -405,11 +413,12 @@ prompt_components() {
                     1) INSTALL_GAR=true ;;
                     2) INSTALL_GARBAR=true ;;
                     3) INSTALL_GARBG=true ;;
-                    4) INSTALL_GARLOCK=true ;;
-                    5) INSTALL_GARDM=true ;;
-                    6) INSTALL_GARLAUNCH=true ;;
-                    7) INSTALL_GARCLIP=true ;;
-                    8) INSTALL_GARTK=true ;;
+                    4) INSTALL_GARSHOT=true ;;
+                    5) INSTALL_GARLOCK=true ;;
+                    6) INSTALL_GARDM=true ;;
+                    7) INSTALL_GARLAUNCH=true ;;
+                    8) INSTALL_GARCLIP=true ;;
+                    9) INSTALL_GARTK=true ;;
                 esac
             done
             ;;
@@ -417,9 +426,10 @@ prompt_components() {
 
     # Ensure at least one component is selected
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
+       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
+       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -444,6 +454,7 @@ show_selection_summary() {
     [ "$INSTALL_GAR" = true ] && echo -e "  ${GREEN}•${NC} gar (window manager)"
     [ "$INSTALL_GARBAR" = true ] && echo -e "  ${GREEN}•${NC} garbar (status bar)"
     [ "$INSTALL_GARBG" = true ] && echo -e "  ${GREEN}•${NC} garbg (wallpaper daemon)"
+    [ "$INSTALL_GARSHOT" = true ] && echo -e "  ${GREEN}•${NC} garshot (screenshot utility)"
     [ "$INSTALL_GARLOCK" = true ] && echo -e "  ${GREEN}•${NC} garlock (screen locker)"
     [ "$INSTALL_GARDM" = true ] && echo -e "  ${YELLOW}•${NC} gardm (display manager)"
     [ "$INSTALL_GARLAUNCH" = true ] && echo -e "  ${GREEN}•${NC} garlaunch (application launcher)"
@@ -471,6 +482,7 @@ fetch_source() {
         git fetch origin
         git checkout "$BRANCH"
         git pull origin "$BRANCH"
+        git submodule update --init --recursive
     else
         if [ -d "$BUILD_DIR" ]; then
             log_warn "Directory exists but is not a git repo, removing..."
@@ -478,7 +490,7 @@ fetch_source() {
         fi
 
         log_info "Cloning repository..."
-        git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$BUILD_DIR"
+        git clone --branch "$BRANCH" --recurse-submodules "$REPO_URL" "$BUILD_DIR"
     fi
 
     cd "$BUILD_DIR"
@@ -583,6 +595,46 @@ EOF
 
     echo -e "${GREEN}  ✓ garbg installed successfully${NC}"
     log_info "  Enable with: systemctl --user enable --now garbg"
+}
+
+install_garshot() {
+    log_step "Building garshot (screenshot utility)..."
+
+    cd "$BUILD_DIR/garshot"
+    cargo build --release
+
+    log_info "Installing garshot binary to $BIN_DIR..."
+    sudo install -Dm755 target/release/garshot "$BIN_DIR/garshot"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garshot"
+    if [ ! -f "$HOME/.config/garshot/config.toml" ]; then
+        log_info "Creating default garshot config..."
+        cat << 'EOF' > "$HOME/.config/garshot/config.toml"
+# garshot configuration
+# See https://gar.dev/components/garshot for options
+
+[general]
+save_dir = "~/Pictures/Screenshots"
+format = "png"
+quality = 90
+include_cursor = false
+
+[selection]
+blur_radius = 15
+line_color = "#ff6600"
+line_width = 2
+
+[naming]
+pattern = "screenshot-%Y%m%d-%H%M%S"
+EOF
+    fi
+
+    # Ensure screenshots directory exists
+    mkdir -p "$HOME/Pictures/Screenshots"
+
+    echo -e "${GREEN}  ✓ garshot installed successfully${NC}"
+    log_info "  Keybinds: Ctrl+Shift+4 (region), Ctrl+Shift+5 (screen), Ctrl+Shift+6 (window)"
 }
 
 install_garlock() {
@@ -894,6 +946,7 @@ parse_args() {
                         gar) INSTALL_GAR=true ;;
                         garbar) INSTALL_GARBAR=true ;;
                         garbg) INSTALL_GARBG=true ;;
+                        garshot) INSTALL_GARSHOT=true ;;
                         garlock) INSTALL_GARLOCK=true ;;
                         gardm) INSTALL_GARDM=true ;;
                         garlaunch) INSTALL_GARLAUNCH=true ;;
@@ -903,6 +956,7 @@ parse_args() {
                             INSTALL_GAR=true
                             INSTALL_GARBAR=true
                             INSTALL_GARBG=true
+                            INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
                             INSTALL_GARDM=true
                             INSTALL_GARLAUNCH=true
@@ -913,6 +967,7 @@ parse_args() {
                             INSTALL_GAR=true
                             INSTALL_GARBAR=true
                             INSTALL_GARBG=true
+                            INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
                             INSTALL_GARLAUNCH=true
                             INSTALL_GARCLIP=true
@@ -939,7 +994,7 @@ parse_args() {
                 echo "  --no-deps           Skip dependency installation"
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
-                echo "                      (gar,garbar,garbg,garlock,gardm,garlaunch,garclip,gartk,all,desktop)"
+                echo "                      (gar,garbar,garbg,garshot,garlock,gardm,garlaunch,garclip,gartk,all,desktop)"
                 echo "  --help              Show this help message"
                 echo ""
                 echo "Environment variables:"
@@ -987,9 +1042,10 @@ main() {
 
     # Component selection (if not specified via CLI)
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
+       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
+       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         prompt_components
     fi
 
@@ -1023,6 +1079,7 @@ main() {
     [ "$INSTALL_GAR" = true ] && install_gar
     [ "$INSTALL_GARBAR" = true ] && install_garbar
     [ "$INSTALL_GARBG" = true ] && install_garbg
+    [ "$INSTALL_GARSHOT" = true ] && install_garshot
     [ "$INSTALL_GARLOCK" = true ] && install_garlock
     [ "$INSTALL_GARDM" = true ] && install_gardm
     [ "$INSTALL_GARTK" = true ] && install_gartk
@@ -1058,6 +1115,14 @@ main() {
     if [ "$INSTALL_GARBG" = true ]; then
         echo "  3. Enable wallpaper daemon:"
         echo "     systemctl --user enable --now garbg"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARSHOT" = true ]; then
+        echo "  Screenshot keybinds (add to ~/.config/gar/init.lua):"
+        echo "     Ctrl+Shift+4: garshot select  (region with blur overlay)"
+        echo "     Ctrl+Shift+5: garshot screen  (full screen)"
+        echo "     Ctrl+Shift+6: garshot window  (active window)"
         echo ""
     fi
 

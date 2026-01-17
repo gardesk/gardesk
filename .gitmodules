@@ -30,3 +30,7 @@
 	path = garclip
 	url = git@github.com:gardesk/garclip.git
 	branch = trunk
+[submodule "garshot"]
+	path = garshot
+	url = git@github.com:gardesk/garshot.git
+	branch = trunk
