@@ -106,10 +106,10 @@ const docSections = [
           <div class="mb-8">
             <MultiTerminal
               tabs={['Cargo.toml']}
-              commands={[`[dependencies]
-gartk-core = { path = "path/to/gartk/gartk-core" }
-gartk-x11 = { path = "path/to/gartk/gartk-x11" }
-gartk-render = { path = "path/to/gartk/gartk-render" }`]}
+              commands={[{command: `[dependencies]
+gartk-core = ${'{ path = "path/to/gartk/gartk-core" }'}
+gartk-x11 = ${'{ path = "path/to/gartk/gartk-x11" }'}
+gartk-render = ${'{ path = "path/to/gartk/gartk-render" }'}`}]}
               language="toml"
             />
           </div>
@@ -1705,29 +1705,29 @@ fn main() -> anyhow::Result&lt;()> {{
               <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
                 <span class="text-sm text-gar-text-secondary font-mono">multi_monitor.rs</span>
               </div>
-              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_x11::{{Connection, detect_monitors}};
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`use gartk_x11::{Connection, detect_monitors};
 
-fn main() -> anyhow::Result&lt;()> {{
+fn main() -> anyhow::Result<()> {
     let conn = Connection::connect(None)?;
     let monitors = detect_monitors(&conn)?;
 
-    println!("Detected {{}} monitors:", monitors.len());
-    for (i, monitor) in monitors.iter().enumerate() {{
-        println!("  [{{}}] {{}}", i, monitor.name);
-        println!("      Position: {{}},{{}}",monitor.rect.x, monitor.rect.y);
-        println!("      Size: {{}}x{{}}", monitor.rect.width, monitor.rect.height);
-        println!("      DPI: {{:.1}}", monitor.dpi());
-        println!("      Primary: {{}}", monitor.primary);
-    }}
+    println!("Detected {} monitors:", monitors.len());
+    for (i, monitor) in monitors.iter().enumerate() {
+        println!("  [{}] {}", i, monitor.name);
+        println!("      Position: {},{}",monitor.rect.x, monitor.rect.y);
+        println!("      Size: {}x{}", monitor.rect.width, monitor.rect.height);
+        println!("      DPI: {:.1}", monitor.dpi());
+        println!("      Primary: {}", monitor.primary);
+    }
 
     // Create window on each monitor
-    for monitor in &monitors {{
+    for monitor in &monitors {
         let pos = monitor.center();
         // ... create window at pos ...
-    }}
+    }
 
     Ok(())
-}}</code></pre>
+}`}</code></pre>
             </div>
           </div>
 
