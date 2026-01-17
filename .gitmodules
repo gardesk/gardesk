@@ -18,3 +18,11 @@
 	path = garlock
 	url = git@github.com:gardesk/garlock.git
 	branch = trunk
+[submodule "gartk"]
+	path = gartk
+	url = git@github.com:gardesk/gartk.git
+	branch = trunk
+[submodule "garlaunch"]
+	path = garlaunch
+	url = git@github.com:gardesk/garlaunch.git
+	branch = trunk
