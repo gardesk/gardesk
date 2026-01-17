@@ -1,100 +1,1436 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
 
-const configExample = `# ~/.config/garbar/config.toml
+const garbarImages = [
+  { src: '/images/garbar1.png', alt: 'garbar status bar screenshot - default theme' },
+];
 
-[bar]
-height = 28
-position = "top"
-background = "#14171e"
-foreground = "#abb2bf"
-font = "JetBrains Mono 10"
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
 
-[modules.left]
-items = ["workspaces", "window_title"]
-
-[modules.center]
-items = ["datetime"]
-
-[modules.right]
-items = ["cpu", "memory", "battery", "tray"]
-
-[workspaces]
-focused_bg = "#61afef"
-focused_fg = "#14171e"
-urgent_bg = "#e06c75"
-
-[datetime]
-format = "%a %b %d  %H:%M"
-
-[cpu]
-format = "CPU {percent}%"
-interval = 2
-
-[memory]
-format = "MEM {percent}%"
-interval = 5
-
-[battery]
-format = "BAT {percent}%"
-charging = "CHG {percent}%"
-critical = 15`;
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'modules',
+    label: 'Modules',
+    children: [
+      { id: 'modules-workspaces', label: 'Workspaces' },
+      { id: 'modules-window-title', label: 'Window Title' },
+      { id: 'modules-cpu', label: 'CPU' },
+      { id: 'modules-memory', label: 'Memory' },
+      { id: 'modules-battery', label: 'Battery' },
+      { id: 'modules-datetime', label: 'Date/Time' },
+      { id: 'modules-script', label: 'Script' },
+      { id: 'modules-tray', label: 'System Tray' },
+    ]
+  },
+  {
+    id: 'appearance',
+    label: 'Appearance',
+    children: [
+      { id: 'appearance-colors', label: 'Colors' },
+      { id: 'appearance-fonts', label: 'Fonts' },
+      { id: 'appearance-gradients', label: 'Gradients' },
+      { id: 'appearance-borders', label: 'Borders & Shadows' },
+    ]
+  },
+  {
+    id: 'separator',
+    label: 'Separator',
+  },
+  {
+    id: 'animations',
+    label: 'Animations',
+  },
+];
 ---
 
-<ComponentPageLayout
-  name="garbar"
-  tagline="Async Status Bar"
-  description="A Tokio-powered status bar with modular widgets and Cairo/Pango rendering. garbar displays system information, workspaces, and more with a clean, customizable interface."
-  status="stable"
-  accentColor="green"
-  features={[
-    'Async module architecture with Tokio runtime',
-    'Cairo/Pango vector rendering for crisp text',
-    'Battery, CPU, memory monitoring widgets',
-    'Workspace indicator synced with gar',
-    'Active window title display',
-    'System tray support',
-    'Custom script modules',
-    'TOML or Lua configuration',
-    'IPC control via garbarctl',
-    'EWMH property tracking'
-  ]}
-  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbar"
-  configExample={configExample}
-  configLanguage="toml"
-  githubUrl="https://github.com/gardesk/garbar"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Available Modules</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">workspaces</h3>
-        <p class="text-sm text-gar-text-secondary">Display and switch between workspaces</p>
+<BaseLayout title="garbar - gardesk" description="Async Status Bar. A Tokio-powered status bar with modular widgets and Cairo/Pango rendering.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-green">garbar</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Async Status Bar</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A Tokio-powered status bar with modular widgets and Cairo/Pango rendering. garbar displays system information, workspaces, and more with a clean, customizable interface. Integrates seamlessly with gar or runs standalone.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garbar" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
       </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">window_title</h3>
-        <p class="text-sm text-gar-text-secondary">Show the focused window's title</p>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garbarImages} />
       </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">datetime</h3>
-        <p class="text-sm text-gar-text-secondary">Date and time with custom formatting</p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">cpu / memory</h3>
-        <p class="text-sm text-gar-text-secondary">System resource monitoring</p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">battery</h3>
-        <p class="text-sm text-gar-text-secondary">Battery status with charging indicator</p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">tray</h3>
-        <p class="text-sm text-gar-text-secondary">System tray for background apps</p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-text-primary mb-2">script</h3>
-        <p class="text-sm text-gar-text-secondary">Run custom scripts and display output</p>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'Async module architecture with Tokio runtime',
+            'Cairo/Pango vector rendering for crisp text',
+            'Battery, CPU, memory monitoring widgets',
+            'Workspace indicator synced with gar/i3/sway',
+            'Active window title display via EWMH',
+            'System tray support (freedesktop.org XEMBED)',
+            'Custom script modules with click/scroll handlers',
+            'TOML or Lua configuration (via gar integration)',
+            'IPC control via garbarctl',
+            'Gradient backgrounds and styling',
+            'Click and scroll event handlers per module',
+            'Hot-reload config via SIGHUP or garbarctl'
+          ].map(feature => (
+            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get garbar running with gar or as a standalone status bar.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garbar using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbar', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garbar && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Running garbar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            garbar can run standalone or be auto-started by gar:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbar', comment: 'Start garbar' },
+              { command: 'RUST_LOG=debug garbar', comment: 'Start with debug logging' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Integration with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Add a <code class="text-gar-accent-green">gar.bar</code> table to your gar config to auto-start garbar:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Enable garbar (gar will spawn it automatically)
+gar.bar = {
+    height = 32,
+    position = "top",
+    background = "#1a1a1a",
+    foreground = "#ffffff",
+    modules_left = {"workspaces", "window_title"},
+    modules_right = {"cpu", "memory", "battery", "datetime"},
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Standalone Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Without gar integration, configure garbar at <code class="text-gar-accent-green">~/.config/garbar/config.toml</code>:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'mkdir -p ~/.config/garbar', comment: 'Create config directory' },
+              { command: '$EDITOR ~/.config/garbar/config.toml', comment: 'Edit configuration' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Control with garbarctl</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Control the running daemon with <code class="text-gar-accent-green">garbarctl</code>:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbarctl status', comment: 'Show bar status' },
+              { command: 'garbarctl reload', comment: 'Reload configuration' },
+              { command: 'garbarctl toggle', comment: 'Toggle visibility' },
+              { command: 'garbarctl update cpu', comment: 'Force update a module' },
+            ]}
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">6. Configuration Priority</h4>
+          <p class="text-gar-text-secondary mb-4">
+            garbar checks configuration in this order:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 mb-4">
+            <li><code class="text-gar-accent-blue">~/.config/gar/init.lua</code> — Reads <code class="text-gar-accent-green">gar.bar</code> table (gar integration)</li>
+            <li><code class="text-gar-accent-blue">~/.config/garbar/config.toml</code> — Standalone TOML config</li>
+            <li>Built-in defaults</li>
+          </ol>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garbar supports two configuration formats: Lua (via gar integration) or standalone TOML.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Minimal Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbar/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`height = 32
+position = "top"
+background = "#1a1a1a"
+foreground = "#ffffff"
+
+modules_left = ["workspaces", "window_title"]
+modules_center = []
+modules_right = ["cpu", "memory", "battery", "datetime"]`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garbar/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-[32rem]"><code class="text-sm text-gar-text-primary font-mono">{`# ═══════════════════════════════════════════
+# Bar Settings
+# ═══════════════════════════════════════════
+
+height = 32
+position = "top"      # "top" or "bottom"
+opacity = 1.0         # 0.0 to 1.0
+
+# Colors
+background = "#1a1a1a"
+foreground = "#ffffff"
+
+# Fonts (Pango format with fallback chain)
+fonts = [
+    "JetBrainsMono Nerd Font:size=10",
+    "DejaVu Sans Mono:size=10",
+    "monospace:size=10"
+]
+
+# ═══════════════════════════════════════════
+# Spacing
+# ═══════════════════════════════════════════
+
+[margin]
+top = 0.0
+right = 0.0
+bottom = 0.0
+left = 0.0
+
+[padding]
+left = 8.0
+right = 16.0
+top = 0.0
+bottom = 0.0
+
+# ═══════════════════════════════════════════
+# Border & Shadow
+# ═══════════════════════════════════════════
+
+[border]
+width = 0.0
+color = ""
+radius = 0.0
+
+[shadow]
+enabled = false
+color = "#00000080"
+blur = 8.0
+offset = { x = 0.0, y = 2.0 }
+
+# ═══════════════════════════════════════════
+# Animations
+# ═══════════════════════════════════════════
+
+[animations]
+enabled = true
+duration = 150        # milliseconds
+easing = "ease-out-cubic"
+
+# ═══════════════════════════════════════════
+# Separator
+# ═══════════════════════════════════════════
+
+[separator]
+text = "│"
+foreground = "#555555"
+[separator.padding]
+left = 8.0
+right = 8.0
+
+# ═══════════════════════════════════════════
+# Module Layout
+# ═══════════════════════════════════════════
+
+modules_left = ["workspaces", "window_title"]
+modules_center = []
+modules_right = ["cpu", "memory", "battery", "tray", "datetime"]
+
+# ═══════════════════════════════════════════
+# Module Configuration
+# ═══════════════════════════════════════════
+
+[modules.workspaces]
+show_empty = false
+show_urgent = true
+pin_workspaces = false
+
+[modules.workspaces.focused]
+background = "transparent"
+foreground = "#ffffff"
+[modules.workspaces.focused.underline]
+width = 2.0
+color = "#33ccff"
+
+[modules.workspaces.unfocused]
+background = "transparent"
+foreground = "#666666"
+
+[modules.workspaces.urgent]
+background = "#ff5555"
+foreground = "#ffffff"
+
+[modules.window_title]
+max_length = 50
+ellipsis = "…"
+empty_text = "Desktop"
+show_icon = true
+icon_spacing = 8.0
+
+[modules.cpu]
+format = " {usage}%"
+interval = 2
+warning_threshold = 70
+critical_threshold = 90
+warning_foreground = "#ffaa00"
+critical_foreground = "#ff5555"
+
+[modules.memory]
+format = " {percent}%"
+format_alt = " {used}/{total}"
+interval = 5
+warning_threshold = 80
+critical_threshold = 95
+warning_foreground = "#ffaa00"
+critical_foreground = "#ff5555"
+
+[modules.battery]
+device = "auto"
+format_charging = " {percent}%"
+format_discharging = "{icon} {percent}%"
+format_full = " Full"
+low_threshold = 15
+low_foreground = "#ff5555"
+[[modules.battery.icons]]
+threshold = 10
+icon = ""
+[[modules.battery.icons]]
+threshold = 25
+icon = ""
+[[modules.battery.icons]]
+threshold = 50
+icon = ""
+[[modules.battery.icons]]
+threshold = 75
+icon = ""
+[[modules.battery.icons]]
+threshold = 100
+icon = ""
+
+[modules.datetime]
+format = " %a %b %d   %H:%M"
+format_alt = " %Y-%m-%d   %H:%M:%S"
+interval = 1
+
+[modules.tray]
+icon_size = 18
+spacing = 8.0
+[modules.tray.padding]
+left = 4.0
+right = 4.0
+
+# ═══════════════════════════════════════════
+# Custom Script Modules
+# ═══════════════════════════════════════════
+
+[modules.script.weather]
+exec = "curl -s 'wttr.in?format=1'"
+interval = 300
+format = " {output}"
+
+[modules.script.music]
+exec = "playerctl metadata --format '{{artist}} - {{title}}'"
+interval = 1
+click_left = "playerctl play-pause"
+click_right = "playerctl next"
+scroll_up = "playerctl volume 0.05+"
+scroll_down = "playerctl volume 0.05-"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Bar Options Reference</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">height</td><td class="py-2 px-3">u16</td><td class="py-2 px-3">32</td><td class="py-2 px-3">Bar height in pixels</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">position</td><td class="py-2 px-3">string</td><td class="py-2 px-3">top</td><td class="py-2 px-3">"top" or "bottom"</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">opacity</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">1.0</td><td class="py-2 px-3">Bar opacity (0.0-1.0)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">background</td><td class="py-2 px-3">hex/gradient</td><td class="py-2 px-3">#1a1a1a</td><td class="py-2 px-3">Bar background (solid or gradient)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">foreground</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ffffff</td><td class="py-2 px-3">Default text color</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">fonts</td><td class="py-2 px-3">array</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Pango font fallback chain</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">margin.*</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">0.0</td><td class="py-2 px-3">External margin (top/right/bottom/left)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">padding.left</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">8.0</td><td class="py-2 px-3">Internal left padding</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">padding.right</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">16.0</td><td class="py-2 px-3">Internal right padding</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border.width</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">0.0</td><td class="py-2 px-3">Border width in pixels</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border.radius</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">0.0</td><td class="py-2 px-3">Corner radius</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">modules_left</td><td class="py-2 px-3">array</td><td class="py-2 px-3">["workspaces", ...]</td><td class="py-2 px-3">Left-aligned modules</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">modules_center</td><td class="py-2 px-3">array</td><td class="py-2 px-3">[]</td><td class="py-2 px-3">Center-aligned modules</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">modules_right</td><td class="py-2 px-3">array</td><td class="py-2 px-3">["cpu", ...]</td><td class="py-2 px-3">Right-aligned modules</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbar is an async status bar built on Tokio with Cairo/Pango rendering. It features a modular architecture where each widget runs independently with its own update interval.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Runtime:</strong> Tokio async runtime for non-blocking module updates</li>
+                <li><strong>Rendering:</strong> Cairo for graphics, Pango for text layout</li>
+                <li><strong>X11 Backend:</strong> x11rb with EWMH and XEMBED support</li>
+                <li><strong>IPC:</strong> JSON over Unix domain sockets</li>
+                <li><strong>Config:</strong> TOML standalone or Lua via gar integration</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">~/.config/garbar/config.toml</td><td class="py-2 px-3">Standalone configuration</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">~/.config/gar/init.lua</td><td class="py-2 px-3">gar integration (gar.bar table)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">$XDG_RUNTIME_DIR/garbar.sock</td><td class="py-2 px-3">IPC socket</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Available Modules</h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">workspaces</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">window_title</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">cpu</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">memory</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">battery</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">datetime</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">tray</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">script</code></div>
+              </div>
+            </div>
+
+            <!-- Modules -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Modules</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garbar uses a modular architecture. Each module runs independently with its own update interval and can handle click/scroll events.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Module Layout</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`modules_left = ["workspaces", "window_title"]
+modules_center = []
+modules_right = ["cpu", "memory", "battery", "tray", "datetime"]`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Module Interactions</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Module</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Left-Click</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Scroll</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">workspaces</td><td class="py-2 px-3">Switch workspace</td><td class="py-2 px-3">-</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">memory</td><td class="py-2 px-3">Toggle format</td><td class="py-2 px-3">-</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">datetime</td><td class="py-2 px-3">Toggle format</td><td class="py-2 px-3">-</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">script</td><td class="py-2 px-3">Custom command</td><td class="py-2 px-3">Custom command</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Workspaces Module -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Workspaces Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays workspace indicators with visual state (focused, unfocused, urgent). Click to switch workspaces. Uses i3-compatible IPC for workspace info.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.workspaces]
+show_empty = false        # Show empty workspaces
+show_urgent = true        # Highlight urgent workspaces
+pin_workspaces = false    # Always show pinned list
+
+# Focused workspace style
+[modules.workspaces.focused]
+background = "transparent"
+foreground = "#ffffff"
+[modules.workspaces.focused.underline]
+width = 2.0
+color = "#33ccff"
+
+# Unfocused workspace style
+[modules.workspaces.unfocused]
+background = "transparent"
+foreground = "#666666"
+
+# Urgent workspace style (flashing windows)
+[modules.workspaces.urgent]
+background = "#ff5555"
+foreground = "#ffffff"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">IPC Socket Paths</h4>
+              <p class="text-gar-text-secondary text-sm mb-4">
+                The module checks these sockets in order:
+              </p>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">$I3SOCK</code> environment variable</li>
+                <li><code class="text-gar-accent-blue">$SWAYSOCK</code> environment variable (sway)</li>
+                <li><code class="text-gar-accent-blue">$XDG_RUNTIME_DIR/gar-i3.sock</code></li>
+                <li><code class="text-gar-accent-blue">/tmp/gar-i3.sock</code></li>
+              </ol>
+            </div>
+
+            <!-- Window Title Module -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Window Title Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays the title of the currently focused window via X11 <code class="text-gar-accent-blue">_NET_ACTIVE_WINDOW</code> property.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.window_title]
+max_length = 50           # Max characters before truncation
+ellipsis = "…"            # Truncation indicator
+empty_text = "Desktop"    # Text when no window focused
+show_icon = true          # Show window icon (if available)
+icon_spacing = 8.0        # Space between icon and text`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary text-sm">
+                <strong>Update interval:</strong> 50ms for snappy focus tracking
+              </p>
+            </div>
+
+            <!-- CPU Module -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">CPU Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays CPU usage percentage with color thresholds for warnings. Reads from <code class="text-gar-accent-blue">/proc/stat</code> with exponential smoothing.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.cpu]
+format = " {usage}%"           # Display format
+interval = 2                    # Update interval (seconds)
+warning_threshold = 70          # % for warning color (orange)
+critical_threshold = 90         # % for critical color (red)
+warning_foreground = "#ffaa00"  # Warning color
+critical_foreground = "#ff5555" # Critical color`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Format Placeholders</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">{`{usage}`}</code> — CPU usage percentage (0-100)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-4">Color Logic</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><span class="text-red-400">Critical</span> (≥90%): <code class="text-gar-accent-blue">#ff5555</code></li>
+                <li><span class="text-orange-400">Warning</span> (≥70%): <code class="text-gar-accent-blue">#ffaa00</code></li>
+                <li><span class="text-blue-400">Normal</span>: <code class="text-gar-accent-blue">#5294e2</code></li>
+              </ul>
+            </div>
+
+            <!-- Memory Module -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Memory Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays memory usage. Click to toggle between percentage and absolute values. Reads from <code class="text-gar-accent-blue">/proc/meminfo</code>.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.memory]
+format = " {percent}%"           # Primary format
+format_alt = " {used}/{total}"   # Alt format (click to toggle)
+interval = 5                      # Update interval (seconds)
+warning_threshold = 80            # % for warning color
+critical_threshold = 95           # % for critical color
+warning_foreground = "#ffaa00"
+critical_foreground = "#ff5555"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Format Placeholders</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">{`{percent}`}</code> — Memory usage percentage</li>
+                <li><code class="text-gar-accent-blue">{`{used}`}</code> — Used memory (auto-scaled: G/M/K)</li>
+                <li><code class="text-gar-accent-blue">{`{total}`}</code> — Total memory</li>
+                <li><code class="text-gar-accent-blue">{`{available}`}</code> — Available memory</li>
+              </ul>
+            </div>
+
+            <!-- Battery Module -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Battery Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays battery status with charging indicator and threshold-based icons. Auto-detects from <code class="text-gar-accent-blue">/sys/class/power_supply</code>.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.battery]
+device = "auto"                    # Auto-detect or specify "BAT0"
+format_charging = " {percent}%"   # While charging
+format_discharging = "{icon} {percent}%"
+format_full = " Full"
+low_threshold = 15                 # Low battery warning %
+low_foreground = "#ff5555"         # Low battery color
+
+# Threshold-based icons (matched in order)
+[[modules.battery.icons]]
+threshold = 10
+icon = ""
+
+[[modules.battery.icons]]
+threshold = 25
+icon = ""
+
+[[modules.battery.icons]]
+threshold = 50
+icon = ""
+
+[[modules.battery.icons]]
+threshold = 75
+icon = ""
+
+[[modules.battery.icons]]
+threshold = 100
+icon = ""`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Format Placeholders</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">{`{percent}`}</code> — Battery percentage</li>
+                <li><code class="text-gar-accent-blue">{`{icon}`}</code> — Threshold-based icon</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-4">Color Logic</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><span class="text-green-400">Charging</span>: <code class="text-gar-accent-blue">#98c379</code></li>
+                <li><span class="text-red-400">Low</span> (≤15%): <code class="text-gar-accent-blue">#ff5555</code></li>
+                <li><span class="text-orange-300">Normal</span>: <code class="text-gar-accent-blue">#e5c07b</code></li>
+              </ul>
+            </div>
+
+            <!-- DateTime Module -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Date/Time Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays current date and time. Click to toggle between formats. Uses strftime syntax via chrono.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.datetime]
+format = " %a %b %d   %H:%M"      # Primary format
+format_alt = " %Y-%m-%d   %H:%M:%S"  # Alt format (click)
+interval = 1                        # Update interval (seconds)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Common Format Codes</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Code</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Output</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Example</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%H:%M</td><td class="py-1 px-3">24-hour time</td><td class="py-1 px-3">14:30</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%I:%M %p</td><td class="py-1 px-3">12-hour time</td><td class="py-1 px-3">02:30 PM</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%a</td><td class="py-1 px-3">Day abbreviated</td><td class="py-1 px-3">Mon</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%A</td><td class="py-1 px-3">Day full</td><td class="py-1 px-3">Monday</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%b %d</td><td class="py-1 px-3">Month day</td><td class="py-1 px-3">Jan 15</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%Y-%m-%d</td><td class="py-1 px-3">ISO date</td><td class="py-1 px-3">2024-01-15</td></tr>
+                    <tr><td class="py-1 px-3 font-mono">%S</td><td class="py-1 px-3">Seconds</td><td class="py-1 px-3">45</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Script Module -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Script Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Run custom shell commands and display output. Supports click/scroll handlers for interactive widgets. Commands run in background threads.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Weather widget
+[modules.script.weather]
+exec = "curl -s 'wttr.in?format=1'"
+interval = 300   # 5 minutes
+format = " {output}"
+
+# Music player controls
+[modules.script.music]
+exec = "playerctl metadata --format '{{artist}} - {{title}}'"
+interval = 1
+click_left = "playerctl play-pause"
+click_right = "playerctl next"
+scroll_up = "playerctl volume 0.05+"
+scroll_down = "playerctl volume 0.05-"
+
+# Volume control
+[modules.script.volume]
+exec = "pamixer --get-volume-human"
+interval = 0     # Event-driven only (no polling)
+click_left = "pavucontrol"
+scroll_up = "pamixer -i 5"
+scroll_down = "pamixer -d 5"
+
+# VPN status
+[modules.script.vpn]
+exec = "nmcli -t -f TYPE,STATE connection show --active | grep -q vpn && echo '🔒' || echo '🔓'"
+interval = 10`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Script Options</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">exec</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Shell command to execute (required)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">interval</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">Update interval in seconds (0 = event-only)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">format</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Wrapper format (use <code>{`{output}`}</code>)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">click_left</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Command on left-click</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">click_middle</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Command on middle-click</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">click_right</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Command on right-click</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">scroll_up</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Command on scroll up</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">scroll_down</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Command on scroll down</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="text-gar-text-secondary text-sm mt-4">
+                <strong>Note:</strong> Scripts run via <code class="text-gar-accent-blue">sh -c "command"</code>. Output is stdout; empty on non-zero exit.
+              </p>
+            </div>
+
+            <!-- Tray Module -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">System Tray Module</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays system tray icons from freedesktop.org-compatible applications using the XEMBED protocol.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.tray]
+icon_size = 18     # Icon size in pixels
+spacing = 8.0      # Space between icons
+
+[modules.tray.padding]
+left = 4.0
+right = 4.0
+top = 0.0
+bottom = 0.0`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary text-sm mb-4">
+                <strong>Supported apps:</strong> nm-applet, blueman-applet, Discord, Slack, and any app using the freedesktop.org System Tray protocol.
+              </p>
+
+              <div class="p-3 rounded-lg bg-gar-accent-blue/10 border border-gar-accent-blue/20">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong>Note:</strong> Only one application can own the system tray at a time. If icons don't appear, ensure no other status bar (polybar, i3bar) is running.
+                </p>
+              </div>
+            </div>
+
+            <!-- Appearance -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Appearance</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Customize colors, fonts, and styling for the bar and individual modules.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">BlockStyle Properties</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Each rendered block (module output) can have these style properties:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">background</code> — Solid color or gradient</li>
+                <li><code class="text-gar-accent-blue">foreground</code> — Text color</li>
+                <li><code class="text-gar-accent-blue">padding</code> — Internal spacing</li>
+                <li><code class="text-gar-accent-blue">margin</code> — External spacing</li>
+                <li><code class="text-gar-accent-blue">border_radius</code> — Corner rounding</li>
+                <li><code class="text-gar-accent-blue">underline</code> — Line decoration below text</li>
+                <li><code class="text-gar-accent-blue">overline</code> — Line decoration above text</li>
+                <li><code class="text-gar-accent-blue">font_size</code> — Override font size (points)</li>
+              </ul>
+            </div>
+
+            <!-- Colors -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Colors</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Colors use hex format with optional alpha channel.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Color formats
+background = "#1a1a1a"      # 6-char hex (RGB)
+foreground = "#fff"         # 3-char shorthand
+border = "#ff000080"        # 8-char with alpha (RGBA)
+transparent = "transparent" # Keyword`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Default Palette</h4>
+              <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#1a1a1a"></span>
+                  <code>#1a1a1a</code>
+                  <span class="text-gar-text-muted">Background</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#ffffff"></span>
+                  <code>#ffffff</code>
+                  <span class="text-gar-text-muted">Foreground</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#33ccff"></span>
+                  <code>#33ccff</code>
+                  <span class="text-gar-text-muted">Accent/Info</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#5294e2"></span>
+                  <code>#5294e2</code>
+                  <span class="text-gar-text-muted">CPU Normal</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#98c379"></span>
+                  <code>#98c379</code>
+                  <span class="text-gar-text-muted">Success/Charging</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#e5c07b"></span>
+                  <code>#e5c07b</code>
+                  <span class="text-gar-text-muted">Battery Normal</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#ffaa00"></span>
+                  <code>#ffaa00</code>
+                  <span class="text-gar-text-muted">Warning</span>
+                </div>
+                <div class="flex items-center gap-3 p-2 bg-gar-bg-secondary/30 rounded">
+                  <span class="w-5 h-5 rounded border border-gar-text-muted/20" style="background:#ff5555"></span>
+                  <code>#ff5555</code>
+                  <span class="text-gar-text-muted">Critical/Urgent</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fonts -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Fonts</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Fonts use Pango font description format with a fallback chain.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`fonts = [
+    "JetBrainsMono Nerd Font:size=10",  # Primary (with icons)
+    "DejaVu Sans Mono:size=10",          # Fallback 1
+    "monospace:size=10"                   # Fallback 2 (system default)
+]`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Font Format</h4>
+              <p class="text-gar-text-secondary text-sm mb-4">
+                Format: <code class="text-gar-accent-blue">Family Name:size=N:weight=WEIGHT:style=STYLE</code>
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">size=10</code> — Font size in points</li>
+                <li><code class="text-gar-accent-blue">weight=bold</code> — Font weight</li>
+                <li><code class="text-gar-accent-blue">style=italic</code> — Font style</li>
+              </ul>
+
+              <div class="p-3 rounded-lg bg-gar-accent-green/10 border border-gar-accent-green/20 mt-4">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong>Tip:</strong> Use a Nerd Font for icon support (battery, CPU, memory icons). Install with <code class="text-gar-accent-blue">sudo pacman -S ttf-jetbrains-mono-nerd</code> or similar.
+                </p>
+              </div>
+            </div>
+
+            <!-- Gradients -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Gradients</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Use gradient backgrounds for the bar or module blocks.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Linear Gradient</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+type = "gradient"
+direction = "horizontal"  # or "vertical", "diagonal"
+[[background.stops]]
+position = 0.0
+color = "#1a1a2e"
+[[background.stops]]
+position = 1.0
+color = "#16213e"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Radial Gradient</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+type = "radial"
+center = [0.5, 0.5]       # Center point (0-1 relative)
+radius = 1.0              # Gradient radius
+[[background.stops]]
+position = 0.0
+color = "#2a2a4a"
+[[background.stops]]
+position = 1.0
+color = "#1a1a2a"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Gradient Directions</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">horizontal</code> — Left to right</li>
+                <li><code class="text-gar-accent-blue">vertical</code> — Top to bottom</li>
+                <li><code class="text-gar-accent-blue">diagonal</code> — Top-left to bottom-right</li>
+              </ul>
+            </div>
+
+            <!-- Borders & Shadows -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Borders & Shadows</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Border Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[border]
+width = 1.0           # Border width in pixels
+color = "#333333"     # Border color
+radius = 8.0          # Corner radius`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Shadow Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[shadow]
+enabled = true
+color = "#00000080"   # Shadow color with alpha
+blur = 8.0            # Blur radius
+[shadow.offset]
+x = 0.0               # Horizontal offset
+y = 2.0               # Vertical offset (drop shadow)`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Separator</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Configure the visual separator between modules.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[separator]
+text = "│"            # Separator character (Unicode box drawing)
+foreground = "#555555"
+
+[separator.padding]
+left = 8.0
+right = 8.0
+top = 0.0
+bottom = 0.0`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Common Separator Characters</h4>
+              <div class="grid grid-cols-4 gap-2 text-sm">
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">│</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">|</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">·</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">•</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">/</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">\</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono">◆</div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center font-mono"></div>
+              </div>
+            </div>
+
+            <!-- Animations -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Configure transition animations for bar state changes.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[animations]
+enabled = true
+duration = 150        # Duration in milliseconds
+easing = "ease-out-cubic"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Easing Functions</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">linear</code> — Constant speed</li>
+                <li><code class="text-gar-accent-blue">ease-in</code> — Start slow, end fast</li>
+                <li><code class="text-gar-accent-blue">ease-out</code> — Start fast, end slow</li>
+                <li><code class="text-gar-accent-blue">ease-in-out</code> — Slow start and end</li>
+                <li><code class="text-gar-accent-blue">ease-out-cubic</code> — Smooth deceleration (default)</li>
+              </ul>
+            </div>
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using garbar with gar and other tools.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Auto-Start with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The simplest way to use garbar is via gar integration:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- garbar auto-starts when gar.bar is defined
+gar.bar = {
+    height = 32,
+    position = "top",
+    background = "#1a1a1a",
+    modules_left = {"workspaces", "window_title"},
+    modules_right = {"cpu", "memory", "battery", "tray", "datetime"},
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Media Player Widget</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create an interactive media player widget with playerctl:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.script.media]
+exec = '''
+if playerctl status 2>/dev/null | grep -q Playing; then
+    echo " $(playerctl metadata --format '{{artist}} - {{title}}' | cut -c1-40)"
+elif playerctl status 2>/dev/null | grep -q Paused; then
+    echo " $(playerctl metadata --format '{{artist}} - {{title}}' | cut -c1-40)"
+else
+    echo ""
+fi
+'''
+interval = 1
+click_left = "playerctl play-pause"
+click_right = "playerctl next"
+scroll_up = "playerctl volume 0.05+"
+scroll_down = "playerctl volume 0.05-"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">System Monitor Scripts</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Disk usage warning
+[modules.script.disk]
+exec = "df -h / | awk 'NR==2 {print $5}'"
+interval = 60
+format = " {output}"
+
+# Network status
+[modules.script.network]
+exec = "nmcli -t -f DEVICE,STATE device | grep -m1 connected | cut -d: -f1"
+interval = 10
+format = "󰤨 {output}"
+
+# VPN indicator
+[modules.script.vpn]
+exec = "nmcli -t -f TYPE,STATE connection show --active | grep -q vpn && echo '󰖂' || echo '󰖃'"
+interval = 10
+
+# Unread mail count
+[modules.script.mail]
+exec = "notmuch count tag:unread"
+interval = 60
+format = " {output}"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Toggle Bar Visibility</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Bind a key in gar to toggle the bar:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.bind("mod+b", function()
+    gar.exec("garbarctl toggle")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Hot Reload</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Reload configuration without restarting:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garbarctl reload', comment: 'Reload config from disk' },
+              { command: 'kill -SIGHUP $(pgrep garbar)', comment: 'Or send SIGHUP signal' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Floating Bar Style</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a floating bar with margins and rounded corners:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`height = 28
+opacity = 0.9
+
+[margin]
+top = 8.0
+right = 8.0
+left = 8.0
+
+[border]
+radius = 8.0
+
+[shadow]
+enabled = true
+blur = 12.0
+color = "#00000060"
+offset = { x = 0.0, y = 4.0 }`}</code></pre>
+          </div>
+        </div>
+
+        <!-- IPC Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garbar exposes a Unix domain socket for control and status queries.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <MultiTerminal
+            commands={[
+              { command: 'echo $XDG_RUNTIME_DIR/garbar.sock', comment: 'Primary socket path' },
+              { command: 'ls /tmp/garbar.sock', comment: 'Fallback location' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garbarctl Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">show</td><td class="py-2 px-3">Make bar visible</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">hide</td><td class="py-2 px-3">Hide bar</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">toggle</td><td class="py-2 px-3">Toggle visibility</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">reload</td><td class="py-2 px-3">Reload configuration from disk</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">status</td><td class="py-2 px-3">Query bar status (returns JSON)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">update &lt;module&gt;</td><td class="py-2 px-3">Force update a specific module</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">quit</td><td class="py-2 px-3">Gracefully shut down daemon</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Send JSON objects over the socket for scripting:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Request format</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{"command": "show"}
+{"command": "toggle"}
+{"command": "update_module", "module": "cpu"}
+{"command": "status"}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Response format</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"success": true, "error": null}
+
+// Status response
+{
+  "success": true,
+  "data": {
+    "visible": true,
+    "width": 1920,
+    "height": 32,
+    "modules_left": ["workspaces", "window_title"],
+    "modules_center": [],
+    "modules_right": ["cpu", "memory", "datetime"]
+  }
+}
+
+// Error
+{"success": false, "error": "Connection refused"}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Scripting Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">toggle-bar.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+# Toggle garbar visibility
+SOCK="\${XDG_RUNTIME_DIR:-/tmp}/garbar.sock"
+echo '{"command": "toggle"}' | nc -U "$SOCK"`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garbar won't start</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check for errors with debug logging:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=debug garbar', comment: 'Run with debug logging' },
+                  { command: 'RUST_LOG=garbar=trace garbar', comment: 'Trace-level logging' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Workspaces not showing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">The module needs an i3-compatible IPC socket:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $I3SOCK $SWAYSOCK', comment: 'Check socket env vars' },
+                  { command: 'ls -la $XDG_RUNTIME_DIR/*.sock', comment: 'List available sockets' },
+                  { command: 'ls -la /tmp/gar*.sock', comment: 'Check gar sockets' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Ensure gar is running and exposes <code class="text-gar-accent-blue">/tmp/gar-i3.sock</code> or set <code class="text-gar-accent-blue">I3SOCK</code>.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Icons not displaying</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Ensure a Nerd Font is installed and configured:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'fc-list | grep -i nerd', comment: 'Check for Nerd Fonts' },
+                  { command: 'fc-list | grep -i "JetBrains"', comment: 'Check for JetBrainsMono' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Install with: <code class="text-gar-accent-blue">sudo pacman -S ttf-jetbrains-mono-nerd</code> (Arch) or download from <a href="https://www.nerdfonts.com" class="text-gar-accent-blue hover:underline">nerdfonts.com</a>.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Config not loading</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify config file syntax:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat ~/.config/garbar/config.toml | tomlq .', comment: 'Validate TOML (requires tomlq)' },
+                  { command: 'garbarctl reload', comment: 'Reload after fixing' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Check for missing quotes, unbalanced brackets, or invalid values.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Battery module not showing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check power supply detection:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls /sys/class/power_supply/', comment: 'List power devices' },
+                  { command: 'cat /sys/class/power_supply/BAT0/type', comment: 'Check device type' },
+                  { command: 'cat /sys/class/power_supply/BAT0/capacity', comment: 'Check battery level' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Set <code class="text-gar-accent-blue">device = "BAT0"</code> explicitly if auto-detection fails. Module hides if no battery found.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">System tray icons missing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Only one app can own the system tray:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xprop -root | grep SYSTEM_TRAY', comment: 'Check tray ownership' },
+                  { command: 'pgrep -a polybar', comment: 'Check for other bars' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Kill other status bars (polybar, i3bar, waybar) that may own the tray.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garbarctl: connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify garbar is running:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garbar', comment: 'Check if running' },
+                  { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garbar.sock', comment: 'Check socket exists' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Start garbar first: <code class="text-gar-accent-blue">garbar &</code>
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Script module not updating</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Test the script manually:</p>
+              <MultiTerminal
+                commands={[
+                  { command: "sh -c 'your-script-here'", comment: 'Test script execution' },
+                  { command: 'garbarctl update script:weather', comment: 'Force refresh' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Scripts must exit 0 and output to stdout. Empty output on non-zero exit.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">High CPU usage</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check module intervals:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm mt-3">
+                <li>Increase <code class="text-gar-accent-blue">interval</code> for CPU-intensive scripts</li>
+                <li>Set <code class="text-gar-accent-blue">interval = 0</code> for event-only updates</li>
+                <li>Avoid sub-second intervals for network requests</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
       </div>
     </div>
-  </section>
-</ComponentPageLayout>
+  </main>
+
+  <Footer />
+</BaseLayout>
