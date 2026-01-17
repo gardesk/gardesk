@@ -1,124 +1,1396 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
 
-const configExample = `# ~/.config/garlock/config.toml
+const garlockImages = [
+  { src: '/images/garlock1.png', alt: 'garlock screen locker - locked state' },
+];
 
-[general]
-# Grace period before requiring password (seconds)
-grace_period = 5
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
 
-# PAM service name
-pam_service = "garlock"
-
-# Max failed attempts before cooldown
-max_attempts = 3
-
-# Cooldown after max attempts (seconds)
-cooldown_seconds = 30
-
-[background]
-# Blur radius for background screenshot
-blur_radius = 25.0
-
-# Brightness adjustment (0.0 - 1.0)
-brightness = 0.6
-
-# Or use a static image
-# image = "~/.config/garlock/background.png"
-
-[indicator]
-# Show caps lock state
-show_caps_lock = true
-
-# Show failed attempt count
-show_failed_attempts = true
-
-# Show current time
-show_time = true
-time_format = "%H:%M"
-
-# Colors
-background = "#14171e"
-foreground = "#abb2bf"
-error = "#e06c75"
-success = "#98c379"`;
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'authentication',
+    label: 'Authentication',
+    children: [
+      { id: 'auth-pam', label: 'PAM Integration' },
+      { id: 'auth-security', label: 'Security' },
+      { id: 'auth-cooldown', label: 'Cooldown System' },
+    ]
+  },
+  {
+    id: 'ring-indicator',
+    label: 'Ring Indicator',
+    children: [
+      { id: 'ring-states', label: 'Visual States' },
+      { id: 'ring-customization', label: 'Customization' },
+    ]
+  },
+  {
+    id: 'background',
+    label: 'Background',
+    children: [
+      { id: 'background-blur', label: 'Blur Effect' },
+      { id: 'background-brightness', label: 'Brightness' },
+    ]
+  },
+  {
+    id: 'overlays',
+    label: 'Text Overlays',
+  },
+  {
+    id: 'keyboard',
+    label: 'Keyboard Input',
+  },
+  {
+    id: 'monitors',
+    label: 'Multi-Monitor',
+  },
+  {
+    id: 'daemon-mode',
+    label: 'Daemon Mode',
+  },
+];
 ---
 
-<ComponentPageLayout
-  name="garlock"
-  tagline="Screen Locker"
-  description="A PAM-authenticated screen locker with secure input handling. garlock features background blur, status indicators, and a clean interface while ensuring your passwords are handled securely."
-  status="stable"
-  accentColor="orange"
-  features={[
-    'PAM authentication for secure login',
-    'Secure password handling with zeroize',
-    'X11 keyboard/mouse grabbing',
-    'Configurable background blur',
-    'Caps lock indicator',
-    'Time display on lock screen',
-    'Failed attempt counter',
-    'Grace period support',
-    'Cooldown after failed attempts',
-    'Cairo/Pango rendering for UI'
-  ]}
-  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garlock"
-  configExample={configExample}
-  configLanguage="toml"
-  githubUrl="https://github.com/gardesk/garlock"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Usage</h2>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlock</span> <span class="text-gar-text-muted"># Lock the screen immediately</span></div>
-    </div>
-    <p class="mt-4 text-gar-text-secondary">
-      Bind garlock to a key in your gar configuration:
-    </p>
-    <div class="mt-4 rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
-      <code class="text-gar-text-primary">gar.key(&#123; gar.mod, "Escape", gar.spawn("garlock") &#125;)</code>
-    </div>
-  </section>
+<BaseLayout title="garlock - gardesk" description="Screen Locker. A secure PAM-authenticated screen locker with Cairo/Pango rendering and visual feedback.">
+  <Header />
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">PAM Configuration</h2>
-    <p class="text-gar-text-secondary mb-4">
-      garlock requires a PAM configuration file at <code class="text-gar-accent-blue">/etc/pam.d/garlock</code>:
-    </p>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
-      <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
-        <span class="text-sm text-gar-text-secondary font-mono">/etc/pam.d/garlock</span>
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-green">garlock</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Screen Locker</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A secure PAM-authenticated screen locker with blurred screenshot backgrounds and visual ring feedback. garlock provides comprehensive input protection with keyboard/pointer grabs and secure password handling using memory zeroing.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garlock" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
       </div>
-      <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">#%PAM-1.0
-auth       include      system-auth
-account    include      system-auth</code></pre>
-    </div>
-    <p class="mt-4 text-sm text-gar-text-muted">
-      The installer creates this file automatically.
-    </p>
-  </section>
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Security</h2>
-    <ul class="space-y-3">
-      <li class="flex items-start gap-3">
-        <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <span class="text-gar-text-primary">Passwords are zeroed from memory immediately after use</span>
-      </li>
-      <li class="flex items-start gap-3">
-        <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <span class="text-gar-text-primary">X11 input is grabbed to prevent bypassing</span>
-      </li>
-      <li class="flex items-start gap-3">
-        <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-        <span class="text-gar-text-primary">Uses the same PAM stack as your system login</span>
-      </li>
-    </ul>
-  </section>
-</ComponentPageLayout>
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garlockImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'PAM authentication with configurable service',
+            'Secure password handling with zeroize memory clearing',
+            'Blurred screenshot background for privacy',
+            'Animated ring indicator with 5 visual states',
+            'Multi-monitor support via RandR',
+            'Caps Lock and failed attempt warnings',
+            'Configurable cooldown after failed attempts',
+            'Daemon mode with IPC socket control',
+            'Time display with strftime formatting',
+            'Full Unicode password input support',
+            'Keyboard and pointer grab for security',
+            'TOML configuration at ~/.config/garlock/config.toml',
+          ].map(feature => (
+            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Security Features -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Security Model</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-green/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <h3 class="font-semibold text-gar-text-primary">Memory Security</h3>
+            </div>
+            <p class="text-sm text-gar-text-secondary">Passwords zeroed from memory using zeroize crate. No password remnants after authentication.</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-green/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <h3 class="font-semibold text-gar-text-primary">Input Grabbing</h3>
+            </div>
+            <p class="text-sm text-gar-text-secondary">X11 keyboard and mouse grabbed. No input reaches other applications during lock.</p>
+          </div>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-accent-green/20">
+            <div class="flex items-center gap-2 mb-2">
+              <svg class="w-5 h-5 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+              <h3 class="font-semibold text-gar-text-primary">PAM Integration</h3>
+            </div>
+            <p class="text-sm text-gar-text-secondary">Uses system PAM stack. Same authentication as system login, supports 2FA and custom modules.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get garlock installed and configured for secure screen locking.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garlock using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garlock', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garlock && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. PAM Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a PAM service file for garlock (requires root):
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/pam.d/garlock</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#%PAM-1.0
+# PAM configuration for garlock screen locker
+
+auth required pam_unix.so`}</code></pre>
+          </div>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo tee /etc/pam.d/garlock << "EOF"\n#%PAM-1.0\nauth required pam_unix.so\nEOF', comment: 'Create PAM service file' },
+              { command: 'sudo chmod 644 /etc/pam.d/garlock', comment: 'Set permissions' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Running garlock</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Lock your screen directly or run in daemon mode:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garlock', comment: 'Lock screen directly' },
+              { command: 'garlock lock', comment: 'Explicit lock command' },
+              { command: 'garlock daemon &', comment: 'Start daemon mode' },
+              { command: 'garlock lock', comment: 'Lock via daemon' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Integration with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Bind a key in gar to lock the screen:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Lock screen with Super+L
+gar.bind("mod+l", "exec garlock")
+
+-- Or lock via shell command
+gar.bind("mod+l", function()
+    gar.exec("garlock lock")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a configuration file at <code class="text-gar-accent-green">~/.config/garlock/config.toml</code>:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'mkdir -p ~/.config/garlock', comment: 'Create config directory' },
+              { command: '$EDITOR ~/.config/garlock/config.toml', comment: 'Edit configuration' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">6. Testing</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Test garlock safely with Xephyr:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'Xephyr :1 -screen 1920x1080 &', comment: 'Start nested X server' },
+              { command: 'DISPLAY=:1 garlock', comment: 'Test garlock in Xephyr' },
+            ]}
+          />
+          <div class="p-3 rounded-lg bg-gar-accent-orange/10 border border-gar-accent-orange/20 mt-4">
+            <p class="text-gar-text-secondary text-sm">
+              <strong>Warning:</strong> When testing on your main display, ensure you have TTY access (Ctrl+Alt+F2) as a backup in case of issues.
+            </p>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garlock uses TOML configuration at <code class="text-gar-accent-green">~/.config/garlock/config.toml</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Minimal Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garlock/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+blur_radius = 25.0
+brightness = 0.6
+
+[indicator]
+show_time = true
+time_format = "%H:%M"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garlock/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-[36rem]"><code class="text-sm text-gar-text-primary font-mono">{`# ═══════════════════════════════════════════
+# General Settings
+# ═══════════════════════════════════════════
+
+[general]
+grace_period = 0              # Seconds before password required (0 = disabled)
+pam_service = "garlock"       # PAM service name (must match /etc/pam.d/garlock)
+max_attempts = 3              # Failed attempts before cooldown starts
+cooldown_seconds = 5          # Base cooldown duration (multiplied by excess attempts)
+
+# ═══════════════════════════════════════════
+# Background Settings
+# ═══════════════════════════════════════════
+
+[background]
+blur_radius = 25.0            # Gaussian blur radius (0 = disabled, higher = more blur)
+brightness = 0.6              # Brightness factor (0.0 = black, 1.0 = original)
+fallback_color = "#1a1a2e"    # Solid color if screenshot capture fails
+
+# ═══════════════════════════════════════════
+# Ring Indicator
+# ═══════════════════════════════════════════
+
+[ring]
+# Ring geometry
+radius_outer = 90.0           # Outer ring radius in pixels
+radius_inner = 75.0           # Inner circle radius
+line_width = 6.0              # Ring stroke width
+
+# State colors (hex with optional alpha: #RRGGBB or #RRGGBBAA)
+color_idle = "#1e90ffcc"      # Blue: waiting for input
+color_typing = "#00ff00cc"    # Green: receiving password
+color_verifying = "#ffa500cc" # Orange: checking with PAM
+color_wrong = "#ff0000cc"     # Red: authentication failed
+color_clear = "#ffff00cc"     # Yellow: backspace/clear
+
+# Background colors
+color_inside = "#00000088"    # Inner circle fill (dark transparent)
+color_ring_bg = "#00000055"   # Ring background track
+
+# ═══════════════════════════════════════════
+# Text Overlays
+# ═══════════════════════════════════════════
+
+[indicator]
+# Caps Lock warning
+show_caps_lock = true         # Display "Caps Lock" when active
+caps_lock_text = "Caps Lock"  # Custom warning text
+
+# Failed attempts
+show_failed_attempts = true   # Display failed attempt count
+
+# Time display
+show_time = true              # Display current time above ring
+time_format = "%H:%M"         # strftime format (24-hour default)
+
+# ═══════════════════════════════════════════
+# Font Settings
+# ═══════════════════════════════════════════
+
+[font]
+family = "Sans"               # Font family (Pango format)
+size = 14                     # Font size in points`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options Reference</h4>
+
+          <h5 class="text-md font-medium text-gar-text-primary mb-2 mt-6">General Options</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">grace_period</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Seconds before password required</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">pam_service</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"garlock"</td><td class="py-2 px-3">PAM service name</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">max_attempts</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">3</td><td class="py-2 px-3">Failed attempts before cooldown</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">cooldown_seconds</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">5</td><td class="py-2 px-3">Base cooldown duration (multiplied)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h5 class="text-md font-medium text-gar-text-primary mb-2 mt-6">Background Options</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_radius</td><td class="py-2 px-3">f32</td><td class="py-2 px-3">25.0</td><td class="py-2 px-3">Gaussian blur amount (0 = disabled)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">brightness</td><td class="py-2 px-3">f32</td><td class="py-2 px-3">0.6</td><td class="py-2 px-3">Brightness multiplier (0.0-1.0)</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">fallback_color</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#1a1a2e</td><td class="py-2 px-3">Solid color if screenshot fails</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h5 class="text-md font-medium text-gar-text-primary mb-2 mt-6">Ring Options</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">radius_outer</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">90.0</td><td class="py-2 px-3">Outer ring radius (pixels)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">radius_inner</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">75.0</td><td class="py-2 px-3">Inner circle radius</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">line_width</td><td class="py-2 px-3">f64</td><td class="py-2 px-3">6.0</td><td class="py-2 px-3">Ring stroke width</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_idle</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#1e90ffcc</td><td class="py-2 px-3">Waiting for input (blue)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_typing</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#00ff00cc</td><td class="py-2 px-3">Receiving password (green)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_verifying</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ffa500cc</td><td class="py-2 px-3">PAM check in progress (orange)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_wrong</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ff0000cc</td><td class="py-2 px-3">Authentication failed (red)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_clear</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ffff00cc</td><td class="py-2 px-3">Backspace/clear (yellow)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">color_inside</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#00000088</td><td class="py-2 px-3">Inner circle fill</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">color_ring_bg</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#00000055</td><td class="py-2 px-3">Ring background track</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h5 class="text-md font-medium text-gar-text-primary mb-2 mt-6">Indicator Options</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">show_caps_lock</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Display caps lock warning</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">caps_lock_text</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"Caps Lock"</td><td class="py-2 px-3">Warning text</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">show_failed_attempts</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Show attempt counter</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">show_time</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Display current time</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">time_format</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"%H:%M"</td><td class="py-2 px-3">strftime pattern</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h5 class="text-md font-medium text-gar-text-primary mb-2 mt-6">Font Options</h5>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">family</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"Sans"</td><td class="py-2 px-3">Font family (Pango)</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">size</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">14</td><td class="py-2 px-3">Font size in points</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock is a secure screen locker built with PAM authentication, X11 input grabs, and Cairo/Pango rendering. It captures a blurred screenshot of your desktop and displays a ring indicator for password feedback.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Authentication:</strong> PAM with async threading, zeroize for password security</li>
+                <li><strong>Rendering:</strong> Cairo for graphics, Pango for text layout</li>
+                <li><strong>X11 Backend:</strong> x11rb with keyboard/pointer grabs</li>
+                <li><strong>Input:</strong> xkbcommon for proper Unicode handling</li>
+                <li><strong>IPC:</strong> JSON over Unix domain sockets (daemon mode)</li>
+                <li><strong>Config:</strong> TOML at ~/.config/garlock/config.toml</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">~/.config/garlock/config.toml</td><td class="py-2 px-3">User configuration</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">/etc/pam.d/garlock</td><td class="py-2 px-3">PAM service configuration</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">$XDG_RUNTIME_DIR/garlock.sock</td><td class="py-2 px-3">IPC socket (daemon mode)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Lock Screen Layout</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The lock screen displays elements centered on the primary monitor:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`        Time Display (optional)
+             150px above ring
+
+           [Circular Ring]
+          (12-segment indicator)
+
+        Caps Lock Warning (optional)
+              130px below ring
+
+        Failed Attempts Counter (optional)
+              160px below ring
+
+        Cooldown Timer (when active)
+              190px below ring`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Authentication -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Authentication</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock uses PAM (Pluggable Authentication Modules) for secure password verification. Authentication runs asynchronously to keep the UI responsive.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Authentication Flow</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>User types password (ring turns green)</li>
+                <li>User presses Enter (ring turns orange)</li>
+                <li>PAM verifies password in background thread</li>
+                <li>Success: Screen unlocks</li>
+                <li>Failure: Ring turns red, attempt counter increments</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Async Model</h4>
+              <p class="text-gar-text-secondary mb-4">
+                PAM verification runs in a separate thread to prevent UI blocking. The main event loop continues processing keyboard input and rendering updates while authentication is in progress.
+              </p>
+            </div>
+
+            <!-- PAM Integration -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">PAM Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                PAM allows flexible authentication configuration, supporting passwords, fingerprints, or other methods.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">PAM Service File</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The service file at <code class="text-gar-accent-green">/etc/pam.d/garlock</code> defines authentication rules:
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">Standard Unix password</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#%PAM-1.0
+auth required pam_unix.so`}</code></pre>
+              </div>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">systemd-based systems</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#%PAM-1.0
+auth required pam_systemd_user.so`}</code></pre>
+              </div>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">With fingerprint (fprintd)</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#%PAM-1.0
+auth sufficient pam_fprintd.so
+auth required pam_unix.so`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Service Name</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Use a different PAM service by setting <code class="text-gar-accent-blue">pam_service</code> in config:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[general]
+pam_service = "login"    # Use system login authentication`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Security -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Security</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock implements multiple security measures to protect your session.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Password Memory Zeroing</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Passwords are stored in a secure buffer that uses the <code class="text-gar-accent-blue">zeroize</code> crate:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm mb-4">
+                <li>Memory is explicitly zeroed when password is dropped</li>
+                <li>Compiler cannot optimize away the zeroing</li>
+                <li>Vec capacity is zeroed even if unused</li>
+                <li>Manual <code class="text-gar-accent-blue">zeroize()</code> available for explicit clearing</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Input Grabs</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garlock grabs both keyboard and pointer to prevent input from reaching other applications:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm mb-4">
+                <li><strong>Keyboard grab:</strong> Prevents Alt+Tab, Super key, all shortcuts</li>
+                <li><strong>Pointer grab:</strong> Confines mouse to lock window</li>
+                <li><strong>Retry mechanism:</strong> Up to 100 attempts with 50ms delay</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Screenshot Timing</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The screenshot is captured <em>before</em> the lock window is created, then immediately blurred and dimmed to prevent screen content from being visible.
+              </p>
+
+              <div class="p-3 rounded-lg bg-gar-accent-blue/10 border border-gar-accent-blue/20">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong>Note:</strong> Password input is never logged, even in debug mode. The password buffer only stores bytes, never printing or exposing the content.
+                </p>
+              </div>
+            </div>
+
+            <!-- Cooldown System -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Cooldown System</h3>
+              <p class="text-gar-text-secondary mb-4">
+                After too many failed attempts, garlock enforces a cooldown period before allowing more attempts.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Cooldown Formula</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`duration = cooldown_seconds × (failed_attempts - max_attempts + 1)
+
+Example with max_attempts=3, cooldown_seconds=5:
+  3 failures → 5 × (3-3+1) = 5 seconds
+  4 failures → 5 × (4-3+1) = 10 seconds
+  5 failures → 5 × (5-3+1) = 15 seconds`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Cooldown Behavior</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Password input is disabled during cooldown</li>
+                <li>Countdown timer displayed below ring</li>
+                <li>Enter key has no effect until cooldown expires</li>
+                <li>Counter resets after successful authentication</li>
+              </ul>
+            </div>
+
+            <!-- Ring Indicator -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Ring Indicator</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The ring indicator provides visual feedback for authentication state and password input progress.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Ring Structure</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Outer ring:</strong> 12 segments for keystroke feedback</li>
+                <li><strong>Inner circle:</strong> Dark fill for contrast</li>
+                <li><strong>Background track:</strong> Subtle ring outline</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Segment Highlighting</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Each keystroke advances the highlight to the next segment (clockwise from top):
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Character typed → advance to next segment</li>
+                <li>Backspace → retreat to previous segment</li>
+                <li>Ctrl+U (clear) → reset to no highlight</li>
+                <li>Active segment is brightened (+0.3 per color component)</li>
+              </ul>
+            </div>
+
+            <!-- Visual States -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Visual States</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The ring color indicates the current authentication state:
+              </p>
+
+              <div class="space-y-3 mb-6">
+                <div class="flex items-center gap-4 p-3 rounded-lg bg-gar-bg-secondary/30">
+                  <span class="w-6 h-6 rounded-full border-2" style="border-color:#1e90ff; background:#1e90ff44"></span>
+                  <div>
+                    <div class="font-medium text-gar-text-primary">Idle (Blue)</div>
+                    <div class="text-sm text-gar-text-secondary">Waiting for input</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-lg bg-gar-bg-secondary/30">
+                  <span class="w-6 h-6 rounded-full border-2" style="border-color:#00ff00; background:#00ff0044"></span>
+                  <div>
+                    <div class="font-medium text-gar-text-primary">Typing (Green)</div>
+                    <div class="text-sm text-gar-text-secondary">Password characters being entered</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-lg bg-gar-bg-secondary/30">
+                  <span class="w-6 h-6 rounded-full border-2" style="border-color:#ffa500; background:#ffa50044"></span>
+                  <div>
+                    <div class="font-medium text-gar-text-primary">Verifying (Orange)</div>
+                    <div class="text-sm text-gar-text-secondary">PAM authentication in progress</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-lg bg-gar-bg-secondary/30">
+                  <span class="w-6 h-6 rounded-full border-2" style="border-color:#ff0000; background:#ff000044"></span>
+                  <div>
+                    <div class="font-medium text-gar-text-primary">Wrong (Red)</div>
+                    <div class="text-sm text-gar-text-secondary">Authentication failed</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-4 p-3 rounded-lg bg-gar-bg-secondary/30">
+                  <span class="w-6 h-6 rounded-full border-2" style="border-color:#ffff00; background:#ffff0044"></span>
+                  <div>
+                    <div class="font-medium text-gar-text-primary">Clear (Yellow)</div>
+                    <div class="text-sm text-gar-text-secondary">Backspace pressed or buffer cleared</div>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State Timeouts</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><strong>Input idle:</strong> 300ms → ring returns to idle blue</li>
+                <li><strong>Auth error:</strong> 1.5s → ring returns to idle blue</li>
+              </ul>
+            </div>
+
+            <!-- Ring Customization -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Ring Customization</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Customize the ring appearance in the <code class="text-gar-accent-green">[ring]</code> section:
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[ring]
+# Make a larger ring
+radius_outer = 120.0
+radius_inner = 100.0
+line_width = 8.0
+
+# Custom color scheme (purple/pink theme)
+color_idle = "#9b59b6cc"      # Purple
+color_typing = "#e91e63cc"    # Pink
+color_verifying = "#f39c12cc" # Gold
+color_wrong = "#e74c3ccc"     # Red
+color_clear = "#3498dbcc"     # Blue
+
+# Darker backgrounds
+color_inside = "#000000aa"
+color_ring_bg = "#00000077"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Color Format</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Colors use hex format with optional alpha:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li><code class="text-gar-accent-blue">#RRGGBB</code> — RGB (fully opaque)</li>
+                <li><code class="text-gar-accent-blue">#RRGGBBAA</code> — RGBA with alpha (cc = 80%, 88 = 53%)</li>
+              </ul>
+            </div>
+
+            <!-- Background -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Background</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock captures a screenshot of your desktop before locking, then applies blur and brightness adjustments for privacy.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Processing Pipeline</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Connect to X11 and capture root window</li>
+                <li>Downsample to 1/4 size (16x speedup)</li>
+                <li>Apply Gaussian blur at reduced resolution</li>
+                <li>Scale back to original size</li>
+                <li>Apply brightness adjustment</li>
+                <li>Use as lock screen background</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Fallback Behavior</h4>
+              <p class="text-gar-text-secondary text-sm">
+                If screenshot capture fails (e.g., compositor issues), garlock uses the <code class="text-gar-accent-blue">fallback_color</code> as a solid background.
+              </p>
+            </div>
+
+            <!-- Blur Effect -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Blur Effect</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The blur radius controls how much the screenshot is blurred. Higher values provide more privacy but take longer to process.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+blur_radius = 25.0    # Default: good privacy/speed balance
+
+# Examples:
+blur_radius = 0       # No blur (fast, but shows desktop)
+blur_radius = 10      # Light blur (fast)
+blur_radius = 25      # Medium blur (default)
+blur_radius = 50      # Heavy blur (slower)
+blur_radius = 100     # Maximum privacy (slowest)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Performance</h4>
+              <p class="text-gar-text-secondary text-sm">
+                Blur processing typically takes 50-150ms thanks to the downsample optimization. With blur disabled (<code class="text-gar-accent-blue">blur_radius = 0</code>), processing takes ~10ms.
+              </p>
+            </div>
+
+            <!-- Brightness -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Brightness</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Brightness adjustment dims the background to improve ring indicator visibility and reduce screen glare.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+brightness = 0.6      # Default: 60% brightness
+
+# Examples:
+brightness = 0.0      # Completely black
+brightness = 0.3      # Very dim
+brightness = 0.6      # Default
+brightness = 0.8      # Slightly dimmed
+brightness = 1.0      # Original brightness`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary text-sm">
+                Lower values are easier on the eyes in dark environments and make the ring indicator more visible.
+              </p>
+            </div>
+
+            <!-- Text Overlays -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Text Overlays</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock can display several text overlays around the ring indicator.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Time Display</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[indicator]
+show_time = true
+time_format = "%H:%M"         # 24-hour (14:30)
+# time_format = "%I:%M %p"    # 12-hour (02:30 PM)
+# time_format = "%H:%M:%S"    # With seconds (14:30:45)
+# time_format = "%a %H:%M"    # Day + time (Mon 14:30)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Common Time Formats</h4>
+              <div class="overflow-x-auto mb-6">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Format</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Example</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%H:%M</td><td class="py-1 px-3">14:30</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%I:%M %p</td><td class="py-1 px-3">02:30 PM</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%H:%M:%S</td><td class="py-1 px-3">14:30:45</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%l:%M %p</td><td class="py-1 px-3">2:30 PM (no leading zero)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-1 px-3 font-mono">%a %H:%M</td><td class="py-1 px-3">Mon 14:30</td></tr>
+                    <tr><td class="py-1 px-3 font-mono">%A, %B %d</td><td class="py-1 px-3">Monday, January 17</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Caps Lock Warning</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[indicator]
+show_caps_lock = true
+caps_lock_text = "Caps Lock"    # Or localized: "MAYÚSCULAS"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Failed Attempts</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[indicator]
+show_failed_attempts = true    # Shows "1 failed attempt" or "3 failed attempts"`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Keyboard Input -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keyboard Input</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock uses xkbcommon for proper keyboard handling, supporting full Unicode input including international characters.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Bindings</h4>
+              <div class="overflow-x-auto mb-6">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key(s)</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Any printable</td><td class="py-2 px-3">Add character to password</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Backspace</td><td class="py-2 px-3">Remove last character</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Return / KP_Enter</td><td class="py-2 px-3">Submit password</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Ctrl+U</td><td class="py-2 px-3">Clear password buffer</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Ctrl+C</td><td class="py-2 px-3">Clear password buffer</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Escape</td><td class="py-2 px-3">Exit (dev mode only)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">Modifiers</td><td class="py-2 px-3">Update state (no visual change)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Unicode Support</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garlock correctly handles multi-byte UTF-8 characters:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Japanese: 日本語</li>
+                <li>Accented: café, naïve, señor</li>
+                <li>Symbols: € £ © ™</li>
+                <li>Emoji: Not recommended in passwords, but supported</li>
+              </ul>
+            </div>
+
+            <!-- Multi-Monitor -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Multi-Monitor</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garlock uses RandR to detect monitors and centers the ring indicator on the primary monitor.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Monitor Detection</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li>Query RandR for screen resources</li>
+                <li>Find all connected outputs with active CRTCs</li>
+                <li>Identify primary monitor</li>
+                <li>Calculate center point for ring placement</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Fallback Behavior</h4>
+              <p class="text-gar-text-secondary mb-4">
+                If RandR is unavailable or no primary monitor is set, garlock centers the ring on the overall screen center.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Coverage</h4>
+              <p class="text-gar-text-secondary text-sm">
+                The lock window covers the entire virtual screen (all monitors combined), not just the primary monitor.
+              </p>
+            </div>
+
+            <!-- Daemon Mode -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Run garlock as a daemon to accept lock commands via IPC socket.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Starting the Daemon</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'garlock daemon &', comment: 'Start daemon in background' },
+                  { command: 'garlock daemon', comment: 'Or run in foreground for debugging' },
+                ]}
+                class="mb-6"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon Benefits</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Faster locking:</strong> No startup overhead when locking</li>
+                <li><strong>State queries:</strong> Check if screen is locked</li>
+                <li><strong>Remote control:</strong> Lock via IPC from scripts</li>
+                <li><strong>Systemd integration:</strong> Run as user service</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Systemd Service</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.config/systemd/user/garlock.service</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Unit]
+Description=garlock - Screen Locker Daemon
+After=graphical-session-pre.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/garlock daemon
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=graphical-session.target`}</code></pre>
+              </div>
+            </div>
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using garlock with gar and other tools.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lock on Keybind</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Bind Super+L to lock the screen in gar:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Lock screen with Super+L
+gar.bind("mod+l", "exec garlock")`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lock on Suspend</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use systemd to lock before suspend:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">/etc/systemd/system/garlock-suspend@.service</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Unit]
+Description=Lock screen before suspend
+Before=sleep.target
+
+[Service]
+User=%i
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/garlock lock
+Type=forking
+
+[Install]
+WantedBy=sleep.target`}</code></pre>
+          </div>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'sudo systemctl enable garlock-suspend@$USER.service', comment: 'Enable lock on suspend' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Auto-Lock on Idle</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use xidlehook or xautolock to lock after inactivity:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "xidlehook --timer 300 'garlock lock' ''", comment: 'Lock after 5 minutes idle' },
+              { command: 'xautolock -time 5 -locker garlock', comment: 'Or use xautolock' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lock with DPMS</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Turn off monitors and lock simultaneously:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.local/bin/lock-and-blank</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+# Lock and turn off monitors
+garlock lock &
+sleep 0.5
+xset dpms force off`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Minimal Privacy Lock</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Maximum blur for privacy-conscious users:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+blur_radius = 100.0    # Maximum blur
+brightness = 0.3       # Very dim`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Solid Color Lock</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Skip the screenshot for fastest locking:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+blur_radius = 0
+brightness = 0.0       # Forces solid fallback
+fallback_color = "#1a1a2e"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Theme Example</h4>
+          <p class="text-gar-text-secondary mb-4">
+            A complete custom theme with different colors:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Nord-inspired theme
+[background]
+blur_radius = 30.0
+brightness = 0.5
+fallback_color = "#2e3440"
+
+[ring]
+radius_outer = 100.0
+radius_inner = 85.0
+line_width = 5.0
+color_idle = "#5e81accc"      # Nord blue
+color_typing = "#a3be8ccc"    # Nord green
+color_verifying = "#ebcb8bcc" # Nord yellow
+color_wrong = "#bf616acc"     # Nord red
+color_clear = "#b48eadcc"     # Nord purple
+color_inside = "#2e344088"
+color_ring_bg = "#3b425255"
+
+[indicator]
+show_time = true
+time_format = "%H:%M"
+show_caps_lock = true
+show_failed_attempts = true
+
+[font]
+family = "Inter"
+size = 16`}</code></pre>
+          </div>
+        </div>
+
+        <!-- IPC Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            In daemon mode, garlock exposes a Unix domain socket for control and status queries.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <MultiTerminal
+            commands={[
+              { command: 'echo $XDG_RUNTIME_DIR/garlock.sock', comment: 'Primary socket path' },
+              { command: 'ls /run/user/$UID/garlock.sock', comment: 'Typical location' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">CLI Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garlock daemon</td><td class="py-2 px-3">Start daemon mode</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">garlock lock</td><td class="py-2 px-3">Lock screen (direct or via daemon)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">garlock status</td><td class="py-2 px-3">Query current state</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">garlock shutdown</td><td class="py-2 px-3">Stop the daemon</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Commands are JSON objects, one per line:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Commands (Client → Daemon)</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{"command": "lock"}
+{"command": "query-state"}
+{"command": "shutdown"}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Responses (Daemon → Client)</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"status": "ok"}
+{"status": "ok", "message": "Locking screen"}
+
+// State query response
+{
+  "status": "state",
+  "locked": true,
+  "failed_attempts": 2,
+  "in_cooldown": false
+}
+
+// Error
+{"status": "error", "message": "Screen is already locked"}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Scripting Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">lock-if-unlocked.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+# Lock only if not already locked
+SOCK="\${XDG_RUNTIME_DIR:-/run/user/\$(id -u)}/garlock.sock"
+
+if [ -S "$SOCK" ]; then
+    # Daemon mode: query state first
+    STATE=$(echo '{"command": "query-state"}' | nc -U "$SOCK")
+    if echo "$STATE" | grep -q '"locked":false'; then
+        echo '{"command": "lock"}' | nc -U "$SOCK"
+    fi
+else
+    # Direct mode
+    garlock lock
+fi`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Events (Planned)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Future versions will support event subscriptions:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Planned event types
+{"event": "Locked"}
+{"event": "Unlocked"}
+{"event": "AuthFailed", "attempt": 3}
+{"event": "CooldownStarted", "seconds": 15}
+{"event": "Shutdown"}`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">PAM authentication fails</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Ensure the PAM service file exists:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -la /etc/pam.d/garlock', comment: 'Check PAM service exists' },
+                  { command: 'cat /etc/pam.d/garlock', comment: 'View PAM configuration' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                If missing, create <code class="text-gar-accent-blue">/etc/pam.d/garlock</code> with <code class="text-gar-accent-blue">auth required pam_unix.so</code>
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Keyboard grab fails</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Another application may have grabbed the keyboard:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xdotool getactivewindow', comment: 'Check active window' },
+                  { command: 'RUST_LOG=debug garlock 2>&1 | grep -i grab', comment: 'View grab attempts' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                garlock retries up to 100 times. If it still fails, check for modal dialogs or fullscreen apps.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Screenshot capture fails</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">This can happen with some compositors:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=debug garlock 2>&1 | grep -i screenshot', comment: 'Check for errors' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                garlock will use the fallback solid color. Set <code class="text-gar-accent-blue">fallback_color</code> in config if you want a different color.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Config not loading</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify config file syntax:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat ~/.config/garlock/config.toml | tomlq .', comment: 'Validate TOML' },
+                  { command: 'garlock --debug lock 2>&1 | grep -i config', comment: 'Check config loading' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Locked out of system</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Use a TTY to access your system:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm mt-3">
+                <li>Press <code class="text-gar-accent-blue">Ctrl+Alt+F2</code> to switch to TTY2</li>
+                <li>Log in with your username and password</li>
+                <li>Kill garlock: <code class="text-gar-accent-blue">pkill -9 garlock</code></li>
+                <li>Return to GUI: <code class="text-gar-accent-blue">Ctrl+Alt+F7</code> (or F1)</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Ring not centered on correct monitor</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">garlock uses the primary monitor. Set your primary:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xrandr --query | grep primary', comment: 'Check current primary' },
+                  { command: 'xrandr --output HDMI-1 --primary', comment: 'Set primary monitor' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Daemon not responding</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check if the daemon is running:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garlock', comment: 'Check daemon process' },
+                  { command: 'ls -la $XDG_RUNTIME_DIR/garlock.sock', comment: 'Check socket exists' },
+                  { command: 'garlock shutdown && garlock daemon &', comment: 'Restart daemon' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Slow blur processing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Reduce blur radius or disable blur:</p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mt-3">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[background]
+blur_radius = 10.0    # Lower = faster
+# blur_radius = 0     # Disable completely`}</code></pre>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Password with special characters fails</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check keyboard layout:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'setxkbmap -query', comment: 'Check current layout' },
+                  { command: 'setxkbmap us', comment: 'Switch to US layout if needed' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                garlock uses xkbcommon for keyboard handling. Ensure your keyboard layout matches what you used to set your password.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Debug mode</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Run with verbose logging to diagnose issues:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=debug garlock', comment: 'Debug logging' },
+                  { command: 'RUST_LOG=garlock=trace garlock', comment: 'Trace logging' },
+                  { command: 'garlock --debug lock', comment: 'Debug flag' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
