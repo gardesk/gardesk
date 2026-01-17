@@ -19,6 +19,7 @@ const tabs = [
   { id: 'config', label: 'Config' },
   { id: 'docs', label: 'Docs' },
   { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
   { id: 'troubleshooting', label: 'Troubleshooting' },
 ];
 
@@ -1091,8 +1092,162 @@ end)`}</code></pre>
           </div>
         </div>
 
-        <!-- Troubleshooting Tab -->
+        <!-- IPC/API Tab -->
         <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC & API Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garlaunch provides IPC control via Unix domain sockets when running in daemon mode. The garlaunchctl client sends commands to the daemon.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10 mb-6">
+            <code class="text-gar-accent-magenta">$XDG_RUNTIME_DIR/garlaunch.sock</code>
+            <p class="text-gar-text-secondary text-sm mt-2">Fallback: <code class="text-gar-accent-blue">/tmp/garlaunch.sock</code></p>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">IPC Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Args</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">show</td><td class="py-2 px-3">mode?, source?</td><td class="py-2 px-3">Show launcher in specified mode</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">hide</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Hide launcher window</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">toggle</td><td class="py-2 px-3">mode?</td><td class="py-2 px-3">Toggle launcher visibility</td></tr>
+                <tr><td class="py-2 px-3 font-mono">status</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query daemon status</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Request Format</h4>
+          <p class="text-gar-text-secondary mb-3">JSON messages sent over Unix socket:</p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Show request</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "show",
+  "args": {
+    "mode": "drun",
+    "source": null
+  }
+}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Toggle with mode</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "toggle",
+  "args": {
+    "mode": "window"
+  }
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Success response</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "success": true,
+  "data": null,
+  "error": null
+}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Error response</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "success": false,
+  "data": null,
+  "error": "Daemon not running"
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garlaunchctl Usage</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garlaunchctl show', comment: 'Show in default mode (drun)' },
+              { command: 'garlaunchctl show --mode window', comment: 'Show window switcher' },
+              { command: 'garlaunchctl show --mode script --source ./menu.sh', comment: 'Show custom script menu' },
+              { command: 'garlaunchctl toggle', comment: 'Toggle visibility' },
+              { command: 'garlaunchctl toggle --mode run', comment: 'Toggle with run mode' },
+              { command: 'garlaunchctl hide', comment: 'Hide launcher' },
+              { command: 'garlaunchctl status', comment: 'Check daemon status' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gar Integration IPC</h4>
+          <p class="text-gar-text-secondary mb-3">Window mode communicates with gar via its IPC socket:</p>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Purpose</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">get_windows</td><td class="py-2 px-3">Fetch list of all windows from gar</td></tr>
+                <tr><td class="py-2 px-3 font-mono">focus_window</td><td class="py-2 px-3">Focus a window by ID</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Script Mode Protocol</h4>
+          <p class="text-gar-text-secondary mb-3">Scripts communicate via stdin/stdout JSON:</p>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Direction</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Format</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">script → garlaunch</td><td class="py-2 px-3 font-mono">{`{"items": [...]}`}</td><td class="py-2 px-3">Initial item list</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">garlaunch → script</td><td class="py-2 px-3 font-mono">{`{"selected": {...}}`}</td><td class="py-2 px-3">User selection</td></tr>
+                <tr><td class="py-2 px-3">script → garlaunch</td><td class="py-2 px-3 font-mono">{`{"action": "..."}`}</td><td class="py-2 px-3">Action response</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Action Types</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Args</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">launch</td><td class="py-2 px-3">command</td><td class="py-2 px-3">Execute command and close</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">close</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Close launcher</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">switch</td><td class="py-2 px-3">mode</td><td class="py-2 px-3">Switch to different mode</td></tr>
+                <tr><td class="py-2 px-3 font-mono">custom</td><td class="py-2 px-3">data</td><td class="py-2 px-3">Return custom data to caller</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
           <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
 
           <div class="space-y-6">

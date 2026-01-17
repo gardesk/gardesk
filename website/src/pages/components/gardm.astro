@@ -18,6 +18,7 @@ const tabs = [
   { id: 'config', label: 'Config' },
   { id: 'docs', label: 'Docs' },
   { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
   { id: 'troubleshooting', label: 'Troubleshooting' },
 ];
 
@@ -1226,8 +1227,175 @@ color_error = "#ff5555"        # Red errors`}</code></pre>
           />
         </div>
 
-        <!-- Troubleshooting Tab -->
+        <!-- IPC/API Tab -->
         <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC & API Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            gardm uses a Unix domain socket for IPC between gardmd (daemon) and gardm-greeter (UI). The greeter sends authentication requests and receives session control messages.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10 mb-6">
+            <code class="text-gar-accent-cyan">/run/gardm.sock</code>
+            <p class="text-gar-text-secondary text-sm mt-2">Only accessible by root and gardm-greeter process</p>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Greeter → Daemon Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Args</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">authenticate</td><td class="py-2 px-3">username, password</td><td class="py-2 px-3">Authenticate user via PAM</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">start_session</td><td class="py-2 px-3">username, session</td><td class="py-2 px-3">Start user session</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">get_users</td><td class="py-2 px-3">-</td><td class="py-2 px-3">List available users</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">get_sessions</td><td class="py-2 px-3">-</td><td class="py-2 px-3">List available sessions</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">power_off</td><td class="py-2 px-3">-</td><td class="py-2 px-3">System shutdown</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">reboot</td><td class="py-2 px-3">-</td><td class="py-2 px-3">System reboot</td></tr>
+                <tr><td class="py-2 px-3 font-mono">suspend</td><td class="py-2 px-3">-</td><td class="py-2 px-3">System suspend</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon → Greeter Events</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Event</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Data</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">auth_success</td><td class="py-2 px-3">username</td><td class="py-2 px-3">Authentication succeeded</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">auth_failure</td><td class="py-2 px-3">reason</td><td class="py-2 px-3">Authentication failed</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">session_started</td><td class="py-2 px-3">session, pid</td><td class="py-2 px-3">Session launched</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">session_ended</td><td class="py-2 px-3">session, exit_code</td><td class="py-2 px-3">Session terminated</td></tr>
+                <tr><td class="py-2 px-3 font-mono">users_list</td><td class="py-2 px-3">[users]</td><td class="py-2 px-3">Response to get_users</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Request Format</h4>
+          <p class="text-gar-text-secondary mb-3">JSON messages sent over Unix socket:</p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Authentication request</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "authenticate",
+  "args": {
+    "username": "alice",
+    "password": "***"
+  }
+}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Start session request</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "start_session",
+  "args": {
+    "username": "alice",
+    "session": "gar"
+  }
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Success response</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "success": true,
+  "event": "auth_success",
+  "data": {
+    "username": "alice"
+  }
+}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Error response</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "success": false,
+  "event": "auth_failure",
+  "data": {
+    "reason": "Invalid password"
+  }
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">User Object</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "username": "alice",
+  "uid": 1000,
+  "gid": 1000,
+  "gecos": "Alice User",
+  "home": "/home/alice",
+  "shell": "/bin/bash",
+  "face_icon": "/var/lib/AccountsService/icons/alice"
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Session Object</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "id": "gar",
+  "name": "gar Desktop",
+  "comment": "The gar window manager",
+  "exec": "/usr/bin/gar-session.sh",
+  "type": "x11",
+  "desktop_file": "/usr/share/xsessions/gar.desktop"
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Security Notes</h4>
+          <div class="p-4 rounded-lg bg-gar-accent-red/10 border border-gar-accent-red/30 mb-6">
+            <ul class="list-disc list-inside text-gar-text-secondary space-y-2 text-sm">
+              <li>Socket only accessible by root and greeter process</li>
+              <li>Passwords transmitted in plaintext over socket (local only)</li>
+              <li>PAM handles actual authentication and password verification</li>
+              <li>Greeter drops privileges after connecting</li>
+              <li>Session processes run as authenticated user, not root</li>
+            </ul>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Power Management</h4>
+          <p class="text-gar-text-secondary mb-3">Power commands use systemd-logind:</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">D-Bus Method</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">power_off</td><td class="py-2 px-3">PowerOff(false)</td><td class="py-2 px-3">May require polkit rule</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">reboot</td><td class="py-2 px-3">Reboot(false)</td><td class="py-2 px-3">May require polkit rule</td></tr>
+                <tr><td class="py-2 px-3 font-mono">suspend</td><td class="py-2 px-3">Suspend(false)</td><td class="py-2 px-3">Hardware support required</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
           <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
 
           <div class="space-y-6">
