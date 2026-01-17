@@ -1,0 +1,132 @@
+---
+interface DocItem {
+  id: string;
+  label: string;
+  children?: DocItem[];
+}
+
+interface Props {
+  items: DocItem[];
+  defaultItem?: string;
+  class?: string;
+}
+
+const { items, defaultItem, class: className } = Astro.props;
+const activeItem = defaultItem || items[0]?.id;
+
+function flattenItems(items: DocItem[]): string[] {
+  const result: string[] = [];
+  for (const item of items) {
+    result.push(item.id);
+    if (item.children) {
+      result.push(...flattenItems(item.children));
+    }
+  }
+  return result;
+}
+
+const allIds = flattenItems(items);
+---
+
+<div class:list={["docs-sidebar-container flex flex-col lg:flex-row gap-6", className]} data-active-doc={activeItem}>
+  <!-- Sidebar -->
+  <nav class="docs-sidebar lg:w-56 flex-shrink-0">
+    <div class="lg:sticky lg:top-4 bg-gar-bg-secondary/50 rounded-lg border border-gar-text-muted/20 p-3 overflow-y-auto max-h-[60vh] lg:max-h-[70vh]">
+      <ul class="space-y-1">
+        {items.map((item) => (
+          <li>
+            <button
+              class:list={[
+                "docs-nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                item.id === activeItem
+                  ? "bg-gar-accent-blue/10 text-gar-accent-blue"
+                  : "text-gar-text-secondary hover:bg-gar-bg-primary/50 hover:text-gar-text-primary"
+              ]}
+              data-doc={item.id}
+            >
+              {item.label}
+            </button>
+            {item.children && item.children.length > 0 && (
+              <ul class="ml-3 mt-1 space-y-1 border-l border-gar-text-muted/20 pl-3">
+                {item.children.map((child) => (
+                  <li>
+                    <button
+                      class:list={[
+                        "docs-nav-item w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors",
+                        child.id === activeItem
+                          ? "bg-gar-accent-blue/10 text-gar-accent-blue"
+                          : "text-gar-text-muted hover:bg-gar-bg-primary/50 hover:text-gar-text-secondary"
+                      ]}
+                      data-doc={child.id}
+                    >
+                      {child.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Content Area - Static slot names -->
+  <div class="docs-content flex-1 min-w-0">
+    <div class:list={["docs-panel", allIds[0] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[0]}><slot name="doc-0" /></div>
+    {allIds[1] && <div class:list={["docs-panel", allIds[1] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[1]}><slot name="doc-1" /></div>}
+    {allIds[2] && <div class:list={["docs-panel", allIds[2] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[2]}><slot name="doc-2" /></div>}
+    {allIds[3] && <div class:list={["docs-panel", allIds[3] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[3]}><slot name="doc-3" /></div>}
+    {allIds[4] && <div class:list={["docs-panel", allIds[4] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[4]}><slot name="doc-4" /></div>}
+    {allIds[5] && <div class:list={["docs-panel", allIds[5] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[5]}><slot name="doc-5" /></div>}
+    {allIds[6] && <div class:list={["docs-panel", allIds[6] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[6]}><slot name="doc-6" /></div>}
+    {allIds[7] && <div class:list={["docs-panel", allIds[7] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[7]}><slot name="doc-7" /></div>}
+    {allIds[8] && <div class:list={["docs-panel", allIds[8] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[8]}><slot name="doc-8" /></div>}
+    {allIds[9] && <div class:list={["docs-panel", allIds[9] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[9]}><slot name="doc-9" /></div>}
+    {allIds[10] && <div class:list={["docs-panel", allIds[10] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[10]}><slot name="doc-10" /></div>}
+    {allIds[11] && <div class:list={["docs-panel", allIds[11] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[11]}><slot name="doc-11" /></div>}
+    {allIds[12] && <div class:list={["docs-panel", allIds[12] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[12]}><slot name="doc-12" /></div>}
+    {allIds[13] && <div class:list={["docs-panel", allIds[13] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[13]}><slot name="doc-13" /></div>}
+    {allIds[14] && <div class:list={["docs-panel", allIds[14] === activeItem ? "block" : "hidden"]} data-doc-panel={allIds[14]}><slot name="doc-14" /></div>}
+  </div>
+</div>
+
+<script>
+  function initDocsSidebars() {
+    document.querySelectorAll('.docs-sidebar-container').forEach((container) => {
+      const buttons = container.querySelectorAll('.docs-nav-item');
+      const panels = container.querySelectorAll('.docs-panel');
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const docId = button.getAttribute('data-doc');
+
+          // Update buttons
+          buttons.forEach((btn) => {
+            const isActive = btn.getAttribute('data-doc') === docId;
+            btn.classList.toggle('bg-gar-accent-blue/10', isActive);
+            btn.classList.toggle('text-gar-accent-blue', isActive);
+            btn.classList.toggle('text-gar-text-secondary', !isActive && !btn.closest('ul ul'));
+            btn.classList.toggle('text-gar-text-muted', !isActive && !!btn.closest('ul ul'));
+          });
+
+          // Update panels
+          panels.forEach((panel) => {
+            const isActive = panel.getAttribute('data-doc-panel') === docId;
+            panel.classList.toggle('hidden', !isActive);
+            panel.classList.toggle('block', isActive);
+          });
+
+          // Update container data attribute
+          container.setAttribute('data-active-doc', docId || '');
+        });
+      });
+    });
+  }
+
+  // Initialize on page load
+  initDocsSidebars();
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initDocsSidebars);
+</script>

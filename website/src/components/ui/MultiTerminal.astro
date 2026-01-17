@@ -1,0 +1,44 @@
+---
+interface Command {
+  command: string;
+  comment?: string;
+  output?: string;
+}
+
+interface Props {
+  commands: Command[];
+  title?: string;
+  class?: string;
+}
+
+const { commands, title, class: className } = Astro.props;
+---
+
+<div class:list={["multi-terminal rounded-lg overflow-hidden border border-gar-text-muted/20", className]}>
+  {title && (
+    <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20 flex items-center gap-2">
+      <div class="flex gap-1.5">
+        <span class="w-3 h-3 rounded-full bg-red-500/70"></span>
+        <span class="w-3 h-3 rounded-full bg-yellow-500/70"></span>
+        <span class="w-3 h-3 rounded-full bg-green-500/70"></span>
+      </div>
+      <span class="text-sm text-gar-text-secondary font-mono ml-2">{title}</span>
+    </div>
+  )}
+  <div class="bg-gar-bg-primary p-4 font-mono text-sm overflow-x-auto">
+    {commands.map((cmd, index) => (
+      <div class:list={["command-line", index > 0 && "mt-3"]}>
+        <div class="flex items-start gap-2">
+          <span class="text-gar-accent-green select-none">$</span>
+          <span class="text-gar-text-primary">{cmd.command}</span>
+          {cmd.comment && (
+            <span class="text-gar-text-muted ml-2"># {cmd.comment}</span>
+          )}
+        </div>
+        {cmd.output && (
+          <div class="mt-1 ml-4 text-gar-text-secondary whitespace-pre-wrap">{cmd.output}</div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
