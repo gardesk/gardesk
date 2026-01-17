@@ -145,14 +145,16 @@ const docsItems = [
             'Mouse drag for moving/resizing floating windows',
             'Automatic picom compositor configuration',
             'Session management with systemd integration'
-          ].map(feature => (
-            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span class="text-gar-text-primary">{feature}</span>
-            </li>
-          ))}
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
         </ul>
       </section>
 
@@ -483,9 +485,9 @@ gar.exec_once("garbg set ~/Pictures/wallpaper.png")`}</code></pre>
               </thead>
               <tbody class="text-gar-text-secondary">
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_width</td><td class="py-2 px-3">int</td><td class="py-2 px-3">2</td><td class="py-2 px-3">Border width in pixels</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_focused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#5294e2</td><td class="py-2 px-3">Focused window border</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_unfocused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#2d2d2d</td><td class="py-2 px-3">Unfocused window border</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_urgent</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ff5555</td><td class="py-2 px-3">Urgent window border</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_focused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">{'#5294e2'}</td><td class="py-2 px-3">Focused window border</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_unfocused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">{'#2d2d2d'}</td><td class="py-2 px-3">Unfocused window border</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_urgent</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">{'#ff5555'}</td><td class="py-2 px-3">Urgent window border</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_inner</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Gap between windows</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_outer</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Gap at screen edges</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">follow_window_on_move</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Follow window to new workspace</td></tr>
@@ -588,11 +590,11 @@ gar.rule({ title = "Dialog" }, { floating = true })</code></pre>
                 <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
                   <h4 class="font-mono text-gar-accent-green mb-2">gar.picom_rule(config)</h4>
                   <p class="text-gar-text-secondary text-sm">Registers per-window picom compositor rules.</p>
-                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.picom_rule({`}{`}
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>{`gar.picom_rule({
     match = "class_g = 'Firefox'",
     corner_radius = 0,
     opacity = 1.0
-{`}`})</code></pre>
+})`}</code></pre>
                 </div>
               </div>
             </div>
@@ -693,23 +695,23 @@ gar.bind("mod+ctrl+h", gar.resize("left", 0.05))`}</code></pre>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Special Keys</h4>
               <div class="flex flex-wrap gap-2 mb-4">
-                {['return', 'escape', 'tab', 'space', 'backspace', 'delete', 'left', 'right', 'up', 'down', 'home', 'end', 'page_up', 'page_down', 'f1-f12'].map(key => (
-                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
-                ))}
+                {['return', 'escape', 'tab', 'space', 'backspace', 'delete', 'left', 'right', 'up', 'down', 'home', 'end', 'page_up', 'page_down', 'f1-f12'].map(function(key) {
+                  return (<span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>)
+                })}
               </div>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Punctuation</h4>
               <div class="flex flex-wrap gap-2 mb-4">
-                {['comma', 'period', 'semicolon', 'apostrophe', 'bracketleft', 'bracketright', 'backslash', 'slash', 'minus', 'equal', 'grave'].map(key => (
-                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
-                ))}
+                {['comma', 'period', 'semicolon', 'apostrophe', 'bracketleft', 'bracketright', 'backslash', 'slash', 'minus', 'equal', 'grave'].map(function(key) {
+                  return <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
+                })}
               </div>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Media Keys (XF86)</h4>
               <div class="flex flex-wrap gap-2 mb-4">
-                {['XF86AudioRaiseVolume', 'XF86AudioLowerVolume', 'XF86AudioMute', 'XF86MonBrightnessUp', 'XF86MonBrightnessDown', 'Print'].map(key => (
-                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
-                ))}
+                {['XF86AudioRaiseVolume', 'XF86AudioLowerVolume', 'XF86AudioMute', 'XF86MonBrightnessUp', 'XF86MonBrightnessDown', 'Print'].map(function(key) {
+                  return <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
+                })}
               </div>
 
               <p class="text-gar-text-secondary text-sm">

@@ -158,9 +158,9 @@ const components = [
     <HeroSection />
     <FeaturesSection />
 
-    {components.map(component => (
-      <ComponentSection {...component} />
-    ))}
+    {components.map(function(component) {
+      return (<ComponentSection {...component} />)
+    })}
 
     <InstallSection />
   </main>

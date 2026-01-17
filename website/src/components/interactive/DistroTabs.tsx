@@ -58,15 +58,15 @@ export default function DistroTabs() {
   const [activeDistro, setActiveDistro] = useState(distros[0]);
   const [copied, setCopied] = useState(false);
 
-  const copyCommands = async () => {
+  const copyCommands = async function() {
     const text = activeDistro.commands
-      .filter(cmd => !cmd.startsWith('#'))
+      .filter(function(cmd) { return !cmd.startsWith('#') })
       .join('\n');
 
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(function() { setCopied(false) }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -76,27 +76,29 @@ export default function DistroTabs() {
     <div className="distro-tabs w-full max-w-2xl mx-auto">
       {/* Tab buttons */}
       <div className="flex flex-wrap gap-2 mb-4" role="tablist">
-        {distros.map((distro) => (
-          <button
-            key={distro.id}
-            role="tab"
-            aria-selected={activeDistro.id === distro.id}
-            onClick={() => setActiveDistro(distro)}
-            className={`
-              px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
-              ${activeDistro.id === distro.id
-                ? 'bg-gar-accent-blue text-gar-bg-deep'
-                : 'bg-gar-bg-secondary text-gar-text-secondary hover:bg-gar-bg-tertiary hover:text-gar-text-primary'
-              }
-              ${!distro.available && distro.id !== 'universal' ? 'opacity-60' : ''}
-            `}
-          >
-            {distro.name}
-            {!distro.available && distro.id !== 'universal' && (
-              <span className="ml-1.5 text-xs opacity-75">(soon)</span>
-            )}
-          </button>
-        ))}
+        {distros.map(function(distro) {
+          return (
+            <button
+              key={distro.id}
+              role="tab"
+              aria-selected={activeDistro.id === distro.id}
+              onClick={function() { setActiveDistro(distro) }}
+              className={`
+                px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                ${activeDistro.id === distro.id
+                  ? 'bg-gar-accent-blue text-gar-bg-deep'
+                  : 'bg-gar-bg-secondary text-gar-text-secondary hover:bg-gar-bg-tertiary hover:text-gar-text-primary'
+                }
+                ${!distro.available && distro.id !== 'universal' ? 'opacity-60' : ''}
+              `}
+            >
+              {distro.name}
+              {!distro.available && distro.id !== 'universal' && (
+                <span className="ml-1.5 text-xs opacity-75">(soon)</span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       {/* Command panel */}
@@ -133,18 +135,20 @@ export default function DistroTabs() {
 
         {/* Terminal body */}
         <div className="bg-gar-bg-primary p-4 font-mono text-sm">
-          {activeDistro.commands.map((cmd, i) => (
-            <div key={i} className="mb-1 last:mb-0">
-              {cmd.startsWith('#') ? (
-                <span className="text-gar-text-muted">{cmd}</span>
-              ) : (
-                <div className="flex gap-2">
-                  <span className="text-gar-accent-green select-none">$</span>
-                  <span className="text-gar-text-primary">{cmd}</span>
-                </div>
-              )}
-            </div>
-          ))}
+          {activeDistro.commands.map(function(cmd, i) {
+            return (
+              <div key={i} className="mb-1 last:mb-0">
+                {cmd.startsWith('#') ? (
+                  <span className="text-gar-text-muted">{cmd}</span>
+                ) : (
+                  <div className="flex gap-2">
+                    <span className="text-gar-accent-green select-none">$</span>
+                    <span className="text-gar-text-primary">{cmd}</span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

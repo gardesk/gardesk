@@ -33,40 +33,44 @@ const allIds = flattenItems(items);
   <nav class="docs-sidebar lg:w-56 flex-shrink-0">
     <div class="lg:sticky lg:top-4 bg-gar-bg-secondary/50 rounded-lg border border-gar-text-muted/20 p-3 overflow-y-auto max-h-[60vh] lg:max-h-[70vh]">
       <ul class="space-y-1">
-        {items.map((item) => (
-          <li>
-            <button
-              class:list={[
-                "docs-nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                item.id === activeItem
-                  ? "bg-gar-accent-blue/10 text-gar-accent-blue"
-                  : "text-gar-text-secondary hover:bg-gar-bg-primary/50 hover:text-gar-text-primary"
-              ]}
-              data-doc={item.id}
-            >
-              {item.label}
-            </button>
-            {item.children && item.children.length > 0 && (
-              <ul class="ml-3 mt-1 space-y-1 border-l border-gar-text-muted/20 pl-3">
-                {item.children.map((child) => (
-                  <li>
-                    <button
-                      class:list={[
-                        "docs-nav-item w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors",
-                        child.id === activeItem
-                          ? "bg-gar-accent-blue/10 text-gar-accent-blue"
-                          : "text-gar-text-muted hover:bg-gar-bg-primary/50 hover:text-gar-text-secondary"
-                      ]}
-                      data-doc={child.id}
-                    >
-                      {child.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
+        {items.map(function(item) {
+          return (
+            <li>
+              <button
+                class:list={[
+                  "docs-nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  item.id === activeItem
+                    ? "bg-gar-accent-blue/10 text-gar-accent-blue"
+                    : "text-gar-text-secondary hover:bg-gar-bg-primary/50 hover:text-gar-text-primary"
+                ]}
+                data-doc={item.id}
+              >
+                {item.label}
+              </button>
+              {item.children && item.children.length > 0 && (
+                <ul class="ml-3 mt-1 space-y-1 border-l border-gar-text-muted/20 pl-3">
+                  {item.children.map(function(child) {
+                    return (
+                      <li>
+                        <button
+                          class:list={[
+                            "docs-nav-item w-full text-left px-3 py-1.5 rounded-md text-sm transition-colors",
+                            child.id === activeItem
+                              ? "bg-gar-accent-blue/10 text-gar-accent-blue"
+                              : "text-gar-text-muted hover:bg-gar-bg-primary/50 hover:text-gar-text-secondary"
+                          ]}
+                          data-doc={child.id}
+                        >
+                          {child.label}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </li>
+          )
+        })}
       </ul>
     </div>
   </nav>

@@ -8,6 +8,7 @@ import ImageCarousel from '../../components/ui/ImageCarousel.astro';
 import TabbedCard from '../../components/ui/TabbedCard.astro';
 import MultiTerminal from '../../components/ui/MultiTerminal.astro';
 import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+import FeatureList from '../../components/ui/FeatureList.astro';
 
 const garlaunchImages = [
   { src: '/images/garlaunch1.png', alt: 'garlaunch application launcher' },
@@ -72,6 +73,23 @@ const docsItems = [
     label: 'Script Protocol',
   },
 ];
+
+const garlaunchFeatures = [
+  'Fuzzy search with nucleo matcher',
+  'Smart case matching and normalization',
+  'Desktop entry mode (scans .desktop files)',
+  'Command execution mode (PATH binaries)',
+  'Window switcher mode (via gar IPC)',
+  'Custom script mode with JSON protocol',
+  'Daemon mode with IPC control',
+  'Popup window centered on primary monitor',
+  'Cairo/Pango rendering via gartk',
+  'Keyboard grab for exclusive input',
+  'Flatpak and Snap application support',
+  'Scrollable item list with selection highlight',
+  'garlaunchctl for external control',
+  'Fallback to direct launch without daemon'
+];
 ---
 
 <BaseLayout title="garlaunch - gardesk" description="Application Launcher. A rofi-like fuzzy finder with desktop app mode, command mode, window switcher, and custom script support.">
@@ -112,29 +130,16 @@ const docsItems = [
       <section class="mb-12">
         <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
         <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            'Fuzzy search with nucleo matcher',
-            'Smart case matching and normalization',
-            'Desktop entry mode (scans .desktop files)',
-            'Command execution mode (PATH binaries)',
-            'Window switcher mode (via gar IPC)',
-            'Custom script mode with JSON protocol',
-            'Daemon mode with IPC control',
-            'Popup window centered on primary monitor',
-            'Cairo/Pango rendering via gartk',
-            'Keyboard grab for exclusive input',
-            'Flatpak and Snap application support',
-            'Scrollable item list with selection highlight',
-            'garlaunchctl for external control',
-            'Fallback to direct launch without daemon'
-          ].map(feature => (
-            <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-              <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-magenta" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-              <span class="text-gar-text-primary">{feature}</span>
-            </li>
-          ))}
+          {garlaunchFeatures.map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-magenta" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
         </ul>
       </section>
 

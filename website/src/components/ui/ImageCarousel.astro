@@ -12,16 +12,18 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
   <!-- Images container -->
   <div class="relative overflow-hidden rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary">
     <div class="carousel-track flex transition-transform duration-500 ease-out">
-      {images.map((image, index) => (
-        <div class="carousel-slide w-full flex-shrink-0">
-          <img
-            src={image.src}
-            alt={image.alt}
-            class="w-full h-auto"
-            loading={index === 0 ? 'eager' : 'lazy'}
-          />
-        </div>
-      ))}
+      {images.map(function(image, index) {
+        return (
+          <div class="carousel-slide w-full flex-shrink-0">
+            <img
+              src={image.src}
+              alt={image.alt}
+              class="w-full h-auto"
+              loading={index === 0 ? 'eager' : 'lazy'}
+            />
+          </div>
+        )
+      })}
     </div>
   </div>
 
@@ -52,17 +54,19 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
   <!-- Dots indicator -->
   {images.length > 1 && (
     <div class="carousel-dots flex justify-center gap-2 mt-4">
-      {images.map((_, index) => (
-        <button
-          type="button"
-          class:list={[
-            'carousel-dot w-2 h-2 rounded-full transition-all',
-            index === 0 ? 'bg-gar-accent-blue w-6' : 'bg-gar-text-muted/40 hover:bg-gar-text-muted'
-          ]}
-          data-index={index}
-          aria-label={`Go to image ${index + 1}`}
-        />
-      ))}
+      {images.map(function(_, index) {
+        return (
+          <button
+            type="button"
+            class:list={[
+              'carousel-dot w-2 h-2 rounded-full transition-all',
+              index === 0 ? 'bg-gar-accent-blue w-6' : 'bg-gar-text-muted/40 hover:bg-gar-text-muted'
+            ]}
+            data-index={index}
+            aria-label={`Go to image ${index + 1}`}
+          />
+        )
+      })}
     </div>
   )}
 </div>

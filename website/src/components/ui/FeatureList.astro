@@ -1,0 +1,20 @@
+---
+interface Props {
+  features: string[];
+  accentColor?: string;
+}
+
+const { features, accentColor = 'blue' } = Astro.props;
+const svgClass = "w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-" + accentColor;
+---
+
+{features.map(function(feature) {
+  return (
+    <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+      <svg class={svgClass} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-gar-text-primary">{feature}</span>
+    </li>
+  )
+})}

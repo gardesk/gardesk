@@ -22,14 +22,16 @@ const navLinks = [
 
       <!-- Desktop nav -->
       <div class="hidden md:flex items-center gap-8">
-        {navLinks.map(link => (
-          <a
-            href={link.href}
-            class="text-sm text-gar-text-secondary hover:text-gar-text-primary transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
+        {navLinks.map(function(link) {
+          return (
+            <a
+              href={link.href}
+              class="text-sm text-gar-text-secondary hover:text-gar-text-primary transition-colors"
+            >
+              {link.label}
+            </a>
+          )
+        })}
         <a
           href="https://github.com/gardesk/gardesk"
           class="flex items-center gap-2 text-sm text-gar-text-secondary hover:text-gar-text-primary transition-colors"
@@ -60,14 +62,16 @@ const navLinks = [
   <!-- Mobile menu -->
   <div class="hidden md:hidden bg-gar-bg-primary/95 backdrop-blur-sm border-t border-gar-text-muted/10" id="mobile-menu">
     <div class="px-6 py-4 space-y-3">
-      {navLinks.map(link => (
-        <a
-          href={link.href}
-          class="block text-gar-text-secondary hover:text-gar-text-primary transition-colors py-2"
-        >
-          {link.label}
-        </a>
-      ))}
+      {navLinks.map(function(link) {
+        return (
+          <a
+            href={link.href}
+            class="block text-gar-text-secondary hover:text-gar-text-primary transition-colors py-2"
+          >
+            {link.label}
+          </a>
+        )
+      })}
       <a
         href="https://github.com/gardesk/gardesk"
         class="flex items-center gap-2 text-gar-text-secondary hover:text-gar-text-primary transition-colors py-2"

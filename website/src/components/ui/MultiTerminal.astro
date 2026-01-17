@@ -26,19 +26,21 @@ const { commands, title, class: className } = Astro.props;
     </div>
   )}
   <div class="bg-gar-bg-primary p-4 font-mono text-sm overflow-x-auto">
-    {commands.map((cmd, index) => (
-      <div class:list={["command-line", index > 0 && "mt-3"]}>
-        <div class="flex items-start gap-2">
-          <span class="text-gar-accent-green select-none">$</span>
-          <span class="text-gar-text-primary">{cmd.command}</span>
-          {cmd.comment && (
-            <span class="text-gar-text-muted ml-2"># {cmd.comment}</span>
+    {commands.map(function(cmd, index) {
+      return (
+        <div class:list={["command-line", index > 0 && "mt-3"]}>
+          <div class="flex items-start gap-2">
+            <span class="text-gar-accent-green select-none">$</span>
+            <span class="text-gar-text-primary">{cmd.command}</span>
+            {cmd.comment && (
+              <span class="text-gar-text-muted ml-2"># {cmd.comment}</span>
+            )}
+          </div>
+          {cmd.output && (
+            <div class="mt-1 ml-4 text-gar-text-secondary whitespace-pre-wrap">{cmd.output}</div>
           )}
         </div>
-        {cmd.output && (
-          <div class="mt-1 ml-4 text-gar-text-secondary whitespace-pre-wrap">{cmd.output}</div>
-        )}
-      </div>
-    ))}
+      )
+    })}
   </div>
 </div>
