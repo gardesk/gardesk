@@ -1,0 +1,104 @@
+---
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import ImagePlaceholder from '../ui/ImagePlaceholder.astro';
+
+interface Props {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  features: string[];
+  status: 'stable' | 'beta' | 'coming-soon';
+  imagePosition: 'left' | 'right';
+  imageAlt: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  accentColor?: string;
+}
+
+const {
+  id,
+  name,
+  tagline,
+  description,
+  features,
+  status,
+  imagePosition,
+  imageAlt,
+  imageWidth = 640,
+  imageHeight = 400,
+  accentColor = 'blue'
+} = Astro.props;
+
+const isComingSoon = status === 'coming-soon';
+
+const accentClasses: Record<string, string> = {
+  blue: 'text-gar-accent-blue',
+  green: 'text-gar-accent-green',
+  magenta: 'text-gar-accent-magenta',
+  orange: 'text-gar-accent-orange',
+  cyan: 'text-gar-accent-cyan',
+  yellow: 'text-gar-accent-yellow',
+};
+---
+
+<section
+  id={id}
+  class:list={[
+    'snap-section relative flex items-center justify-center py-20 px-6',
+    isComingSoon && 'opacity-60'
+  ]}
+>
+  <div class="max-w-6xl mx-auto w-full">
+    <div class:list={[
+      'flex flex-col gap-12 items-center',
+      imagePosition === 'left' ? 'lg:flex-row' : 'lg:flex-row-reverse'
+    ]}>
+      <!-- Image placeholder -->
+      <div class="flex-1 w-full max-w-xl lg:max-w-none">
+        <ImagePlaceholder
+          alt={imageAlt}
+          width={imageWidth}
+          height={imageHeight}
+          class="w-full"
+        />
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 max-w-xl">
+        <div class="mb-4">
+          <Badge status={status} class="mb-3" />
+          <h2 class="text-3xl md:text-4xl font-bold text-gar-text-primary mb-2">
+            <span class={accentClasses[accentColor]}>{name}</span>
+          </h2>
+          <p class="text-xl text-gar-text-secondary">{tagline}</p>
+        </div>
+
+        <p class="text-gar-text-secondary mb-6 leading-relaxed">
+          {description}
+        </p>
+
+        <ul class="space-y-3 mb-8">
+          {features.map(feature => (
+            <li class="flex items-start gap-3">
+              <svg class:list={['w-5 h-5 mt-0.5 flex-shrink-0', accentClasses[accentColor]]} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span class="text-gar-text-primary">{feature}</span>
+            </li>
+          ))}
+        </ul>
+
+        {!isComingSoon && (
+          <Button href={`/components/${id}`} variant="secondary">
+            Learn More
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Button>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

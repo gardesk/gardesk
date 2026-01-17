@@ -1,0 +1,100 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `# ~/.config/garbar/config.toml
+
+[bar]
+height = 28
+position = "top"
+background = "#14171e"
+foreground = "#abb2bf"
+font = "JetBrains Mono 10"
+
+[modules.left]
+items = ["workspaces", "window_title"]
+
+[modules.center]
+items = ["datetime"]
+
+[modules.right]
+items = ["cpu", "memory", "battery", "tray"]
+
+[workspaces]
+focused_bg = "#61afef"
+focused_fg = "#14171e"
+urgent_bg = "#e06c75"
+
+[datetime]
+format = "%a %b %d  %H:%M"
+
+[cpu]
+format = "CPU {percent}%"
+interval = 2
+
+[memory]
+format = "MEM {percent}%"
+interval = 5
+
+[battery]
+format = "BAT {percent}%"
+charging = "CHG {percent}%"
+critical = 15`;
+---
+
+<ComponentPageLayout
+  name="garbar"
+  tagline="Async Status Bar"
+  description="A Tokio-powered status bar with modular widgets and Cairo/Pango rendering. garbar displays system information, workspaces, and more with a clean, customizable interface."
+  status="stable"
+  accentColor="green"
+  features={[
+    'Async module architecture with Tokio runtime',
+    'Cairo/Pango vector rendering for crisp text',
+    'Battery, CPU, memory monitoring widgets',
+    'Workspace indicator synced with gar',
+    'Active window title display',
+    'System tray support',
+    'Custom script modules',
+    'TOML or Lua configuration',
+    'IPC control via garbarctl',
+    'EWMH property tracking'
+  ]}
+  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbar"
+  configExample={configExample}
+  configLanguage="toml"
+  githubUrl="https://github.com/gardesk/garbar"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Available Modules</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">workspaces</h3>
+        <p class="text-sm text-gar-text-secondary">Display and switch between workspaces</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">window_title</h3>
+        <p class="text-sm text-gar-text-secondary">Show the focused window's title</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">datetime</h3>
+        <p class="text-sm text-gar-text-secondary">Date and time with custom formatting</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">cpu / memory</h3>
+        <p class="text-sm text-gar-text-secondary">System resource monitoring</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">battery</h3>
+        <p class="text-sm text-gar-text-secondary">Battery status with charging indicator</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">tray</h3>
+        <p class="text-sm text-gar-text-secondary">System tray for background apps</p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-text-primary mb-2">script</h3>
+        <p class="text-sm text-gar-text-secondary">Run custom scripts and display output</p>
+      </div>
+    </div>
+  </section>
+</ComponentPageLayout>

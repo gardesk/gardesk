@@ -1,0 +1,75 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `-- ~/.config/gar/init.lua
+local gar = require("gar")
+
+-- Set mod key
+gar.mod = "Mod4"  -- Super/Windows key
+
+-- Keybindings
+gar.keys({
+  { gar.mod, "Return", gar.spawn("alacritty") },
+  { gar.mod, "d", gar.spawn("rofi -show drun") },
+  { gar.mod, "q", gar.close_window },
+  { gar.mod, "h", gar.focus("left") },
+  { gar.mod, "j", gar.focus("down") },
+  { gar.mod, "k", gar.focus("up") },
+  { gar.mod, "l", gar.focus("right") },
+  { gar.mod, "Shift", "h", gar.move("left") },
+  { gar.mod, "Shift", "l", gar.move("right") },
+})
+
+-- Workspaces
+for i = 1, 9 do
+  gar.key({ gar.mod, tostring(i), gar.workspace(i) })
+  gar.key({ gar.mod, "Shift", tostring(i), gar.move_to_workspace(i) })
+end
+
+-- Window rules
+gar.rules({
+  { class = "Firefox", workspace = 2 },
+  { class = "Spotify", workspace = 9, floating = true },
+})
+
+-- Gaps and borders
+gar.gaps = { inner = 8, outer = 12 }
+gar.border = { width = 2, color = "#61afef", focus = "#98c379" }`;
+---
+
+<ComponentPageLayout
+  name="gar"
+  tagline="Tiling Window Manager"
+  description="An event-driven X11 tiling window manager with a binary tree layout engine. gar gives you full control over your windows with intuitive keyboard-driven navigation and a powerful Lua configuration system."
+  status="stable"
+  accentColor="blue"
+  features={[
+    'Binary tree layout with smart splits',
+    'Full Lua 5.4 scripting for configuration',
+    'Multi-monitor support with per-monitor workspaces',
+    'EWMH compliant for compatibility with bars and tools',
+    'Unix socket IPC for runtime control via garctl',
+    'Customizable gaps, borders, and colors',
+    'Window rules for automatic placement',
+    'Keyboard and mouse input handling',
+    'Integration with picom compositor',
+    'Session management with systemd'
+  ]}
+  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=gar"
+  configExample={configExample}
+  configLanguage="lua"
+  githubUrl="https://github.com/gardesk/gar"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Control with garctl</h2>
+    <p class="text-gar-text-secondary mb-4">
+      Control your running gar instance with the <code class="text-gar-accent-blue">garctl</code> command:
+    </p>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garctl workspace 3</span> <span class="text-gar-text-muted"># Switch to workspace 3</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garctl reload</span> <span class="text-gar-text-muted"># Reload configuration</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garctl focus left</span> <span class="text-gar-text-muted"># Focus window to the left</span></div>
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garctl quit</span> <span class="text-gar-text-muted"># Exit gar</span></div>
+    </div>
+  </section>
+</ComponentPageLayout>

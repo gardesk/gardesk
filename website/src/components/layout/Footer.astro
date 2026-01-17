@@ -1,0 +1,85 @@
+---
+const currentYear = new Date().getFullYear();
+
+const links = {
+  project: [
+    { label: 'GitHub', href: 'https://github.com/gardesk/gardesk' },
+    { label: 'Issues', href: 'https://github.com/gardesk/gardesk/issues' },
+    { label: 'License (MIT)', href: 'https://github.com/gardesk/gardesk/blob/trunk/LICENSE' },
+  ],
+  components: [
+    { label: 'gar', href: '/components/gar' },
+    { label: 'garbar', href: '/components/garbar' },
+    { label: 'garbg', href: '/components/garbg' },
+    { label: 'garlock', href: '/components/garlock' },
+    { label: 'gardm', href: '/components/gardm' },
+  ],
+};
+---
+
+<footer class="relative border-t border-gar-text-muted/10 bg-gar-bg-primary/50 py-12 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <!-- Brand -->
+      <div class="md:col-span-2">
+        <a href="/" class="inline-flex items-center gap-2 text-xl font-bold mb-4">
+          <span class="text-gar-text-primary">gar</span><span class="text-gar-accent-blue">desk</span>
+        </a>
+        <p class="text-sm text-gar-text-secondary max-w-md">
+          A modular X11 desktop environment suite written in Rust.
+          Built for power users who want control over every pixel.
+        </p>
+      </div>
+
+      <!-- Project links -->
+      <div>
+        <h3 class="text-sm font-semibold text-gar-text-primary mb-3">Project</h3>
+        <ul class="space-y-2">
+          {links.project.map(link => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-gar-text-secondary hover:text-gar-text-primary transition-colors"
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Components links -->
+      <div>
+        <h3 class="text-sm font-semibold text-gar-text-primary mb-3">Components</h3>
+        <ul class="space-y-2">
+          {links.components.map(link => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-gar-text-secondary hover:text-gar-text-primary transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="pt-8 border-t border-gar-text-muted/10 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-gar-text-muted">
+        &copy; {currentYear} gardesk. Open source under MIT License.
+      </p>
+      <p class="text-sm text-gar-text-muted flex items-center gap-1.5">
+        Written in
+        <svg class="w-4 h-4 text-gar-accent-orange" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23.687 11.709l-.995-.612a13.559 13.559 0 0 0-.028-.296l.855-.78a.275.275 0 0 0-.006-.402l-.17-.212a.27.27 0 0 0-.379-.063l-.963.593c-.081-.082-.165-.16-.251-.235l.467-.946a.27.27 0 0 0-.127-.367l-.233-.13a.27.27 0 0 0-.369.121l-.545.91a9.54 9.54 0 0 0-.328-.14l.03-1.044a.27.27 0 0 0-.249-.283l-.264-.026a.27.27 0 0 0-.289.245l-.095 1.018c-.12-.028-.242-.052-.366-.072l-.41-.984a.27.27 0 0 0-.346-.157l-.25.088a.27.27 0 0 0-.166.342l.358.974c-.123.006-.247.016-.37.03l-.78-.85a.27.27 0 0 0-.387-.03l-.21.178a.27.27 0 0 0-.036.385l.69.837c-.12.05-.238.106-.356.166l-.987-.571a.27.27 0 0 0-.369.098l-.127.218a.27.27 0 0 0 .094.368l.965.563z"/>
+        </svg>
+        Rust
+      </p>
+    </div>
+  </div>
+</footer>

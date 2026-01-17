@@ -1,0 +1,33 @@
+---
+import DistroTabs from '../interactive/DistroTabs';
+---
+
+<section id="install" class="snap-section relative flex items-center justify-center py-20 px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <!-- Section header -->
+    <div class="mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gar-text-primary mb-4">
+        Get started in seconds
+      </h2>
+      <p class="text-lg text-gar-text-secondary max-w-2xl mx-auto">
+        Choose your distribution or use the universal installer.
+      </p>
+    </div>
+
+    <!-- Distro tabs -->
+    <DistroTabs client:load />
+
+    <!-- Additional info -->
+    <div class="mt-12 text-sm text-gar-text-secondary">
+      <p class="mb-2">
+        The installer will prompt you to select which components to install.
+      </p>
+      <p>
+        For manual installation, see the{' '}
+        <a href="https://github.com/gardesk/gardesk" class="text-gar-accent-blue hover:underline">
+          documentation on GitHub
+        </a>.
+      </p>
+    </div>
+  </div>
+</section>

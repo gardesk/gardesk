@@ -1,0 +1,96 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `# ~/.config/garbg/config.toml
+
+[daemon]
+# Cache settings
+cache_dir = "~/.cache/garbg"
+max_cache_size = "500MB"
+
+[source]
+# Local directory
+type = "directory"
+path = "~/Pictures/Wallpapers"
+recursive = true
+
+# Or HTTP source
+# type = "http"
+# url = "https://example.com/wallpapers/"
+
+# Or S3 source
+# type = "s3"
+# bucket = "my-wallpapers"
+# region = "us-east-1"
+
+[display]
+# Scaling mode: fill, fit, center, tile
+mode = "fill"
+
+# Animation settings for GIFs
+animation = true
+frame_rate = 30
+
+[rotation]
+# Rotate wallpaper automatically
+enabled = true
+interval = "30m"
+random = true`;
+---
+
+<ComponentPageLayout
+  name="garbg"
+  tagline="Wallpaper Daemon"
+  description="A multi-source wallpaper daemon with caching and animation support. Load backgrounds from local files, HTTP endpoints, or S3-compatible storage with intelligent caching."
+  status="stable"
+  accentColor="magenta"
+  features={[
+    'Local file and directory support',
+    'HTTP/HTTPS remote image fetching',
+    'S3-compatible cloud storage (AWS, MinIO)',
+    'Directory index scraping',
+    'LRU cache with blake3 hashing',
+    'Animated GIF and WebP support',
+    'Optional video playback via ffmpeg',
+    'Frame pre-rendering with ring buffer',
+    'Workspace-aware wallpaper switching',
+    'Systemd user service integration'
+  ]}
+  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garbg"
+  configExample={configExample}
+  configLanguage="toml"
+  githubUrl="https://github.com/gardesk/garbg"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Usage</h2>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg daemon</span> <span class="text-gar-text-muted"># Start the daemon</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg set ~/wallpaper.png</span> <span class="text-gar-text-muted"># Set a specific wallpaper</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg next</span> <span class="text-gar-text-muted"># Next wallpaper in rotation</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg prev</span> <span class="text-gar-text-muted"># Previous wallpaper</span></div>
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garbg random</span> <span class="text-gar-text-muted"># Random wallpaper from source</span></div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Supported Formats</h2>
+    <div class="flex flex-wrap gap-2">
+      {['PNG', 'JPEG', 'GIF', 'WebP', 'APNG', 'BMP', 'TIFF', 'MP4*', 'WebM*'].map(format => (
+        <span class="px-3 py-1 rounded-full text-sm bg-gar-bg-secondary border border-gar-text-muted/20 text-gar-text-primary">
+          {format}
+        </span>
+      ))}
+    </div>
+    <p class="mt-4 text-sm text-gar-text-muted">* Video formats require ffmpeg-next feature</p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Systemd Service</h2>
+    <p class="text-gar-text-secondary mb-4">
+      Enable garbg as a user service for automatic startup:
+    </p>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">systemctl --user enable --now garbg</span></div>
+    </div>
+  </section>
+</ComponentPageLayout>

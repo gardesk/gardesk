@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import HeroSection from '../components/sections/HeroSection.astro';
+import FeaturesSection from '../components/sections/FeaturesSection.astro';
+import ComponentSection from '../components/sections/ComponentSection.astro';
+import InstallSection from '../components/sections/InstallSection.astro';
+
+const components = [
+  {
+    id: 'gar',
+    name: 'gar',
+    tagline: 'Tiling Window Manager',
+    description: 'An event-driven X11 tiling window manager with a binary tree layout engine. Configure everything with Lua, from keybindings to window rules.',
+    features: [
+      'Binary tree layout with smart splits',
+      'Full Lua 5.4 configuration',
+      'Multi-monitor workspace support',
+      'EWMH compliant for compatibility',
+      'Unix socket IPC with garctl'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'gar window manager screenshot',
+    accentColor: 'blue'
+  },
+  {
+    id: 'garbar',
+    name: 'garbar',
+    tagline: 'Async Status Bar',
+    description: 'A Tokio-powered status bar with modular widgets and Cairo/Pango rendering. Displays system info, workspaces, and more.',
+    features: [
+      'Async module architecture',
+      'Cairo/Pango vector rendering',
+      'Battery, CPU, memory widgets',
+      'Workspace and window title display',
+      'System tray support'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garbar status bar screenshot',
+    accentColor: 'green'
+  },
+  {
+    id: 'garbg',
+    name: 'garbg',
+    tagline: 'Wallpaper Daemon',
+    description: 'A multi-source wallpaper daemon with caching and animation support. Load backgrounds from local files, HTTP, or S3.',
+    features: [
+      'Local, HTTP, and S3 sources',
+      'LRU cache with blake3 hashing',
+      'Animated GIF/WebP support',
+      'Optional video playback (ffmpeg)',
+      'Systemd user service integration'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'garbg wallpaper daemon screenshot',
+    accentColor: 'magenta'
+  },
+  {
+    id: 'garlock',
+    name: 'garlock',
+    tagline: 'Screen Locker',
+    description: 'A PAM-authenticated screen locker with secure input handling. Features background blur and status indicators.',
+    features: [
+      'PAM authentication',
+      'Secure password handling (zeroize)',
+      'Configurable background blur',
+      'Caps lock and time indicators',
+      'Grace period support'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garlock screen locker screenshot',
+    accentColor: 'orange'
+  },
+  {
+    id: 'gardm',
+    name: 'gardm',
+    tagline: 'Display Manager',
+    description: 'A system-level display manager with a graphical greeter. Manages login sessions and user switching.',
+    features: [
+      'Graphical greeter UI',
+      'PAM-based authentication',
+      'Session management',
+      'Multi-user support',
+      'Systemd service integration'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'gardm display manager screenshot',
+    accentColor: 'cyan'
+  },
+  {
+    id: 'garclip',
+    name: 'garclip',
+    tagline: 'Clipboard Manager',
+    description: 'A clipboard manager with history and search. Store text and images with easy recall.',
+    features: [
+      'Clipboard history',
+      'Image support',
+      'Search and filtering',
+      'Keyboard navigation'
+    ],
+    status: 'coming-soon' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garclip clipboard manager screenshot',
+    accentColor: 'yellow'
+  }
+];
+---
+
+<BaseLayout>
+  <Header />
+
+  <main>
+    <HeroSection />
+    <FeaturesSection />
+
+    {components.map(component => (
+      <ComponentSection {...component} />
+    ))}
+
+    <InstallSection />
+  </main>
+
+  <Footer />
+</BaseLayout>

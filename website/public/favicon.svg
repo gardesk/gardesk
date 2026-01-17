@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="#14171e"/>
+
+  <!-- Gar fish silhouette - stylized elongated fish with long snout -->
+  <g transform="translate(2, 8)">
+    <!-- Body -->
+    <ellipse cx="14" cy="8" rx="12" ry="5" fill="#61afef"/>
+
+    <!-- Long snout/beak -->
+    <path d="M26 8 L32 7 L32 9 L26 8" fill="#61afef"/>
+
+    <!-- Tail fin -->
+    <path d="M2 8 L-2 4 L0 8 L-2 12 L2 8" fill="#61afef"/>
+
+    <!-- Dorsal fin -->
+    <path d="M10 3 L14 0 L18 3" fill="#98c379"/>
+
+    <!-- Eye -->
+    <circle cx="22" cy="7" r="1.5" fill="#14171e"/>
+    <circle cx="22.3" cy="6.7" r="0.5" fill="#abb2bf"/>
+
+    <!-- Gill mark -->
+    <path d="M19 5 Q18 8 19 11" stroke="#14171e" stroke-width="0.8" fill="none"/>
+  </g>
+</svg>

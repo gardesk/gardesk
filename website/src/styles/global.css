@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* Background tones */
+  --color-gar-bg-deep: #0d0f14;
+  --color-gar-bg-primary: #14171e;
+  --color-gar-bg-secondary: #1a1e27;
+  --color-gar-bg-tertiary: #242936;
+
+  /* Atmospheric blues */
+  --color-gar-atmosphere-dark: #2a3441;
+  --color-gar-atmosphere-mid: #3d4a5c;
+  --color-gar-atmosphere-light: #6b7d94;
+
+  /* Terminal accent colors */
+  --color-gar-accent-red: #e06c75;
+  --color-gar-accent-green: #98c379;
+  --color-gar-accent-yellow: #e5c07b;
+  --color-gar-accent-blue: #61afef;
+  --color-gar-accent-magenta: #c678dd;
+  --color-gar-accent-cyan: #56b6c2;
+  --color-gar-accent-orange: #d19a66;
+
+  /* Text */
+  --color-gar-text-primary: #abb2bf;
+  --color-gar-text-secondary: #5c6370;
+  --color-gar-text-muted: #3e4451;
+
+  /* Fonts */
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+    scroll-snap-type: none;
+  }
+}
+
+body {
+  background-color: var(--color-gar-bg-deep);
+  color: var(--color-gar-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-gar-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gar-bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gar-atmosphere-dark);
+}
+
+/* Selection */
+::selection {
+  background-color: var(--color-gar-accent-blue);
+  color: var(--color-gar-bg-deep);
+}
+
+/* Snap section */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(97, 175, 239, 0.15);
+}
+
+.glow-magenta {
+  box-shadow: 0 0 20px rgba(198, 120, 221, 0.15);
+}
+
+/* Code/terminal font */
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}

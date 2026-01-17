@@ -1,0 +1,131 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `# /etc/gardm/config.toml
+
+[general]
+# Default session to launch
+default_session = "gar"
+
+# Auto-login (use with caution)
+auto_login = false
+auto_login_user = ""
+
+[greeter]
+# Background image
+background = "/usr/share/gardm/backgrounds/default.png"
+
+# Theme colors
+background_color = "#14171e"
+foreground_color = "#abb2bf"
+accent_color = "#61afef"
+
+# Font settings
+font = "Inter"
+font_size = 14
+
+[sessions]
+# Session directories to scan
+dirs = [
+  "/usr/share/xsessions",
+  "/usr/share/wayland-sessions"
+]
+
+[security]
+# Minimum UID to display
+min_uid = 1000
+
+# Maximum UID to display
+max_uid = 65534
+
+# Hide users matching these shells
+hide_shells = ["/usr/sbin/nologin", "/bin/false"]`;
+---
+
+<ComponentPageLayout
+  name="gardm"
+  tagline="Display Manager"
+  description="A system-level display manager with a graphical greeter. gardm manages user login sessions with a clean, modern interface and seamless integration with the gar desktop."
+  status="beta"
+  accentColor="cyan"
+  features={[
+    'Graphical greeter with modern UI',
+    'PAM-based authentication',
+    'Session selection (X11 and Wayland)',
+    'Multi-user support',
+    'Auto-login capability',
+    'Systemd service integration',
+    'Configurable theming',
+    'User avatar support',
+    'Last session memory',
+    'Accessible design'
+  ]}
+  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=gardm"
+  configExample={configExample}
+  configLanguage="toml"
+  githubUrl="https://github.com/gardesk/gardm"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Architecture</h2>
+    <p class="text-gar-text-secondary mb-4">
+      gardm consists of two components:
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-cyan mb-2">gardmd</h3>
+        <p class="text-sm text-gar-text-secondary">
+          The daemon process that runs as root, managing X server startup, user sessions, and authentication.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-cyan mb-2">gardm-greeter</h3>
+        <p class="text-sm text-gar-text-secondary">
+          The graphical login interface that runs as a dedicated user, communicating with the daemon via IPC.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Installation</h2>
+    <div class="p-4 rounded-lg bg-gar-accent-yellow/10 border border-gar-accent-yellow/30 mb-4">
+      <p class="text-gar-accent-yellow text-sm">
+        <strong>Note:</strong> gardm requires system-wide installation and root privileges. Test in a VM or with TTY backup access.
+      </p>
+    </div>
+    <p class="text-gar-text-secondary mb-4">
+      After installation, enable gardm as your display manager:
+    </p>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo systemctl disable gdm sddm lightdm</span> <span class="text-gar-text-muted"># Disable current DM</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo systemctl enable gardm</span></div>
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">sudo reboot</span></div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Files</h2>
+    <ul class="space-y-2 font-mono text-sm">
+      <li class="flex gap-4">
+        <span class="text-gar-accent-cyan">/usr/bin/gardmd</span>
+        <span class="text-gar-text-muted">Display manager daemon</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-cyan">/usr/bin/gardm-greeter</span>
+        <span class="text-gar-text-muted">Graphical greeter</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-cyan">/etc/gardm/config.toml</span>
+        <span class="text-gar-text-muted">Configuration file</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-cyan">/etc/pam.d/gardm</span>
+        <span class="text-gar-text-muted">PAM configuration</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-cyan">/usr/lib/systemd/system/gardm.service</span>
+        <span class="text-gar-text-muted">Systemd service</span>
+      </li>
+    </ul>
+  </section>
+</ComponentPageLayout>
