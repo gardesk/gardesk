@@ -1,163 +1,1962 @@
 ---
-import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ComponentHeader from '../../components/ComponentHeader.astro';
+import TabNav from '../../components/TabNav.astro';
+import TabContent from '../../components/TabContent.astro';
+import DocsSidebar from '../../components/DocsSidebar.astro';
+import MultiTerminal from '../../components/MultiTerminal.astro';
 
-const configExample = `// Using gartk in Rust code
+const title = 'gartk - UI Toolkit Library';
+const description = 'Shared UI toolkit providing X11 window management, Cairo/Pango rendering, and input handling for gardesk components.';
 
-use gartk_core::{Color, Theme, Rect};
-use gartk_x11::{Connection, Window, WindowConfig};
-use gartk_render::{Renderer, TextStyle};
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'troubleshooting', label: 'Troubleshooting' }
+];
 
-// Connect to X11
-let conn = Connection::connect(None)?;
-
-// Create a popup window
-let window = Window::create(
-    conn.clone(),
-    WindowConfig::popup()
-        .title("My App")
-        .class("myapp")
-        .size(400, 300)
-        .transparent(true),
-)?;
-
-// Get a theme
-let theme = Theme::dark();
-
-// Create renderer
-let renderer = Renderer::new(&window)?;
-
-// Draw something
-renderer.fill_rounded_rect(
-    Rect::new(10, 10, 100, 50),
-    8.0,
-    theme.selection_background,
-);
-
-renderer.draw_text(
-    "Hello, gartk!",
-    20, 30,
-    TextStyle::default()
-        .color(theme.foreground)
-        .size(14.0),
-);`;
+const docSections = [
+  {
+    title: 'Architecture',
+    items: [
+      { id: 'overview', label: 'Overview' },
+      { id: 'crate-structure', label: 'Crate Structure' },
+      { id: 'design-principles', label: 'Design Principles' }
+    ]
+  },
+  {
+    title: 'gartk-core',
+    items: [
+      { id: 'color', label: 'Color' },
+      { id: 'geometry', label: 'Geometry Types' },
+      { id: 'events', label: 'Input Events' },
+      { id: 'theme', label: 'Theme System' }
+    ]
+  },
+  {
+    title: 'gartk-x11',
+    items: [
+      { id: 'connection', label: 'X11 Connection' },
+      { id: 'window', label: 'Window Management' },
+      { id: 'event-loop', label: 'Event Loop' },
+      { id: 'monitor', label: 'Monitor Detection' },
+      { id: 'keyboard', label: 'Keyboard Handling' },
+      { id: 'cursor', label: 'Cursor Management' },
+      { id: 'atoms', label: 'X11 Atoms' }
+    ]
+  },
+  {
+    title: 'gartk-render',
+    items: [
+      { id: 'surface', label: 'Cairo Surfaces' },
+      { id: 'renderer', label: 'High-Level Renderer' },
+      { id: 'text', label: 'Text Rendering' },
+      { id: 'shapes', label: 'Shape Primitives' }
+    ]
+  },
+  {
+    title: 'Integration',
+    items: [
+      { id: 'usage-patterns', label: 'Common Patterns' },
+      { id: 'transparency', label: 'Transparency Support' },
+      { id: 'double-buffering', label: 'Double Buffering' }
+    ]
+  }
+];
 ---
 
-<ComponentPageLayout
-  name="gartk"
-  tagline="UI Toolkit"
-  description="A shared UI toolkit library for gardesk components. Provides X11 window management, Cairo/Pango rendering, theming, and input handling."
-  status="beta"
-  accentColor="cyan"
-  features={[
-    'X11 connection and window creation',
-    'Cairo/Pango text and shape rendering',
-    'Double-buffered surfaces for flicker-free drawing',
-    'Built-in dark, light, and high-contrast themes',
-    'Color parsing (hex, RGB, named colors)',
-    'Monitor detection via RandR',
-    'Keyboard and pointer event handling',
-    'ARGB visual support for transparency'
-  ]}
-  installCommand="cargo add gartk-core gartk-x11 gartk-render"
-  configExample={configExample}
-  configLanguage="lua"
-  githubUrl="https://github.com/gardesk/gartk"
->
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Crate Structure</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-core</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Core types: Color, Rect, Point, Size, Theme, InputEvent. No platform dependencies.
-        </p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-x11</h3>
-        <p class="text-sm text-gar-text-secondary">
-          X11 integration: Connection, Window, Monitor, EventLoop, Cursor management.
-        </p>
-      </div>
-      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
-        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-render</h3>
-        <p class="text-sm text-gar-text-secondary">
-          Cairo/Pango rendering: Renderer, Surface, TextRenderer, shape primitives.
-        </p>
-      </div>
-    </div>
-  </section>
+<BaseLayout title={title} description={description}>
+  <div class="min-h-screen bg-gradient-to-b from-gar-bg-primary to-gar-bg-secondary">
+    <ComponentHeader
+      name="gartk"
+      tagline="UI Toolkit Library"
+      description="Shared UI toolkit providing X11 window management, Cairo/Pango rendering, theming, and input handling for gardesk GUI components"
+      accentColor="cyan"
+      status="beta"
+      githubUrl="https://github.com/gardesk/gartk"
+    />
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Themes</h2>
-    <p class="text-gar-text-secondary mb-4">
-      gartk includes three built-in themes with full customization support:
-    </p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="p-4 rounded-lg bg-[#1e1e2e] border border-[#45475a]">
-        <h3 class="font-semibold text-[#cdd6f4] mb-2">Dark (default)</h3>
-        <p class="text-sm text-[#6c7086]">
-          Catppuccin-inspired dark theme with soft contrasts.
-        </p>
-      </div>
-      <div class="p-4 rounded-lg bg-[#eff1f5] border border-[#bcc0cc]">
-        <h3 class="font-semibold text-[#4c4f69] mb-2">Light</h3>
-        <p class="text-sm text-[#8c8fa1]">
-          Clean light theme for bright environments.
-        </p>
-      </div>
-      <div class="p-4 rounded-lg bg-black border-2 border-white">
-        <h3 class="font-semibold text-white mb-2">High Contrast</h3>
-        <p class="text-sm text-gray-400">
-          Maximum contrast for accessibility.
-        </p>
-      </div>
-    </div>
-    <p class="mt-4 text-sm text-gar-text-muted">
-      Use <code class="text-gar-accent-cyan">Theme::builder()</code> to customize individual properties.
-    </p>
-  </section>
+    <div class="container mx-auto px-4 py-8">
+      <TabNav tabs={tabs} />
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Window Types</h2>
-    <p class="text-gar-text-secondary mb-4">
-      Create different window types with preconfigured settings:
-    </p>
-    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
-      <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
-        <span class="text-sm text-gar-text-secondary font-mono">WindowConfig examples</span>
-      </div>
-      <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">// Popup (override-redirect, bypasses WM)
-WindowConfig::popup()
+      <TabContent id="getting-started" tabs={tabs}>
+        <div class="prose prose-invert max-w-none">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+
+          <div class="bg-gar-bg-secondary/50 rounded-lg p-6 mb-8 border border-gar-accent-cyan/20">
+            <h3 class="text-lg font-semibold text-gar-accent-cyan mb-4">What is gartk?</h3>
+            <p class="text-gar-text-secondary mb-4">
+              gartk is a modular UI toolkit library that provides X11 window management, Cairo/Pango rendering,
+              and input handling primitives for gardesk components. It's designed as a foundation for building
+              X11 GUI applications with Rust, offering a clean, type-safe API over x11rb, Cairo, and Pango.
+            </p>
+            <p class="text-gar-text-secondary">
+              The toolkit is split into three crates for modularity: <code class="text-gar-accent-cyan">gartk-core</code>
+              (platform-independent types), <code class="text-gar-accent-cyan">gartk-x11</code> (X11 integration),
+              and <code class="text-gar-accent-cyan">gartk-render</code> (Cairo/Pango rendering).
+            </p>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Installation</h3>
+
+          <p class="text-gar-text-secondary mb-4">Add gartk crates to your Cargo.toml:</p>
+
+          <div class="mb-8">
+            <MultiTerminal
+              tabs={['Cargo.toml']}
+              commands={[`[dependencies]
+gartk-core = { path = "path/to/gartk/gartk-core" }
+gartk-x11 = { path = "path/to/gartk/gartk-x11" }
+gartk-render = { path = "path/to/gartk/gartk-render" }`]}
+              language="toml"
+            />
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">System Dependencies</h3>
+
+          <p class="text-gar-text-secondary mb-4">gartk requires X11 development libraries and Cairo/Pango:</p>
+
+          <div class="mb-8">
+            <MultiTerminal
+              tabs={['Arch', 'Ubuntu/Debian', 'Fedora']}
+              commands={[
+                'sudo pacman -S libx11 cairo pango',
+                'sudo apt install libx11-dev libcairo2-dev libpango1.0-dev',
+                'sudo dnf install libX11-devel cairo-devel pango-devel'
+              ]}
+            />
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Hello World Example</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            A minimal example showing window creation, rendering, and event handling:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">main.rs</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_core::{{Color, InputEvent, Key, Rect, Theme}};
+use gartk_render::{{Renderer, TextStyle}};
+use gartk_x11::{{Connection, EventLoop, EventLoopConfig, Window, WindowConfig}};
+
+fn main() -> anyhow::Result&lt;()> {{
+    // Connect to X11
+    let conn = Connection::connect(None)?;
+
+    // Create a window
+    let window = Window::create(
+        conn.clone(),
+        WindowConfig::new()
+            .title("Hello gartk")
+            .class("hello")
+            .size(400, 300)
+            .centered(),
+    )?;
+
+    // Create renderer with theme
+    let theme = Theme::dark();
+    let mut renderer = Renderer::with_theme(400, 300, theme.clone())?;
+
+    // Create event loop
+    let config = EventLoopConfig::default();
+    let mut event_loop = EventLoop::new(&window, config)?;
+
+    // Main loop
+    event_loop.run(|el, event| {{
+        match event {{
+            InputEvent::Expose => {{
+                // Clear and render
+                renderer.clear()?;
+
+                renderer.text_centered(
+                    "Hello, gartk!",
+                    Rect::new(0, 0, 400, 300).center(),
+                    &TextStyle::new()
+                        .font_size(24.0)
+                        .color(theme.foreground),
+                )?;
+
+                // Copy to window (simplified - see docs for GC creation)
+                renderer.flush();
+            }}
+
+            InputEvent::Key(key_event) if key_event.key == Key::Escape => {{
+                el.quit();
+                return Ok(false);
+            }}
+
+            InputEvent::CloseRequested => {{
+                el.quit();
+                return Ok(false);
+            }}
+
+            _ => {{}}
+        }}
+
+        Ok(true)
+    }})?;
+
+    Ok(())
+}}</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Key Features</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">Type-Safe X11</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Built on x11rb for zero-copy event parsing and type-safe protocol handling
+              </p>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">High-Quality Rendering</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Cairo/Pango integration for antialiased graphics and advanced text layout
+              </p>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">Built-in Theming</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Dark, light, and high-contrast themes with full customization support
+              </p>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">Modular Design</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Three-crate structure allows using only what you need
+              </p>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">ARGB Transparency</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Automatic ARGB visual selection for composited transparency
+              </p>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-cyan mb-2">RandR Support</h4>
+              <p class="text-sm text-gar-text-secondary">
+                Multi-monitor detection with DPI calculation and positioning
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-gar-bg-accent/10 rounded-lg p-6 border-l-4 border-gar-accent-cyan">
+            <h4 class="font-semibold text-gar-text-primary mb-2">🚀 Who Should Use gartk?</h4>
+            <ul class="text-sm text-gar-text-secondary space-y-2">
+              <li>• Developers building X11 GUI applications in Rust</li>
+              <li>• Projects needing lightweight window management without full GUI frameworks</li>
+              <li>• Tools requiring custom launchers, popups, or overlay UIs</li>
+              <li>• Applications targeting Linux desktop environments with X11</li>
+            </ul>
+          </div>
+        </div>
+      </TabContent>
+
+      <TabContent id="config" tabs={tabs}>
+        <div class="prose prose-invert max-w-none">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Configuration</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            gartk is a library, not a standalone application. Configuration happens in your Rust code through builders and APIs.
+          </p>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Theme Configuration</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            Create custom themes using the Theme builder:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">Custom theme example</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_core::{{Color, Theme, ThemeBuilder}};
+
+// Use a preset theme
+let theme = Theme::dark();       // Default Catppuccin-inspired
+let theme = Theme::light();      // Light theme
+let theme = Theme::high_contrast(); // Accessibility
+
+// Customize a theme
+let custom = ThemeBuilder::from(Theme::dark())
+    .background(Color::from_hex("#1a1b26")?)
+    .foreground(Color::from_hex("#c0caf5")?)
+    .border(Color::from_hex("#565f89")?)
+    .border_radius(12.0)
+    .font_family("JetBrains Mono")
+    .font_size(13.0)
+    .build();
+
+// Build from scratch
+let theme = Theme::builder()
+    .background(Color::from_hex("#282a36")?)
+    .foreground(Color::from_hex("#f8f8f2")?)
+    .selection_background(Color::from_hex("#44475a")?)
+    .input_background(Color::from_hex("#44475a")?)
+    .item_selected_background(Color::from_hex("#6272a4")?)
+    .padding(16)
+    .build();</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Window Configuration</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            WindowConfig provides a builder API for window creation:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">Window configuration examples</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_x11::{{WindowConfig, WindowType}};
+
+// Popup window (override-redirect, bypasses WM)
+let config = WindowConfig::popup()
     .title("Menu")
     .position(100, 100)
-    .size(200, 300)
+    .size(400, 300)
+    .transparent(true);
 
-// Dialog (managed by WM, modal-like)
-WindowConfig::dialog()
+// Dialog window (managed by WM)
+let config = WindowConfig::dialog()
     .title("Settings")
-    .size(400, 500)
+    .class("myapp-settings")
+    .size(600, 400)
+    .centered();
 
-// Normal window
-WindowConfig::new()
+// Normal application window
+let config = WindowConfig::new()
     .title("My App")
     .class("myapp")
-    .size(800, 600)</code></pre>
-    </div>
-  </section>
+    .size(800, 600)
+    .window_type(WindowType::Normal)
+    .background(0xFF1e1e2e);  // ARGB color
 
-  <section class="mb-12">
-    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Used By</h2>
-    <p class="text-gar-text-secondary mb-4">
-      gartk is the foundation for:
-    </p>
-    <ul class="space-y-2">
-      <li class="flex items-center gap-3">
-        <a href="/components/garlaunch" class="text-gar-accent-magenta hover:underline">garlaunch</a>
-        <span class="text-gar-text-muted">- Application launcher</span>
-      </li>
-      <li class="flex items-center gap-3">
-        <span class="text-gar-text-secondary">Future gardesk components</span>
-      </li>
-    </ul>
-  </section>
-</ComponentPageLayout>
+// Utility window
+let config = WindowConfig::new()
+    .window_type(WindowType::Utility)
+    .title("Tool Palette")
+    .size(200, 400)
+    .map_on_create(false);  // Don't show immediately</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Color Formats</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            Color supports multiple parsing formats:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">Color parsing</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_core::Color;
+
+// Hex colors
+let color = Color::from_hex("#ff0000")?;      // Red
+let color = Color::from_hex("#f00")?;         // Short form
+let color = Color::from_hex("#ff000080")?;    // With alpha
+
+// RGB/RGBA
+let color = Color::from_rgb_str("rgb(255, 0, 0)")?;
+let color = Color::from_rgb_str("rgba(255, 0, 0, 0.5)")?;
+
+// Named colors
+let color = Color::from_name("red")?;
+let color = Color::from_name("transparent")?;
+
+// Parse any format
+let color = Color::parse("#ff0000")?;
+let color = "rgba(255, 0, 0, 0.5)".parse::&lt;Color>()?;
+
+// From u8 components (0-255)
+let color = Color::from_u8(255, 128, 64, 255);
+
+// Programmatic creation (0.0-1.0)
+let color = Color::new(1.0, 0.5, 0.25, 1.0);
+let color = Color::rgb(1.0, 0.0, 0.0);
+
+// Manipulation
+let lighter = color.lighten(0.2);
+let darker = color.darken(0.3);
+let transparent = color.with_alpha(0.5);</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Event Loop Configuration</h3>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">EventLoopConfig</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_x11::EventLoopConfig;
+
+// Default: 60 FPS, expose-only redraw
+let config = EventLoopConfig::default();
+
+// Custom FPS and continuous redraw
+let config = EventLoopConfig {{
+    fps: 120,
+    continuous_redraw: true,  // Redraw every frame
+}};</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Text Styling</h3>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">TextStyle configuration</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_render::{{TextStyle, TextAlign}};
+
+let style = TextStyle::new()
+    .font_family("JetBrains Mono")
+    .font_size(14.0)
+    .color(Color::from_hex("#cdd6f4")?)
+    .align(TextAlign::Center)
+    .ellipsize(true)       // Add "..." if text too long
+    .wrap(false)           // Don't wrap lines
+    .max_width(300);       // Pixel width constraint</code></pre>
+            </div>
+          </div>
+        </div>
+      </TabContent>
+
+      <TabContent id="docs" tabs={tabs}>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <aside class="lg:col-span-1">
+            <DocsSidebar sections={docSections} />
+          </aside>
+
+          <div class="lg:col-span-3 prose prose-invert max-w-none">
+
+            <!-- Architecture -->
+            <section id="overview" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Overview</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gartk is a modular UI toolkit for building X11 GUI applications in Rust. It provides:
+              </p>
+              <ul class="text-gar-text-secondary space-y-2">
+                <li>• Type-safe X11 window management via x11rb</li>
+                <li>• High-quality rendering with Cairo and Pango</li>
+                <li>• Platform-independent geometry and color types</li>
+                <li>• Built-in theming with light/dark/high-contrast presets</li>
+                <li>• Input event abstraction (keyboard, mouse, window events)</li>
+                <li>• RandR multi-monitor support with DPI calculation</li>
+                <li>• ARGB visual support for composited transparency</li>
+              </ul>
+              <p class="text-gar-text-secondary mt-4">
+                The library is battle-tested as the foundation for <a href="/components/garlaunch" class="text-gar-accent-cyan hover:underline">garlaunch</a>.
+              </p>
+            </section>
+
+            <section id="crate-structure" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Crate Structure</h2>
+              <p class="text-gar-text-secondary mb-6">
+                gartk is split into three independent crates for modularity:
+              </p>
+
+              <div class="space-y-6">
+                <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-accent-cyan/20">
+                  <h3 class="text-lg font-semibold text-gar-accent-cyan mb-3">gartk-core</h3>
+                  <p class="text-gar-text-secondary mb-4">
+                    Platform-independent core types with no X11 or rendering dependencies.
+                  </p>
+                  <div class="bg-gar-bg-primary rounded p-4">
+                    <p class="text-sm text-gar-text-muted mb-2">Exports:</p>
+                    <ul class="text-sm text-gar-text-secondary space-y-1">
+                      <li>• <code class="text-gar-accent-cyan">Color</code> - RGBA color with parsing (hex, rgb, named)</li>
+                      <li>• <code class="text-gar-accent-cyan">Rect</code>, <code>Point</code>, <code>Size</code>, <code>Edges</code> - Geometry primitives</li>
+                      <li>• <code class="text-gar-accent-cyan">Theme</code>, <code>ThemeBuilder</code> - UI theming</li>
+                      <li>• <code class="text-gar-accent-cyan">InputEvent</code>, <code>KeyEvent</code>, <code>MouseEvent</code>, <code>ScrollEvent</code> - Input abstraction</li>
+                      <li>• <code class="text-gar-accent-cyan">Key</code>, <code>Modifiers</code>, <code>MouseButton</code> - Input primitives</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-accent-cyan/20">
+                  <h3 class="text-lg font-semibold text-gar-accent-cyan mb-3">gartk-x11</h3>
+                  <p class="text-gar-text-secondary mb-4">
+                    X11 integration layer built on x11rb. Handles connections, windows, events, and monitors.
+                  </p>
+                  <div class="bg-gar-bg-primary rounded p-4">
+                    <p class="text-sm text-gar-text-muted mb-2">Exports:</p>
+                    <ul class="text-sm text-gar-text-secondary space-y-1">
+                      <li>• <code class="text-gar-accent-cyan">Connection</code> - X11 connection wrapper with cached screen info</li>
+                      <li>• <code class="text-gar-accent-cyan">Window</code>, <code>WindowConfig</code> - Window creation and management</li>
+                      <li>• <code class="text-gar-accent-cyan">EventLoop</code>, <code>EventLoopConfig</code> - Blocking event loop with FPS control</li>
+                      <li>• <code class="text-gar-accent-cyan">Monitor</code> - RandR monitor detection with DPI</li>
+                      <li>• <code class="text-gar-accent-cyan">CursorManager</code>, <code>CursorShape</code> - Cursor management</li>
+                      <li>• <code class="text-gar-accent-cyan">Atoms</code> - Pre-interned EWMH and ICCCM atoms</li>
+                      <li>• <code class="text-gar-accent-cyan">key_from_keycode</code>, <code>modifiers_from_x11</code> - Keyboard utilities</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-accent-cyan/20">
+                  <h3 class="text-lg font-semibold text-gar-accent-cyan mb-3">gartk-render</h3>
+                  <p class="text-gar-text-secondary mb-4">
+                    Cairo/Pango rendering layer with high-level abstractions and shape primitives.
+                  </p>
+                  <div class="bg-gar-bg-primary rounded p-4">
+                    <p class="text-sm text-gar-text-muted mb-2">Exports:</p>
+                    <ul class="text-sm text-gar-text-secondary space-y-1">
+                      <li>• <code class="text-gar-accent-cyan">Renderer</code> - High-level renderer combining shapes and text</li>
+                      <li>• <code class="text-gar-accent-cyan">Surface</code>, <code>DoubleBufferedSurface</code> - Cairo image surfaces</li>
+                      <li>• <code class="text-gar-accent-cyan">TextRenderer</code>, <code>TextStyle</code>, <code>TextAlign</code> - Pango text rendering</li>
+                      <li>• <code class="text-gar-accent-cyan">fill_rect</code>, <code>fill_rounded_rect</code>, <code>fill_circle</code> - Shape fills</li>
+                      <li>• <code class="text-gar-accent-cyan">stroke_rect</code>, <code>stroke_rounded_rect</code> - Shape strokes</li>
+                      <li>• <code class="text-gar-accent-cyan">line</code>, <code>hline</code>, <code>vline</code> - Line drawing</li>
+                      <li>• <code class="text-gar-accent-cyan">copy_surface_to_window</code> - X11 PutImage helper</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="design-principles" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Design Principles</h2>
+              <div class="space-y-4 text-gar-text-secondary">
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Modularity</h4>
+                  <p>Three-crate split allows cherry-picking components. Use gartk-core alone for color/geometry types.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Type Safety</h4>
+                  <p>Built on x11rb for compile-time protocol safety. Strong typing for events, colors, and geometry.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Builder APIs</h4>
+                  <p>Fluent builder pattern for WindowConfig, Theme, and TextStyle enables readable configuration.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Performance</h4>
+                  <p>Zero-copy event parsing, double-buffered rendering, Arc-based connection sharing.</p>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Error Handling</h4>
+                  <p>thiserror-based error types with context. Result types throughout the API.</p>
+                </div>
+              </div>
+            </section>
+
+            <!-- gartk-core -->
+            <section id="color" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Color</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The Color type represents RGBA colors with components in 0.0-1.0 range:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">pub struct Color {{
+    pub r: f64,
+    pub g: f64,
+    pub b: f64,
+    pub a: f64,
+}}</pre>
+              </div>
+              <h4 class="font-semibold text-gar-text-primary mb-2">Parsing</h4>
+              <ul class="text-gar-text-secondary space-y-1 mb-4">
+                <li>• <code class="text-gar-accent-cyan">from_hex</code>: #RGB, #RRGGBB, #RRGGBBAA</li>
+                <li>• <code class="text-gar-accent-cyan">from_rgb_str</code>: rgb(255, 0, 0), rgba(255, 0, 0, 0.5)</li>
+                <li>• <code class="text-gar-accent-cyan">from_name</code>: "red", "blue", "transparent", "darkgray"</li>
+                <li>• <code class="text-gar-accent-cyan">parse</code>: Auto-detects format</li>
+              </ul>
+              <h4 class="font-semibold text-gar-text-primary mb-2">Manipulation</h4>
+              <ul class="text-gar-text-secondary space-y-1 mb-4">
+                <li>• <code class="text-gar-accent-cyan">with_alpha(a)</code>: Returns new color with alpha</li>
+                <li>• <code class="text-gar-accent-cyan">lighten(factor)</code>: Lightens by 0.0-1.0</li>
+                <li>• <code class="text-gar-accent-cyan">darken(factor)</code>: Darkens by 0.0-1.0</li>
+                <li>• <code class="text-gar-accent-cyan">to_argb_u32()</code>: Convert to X11 ARGB format</li>
+                <li>• <code class="text-gar-accent-cyan">to_rgb_u32()</code>: Convert to 24-bit RGB</li>
+              </ul>
+              <h4 class="font-semibold text-gar-text-primary mb-2">Constants</h4>
+              <p class="text-gar-text-secondary">
+                BLACK, WHITE, RED, GREEN, BLUE, YELLOW, CYAN, MAGENTA, TRANSPARENT, GRAY, DARK_GRAY, LIGHT_GRAY
+              </p>
+            </section>
+
+            <section id="geometry" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Geometry Types</h2>
+
+              <div class="space-y-6">
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Point</h4>
+                  <p class="text-gar-text-secondary mb-2">2D point with i32 coordinates:</p>
+                  <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                    <pre class="text-sm text-gar-text-primary font-mono">let p = Point::new(100, 50);
+let p = Point::from((100, 50));</pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Size</h4>
+                  <p class="text-gar-text-secondary mb-2">2D size with u32 dimensions:</p>
+                  <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                    <pre class="text-sm text-gar-text-primary font-mono">let s = Size::new(800, 600);
+let area = s.area();  // Returns u64</pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Rect</h4>
+                  <p class="text-gar-text-secondary mb-2">Rectangle with position and size:</p>
+                  <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                    <pre class="text-sm text-gar-text-primary font-mono">let r = Rect::new(10, 10, 200, 100);
+let r = Rect::from_point_size(Point::new(10, 10), Size::new(200, 100));
+
+// Queries
+let pos = r.position();     // Point
+let size = r.size();        // Size
+let center = r.center();    // Point
+let right = r.right();      // i32
+let bottom = r.bottom();    // i32
+
+// Tests
+if r.contains_point(Point::new(50, 50)) {{ }}
+if r.intersects(other_rect) {{ }}
+let intersection = r.intersection(other_rect)?;
+
+// Insets (shrinking)
+let inset = r.inset_uniform(10);  // 10px on all sides
+let inset = r.inset(5, 10, 5, 10); // top, right, bottom, left</pre>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Edges</h4>
+                  <p class="text-gar-text-secondary mb-2">Padding/margin specification:</p>
+                  <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                    <pre class="text-sm text-gar-text-primary font-mono">let e = Edges::uniform(10);              // All sides
+let e = Edges::symmetric(8, 12);         // vertical, horizontal
+let e = Edges::new(5, 10, 5, 10);        // TRBL
+let total_h = e.horizontal();            // left + right
+let total_v = e.vertical();              // top + bottom</pre>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section id="events" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Input Events</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Platform-independent event abstraction (converted from X11 events by EventLoop):
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">pub enum InputEvent {{
+    Key(KeyEvent),
+    MousePress(MouseEvent),
+    MouseRelease(MouseEvent),
+    MouseMove(MouseEvent),
+    MouseEnter(Point),
+    MouseLeave,
+    Scroll(ScrollEvent),
+    Expose,
+    Resize {{ width: u32, height: u32 }},
+    FocusIn,
+    FocusOut,
+    CloseRequested,  // WM_DELETE_WINDOW
+}}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">KeyEvent</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">pub struct KeyEvent {{
+    pub key: Key,
+    pub keycode: u8,
+    pub modifiers: Modifiers,
+    pub pressed: bool,
+}}
+
+// Key enum
+pub enum Key {{
+    Escape, Return, Tab, Backspace, Delete,
+    Home, End, PageUp, PageDown,
+    Left, Right, Up, Down,
+    F1..F12,
+    Space,
+    Char(char),  // Printable characters
+    Unknown(u8),
+}}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Modifiers</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">pub struct Modifiers {{
+    pub shift: bool,
+    pub ctrl: bool,
+    pub alt: bool,
+    pub super_key: bool,
+    pub caps_lock: bool,
+    pub num_lock: bool,
+}}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">MouseButton</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                <pre class="text-sm text-gar-text-primary font-mono">pub enum MouseButton {{
+    Left, Middle, Right,
+    ScrollUp, ScrollDown, ScrollLeft, ScrollRight,
+    Back, Forward,
+    Unknown(u8),
+}}</pre>
+              </div>
+            </section>
+
+            <section id="theme" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Theme System</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Theme provides comprehensive UI styling configuration:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">pub struct Theme {{
+    // Window
+    pub background: Color,
+    pub foreground: Color,
+    pub border: Color,
+    pub border_width: u32,
+    pub border_radius: f64,
+
+    // Text
+    pub font_family: String,
+    pub font_size: f64,
+
+    // Selection
+    pub selection_background: Color,
+    pub selection_foreground: Color,
+
+    // Input field
+    pub input_background: Color,
+    pub input_foreground: Color,
+    pub input_border: Color,
+    pub input_placeholder: Color,
+    pub input_cursor: Color,
+
+    // Items/list
+    pub item_background: Color,
+    pub item_foreground: Color,
+    pub item_hover_background: Color,
+    pub item_hover_foreground: Color,
+    pub item_selected_background: Color,
+    pub item_selected_foreground: Color,
+    pub item_description: Color,
+
+    // Scrollbar
+    pub scrollbar_track: Color,
+    pub scrollbar_thumb: Color,
+    pub scrollbar_width: u32,
+
+    // Spacing
+    pub padding: u32,
+    pub item_spacing: u32,
+    pub item_padding: u32,
+}}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Built-in Themes</h4>
+              <ul class="text-gar-text-secondary space-y-2 mb-4">
+                <li>• <code class="text-gar-accent-cyan">Theme::dark()</code>: Catppuccin Mocha-inspired (#1e1e2e background)</li>
+                <li>• <code class="text-gar-accent-cyan">Theme::light()</code>: Catppuccin Latte (#eff1f5 background)</li>
+                <li>• <code class="text-gar-accent-cyan">Theme::high_contrast()</code>: Black/white for accessibility</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                Use <code class="text-gar-accent-cyan">ThemeBuilder</code> to customize (see Config tab).
+              </p>
+            </section>
+
+            <!-- gartk-x11 -->
+            <section id="connection" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">X11 Connection</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Connection wraps x11rb's RustConnection with cached screen information:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let conn = Connection::connect(None)?;  // Connect to $DISPLAY
+let conn = Connection::connect(Some(":1"))?;  // Specific display
+
+// Screen queries
+let root = conn.root();
+let width = conn.screen_width();
+let height = conn.screen_height();
+let visual = conn.default_visual();
+let colormap = conn.default_colormap();
+
+// ARGB visual for transparency
+if let Some(argb_visual) = conn.find_argb_visual() {{
+    let colormap = conn.create_colormap(argb_visual)?;
+}}
+
+// Atom interning
+let atom = conn.intern_atom("_NET_WM_NAME", false)?;
+
+// ID generation
+let window_id = conn.generate_id()?;
+
+// Access underlying x11rb connection
+conn.inner().map_window(window_id)?;
+conn.flush()?;  // Flush requests
+conn.sync()?;   // Flush and wait for reply</pre>
+              </div>
+              <p class="text-gar-text-secondary">
+                Connection uses Arc internally and is Clone-able for sharing across threads.
+              </p>
+            </section>
+
+            <section id="window" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Window Management</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Window provides a high-level API for X11 window creation and management:
+              </p>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Creation</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">let window = Window::create(conn.clone(), config)?;
+
+// Window is automatically destroyed on Drop
+// Manual cleanup:
+window.destroy()?;</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Visibility</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">window.map()?;    // Show
+window.unmap()?;  // Hide</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Geometry</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">window.move_to(100, 100)?;
+window.resize(800, 600)?;
+window.set_geometry(Rect::new(100, 100, 800, 600))?;
+
+let rect = window.rect();
+let size = window.size();</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Stacking and Focus</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">window.raise()?;   // Raise to top
+window.focus()?;   // Request input focus</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Properties</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">window.set_title("New Title")?;
+
+let id = window.id();          // X11 Window ID
+let visual = window.visual();  // Visual ID
+let depth = window.depth();    // Depth (24 or 32)
+let colormap = window.colormap();  // Colormap ID</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Input Grabbing</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">// For screen lockers or modal dialogs
+window.grab_keyboard()?;
+window.grab_pointer()?;
+
+// Release grabs
+window.ungrab_keyboard()?;
+window.ungrab_pointer()?;</pre>
+              </div>
+
+              <div class="bg-gar-bg-accent/10 rounded-lg p-4 border-l-4 border-gar-accent-cyan">
+                <p class="text-sm text-gar-text-secondary">
+                  <strong class="text-gar-text-primary">Note:</strong> Window automatically registers for common
+                  event masks (Exposure, KeyPress, ButtonPress, StructureNotify, etc.) and sets WM_PROTOCOLS
+                  for proper close handling.
+                </p>
+              </div>
+            </section>
+
+            <section id="event-loop" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Event Loop</h2>
+              <p class="text-gar-text-secondary mb-4">
+                EventLoop provides a blocking event loop with FPS control and event translation:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let mut event_loop = EventLoop::new(&window, config)?;
+
+event_loop.run(|el, event| {{
+    match event {{
+        InputEvent::Expose => {{
+            // Redraw window
+            el.request_redraw();  // Request another redraw
+        }}
+
+        InputEvent::Key(key_event) => {{
+            if key_event.pressed && key_event.key == Key::Escape {{
+                el.quit();
+                return Ok(false);  // Stop loop
+            }}
+        }}
+
+        InputEvent::Resize {{ width, height }} => {{
+            // Handle resize
+        }}
+
+        InputEvent::CloseRequested => {{
+            el.quit();
+            return Ok(false);
+        }}
+
+        _ => {{}}
+    }}
+
+    Ok(true)  // Continue loop
+}})?;</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Frame Timing</h4>
+              <p class="text-gar-text-secondary mb-4">
+                EventLoop maintains target FPS by sleeping between frames. With <code>continuous_redraw: false</code>,
+                it only redraws on Expose or when <code>request_redraw()</code> is called.
+              </p>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Event Translation</h4>
+              <p class="text-gar-text-secondary">
+                EventLoop automatically translates X11 events to InputEvent:
+              </p>
+              <ul class="text-gar-text-secondary space-y-1 mt-2">
+                <li>• KeyPress/KeyRelease → InputEvent::Key</li>
+                <li>• ButtonPress → InputEvent::MousePress or Scroll (for scroll buttons)</li>
+                <li>• MotionNotify → InputEvent::MouseMove</li>
+                <li>• EnterNotify/LeaveNotify → MouseEnter/MouseLeave</li>
+                <li>• Expose → InputEvent::Expose (also sets needs_redraw flag)</li>
+                <li>• ConfigureNotify → InputEvent::Resize</li>
+                <li>• ClientMessage (WM_DELETE_WINDOW) → CloseRequested</li>
+              </ul>
+            </section>
+
+            <section id="monitor" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Monitor Detection</h2>
+              <p class="text-gar-text-secondary mb-4">
+                RandR-based multi-monitor detection with DPI calculation:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_x11::{{detect_monitors, primary_monitor, monitor_at_point}};
+
+// Detect all monitors
+let monitors = detect_monitors(&conn)?;
+for monitor in &monitors {{
+    println!("{{}}: {{}}x{{}} @ {{}}x{{}} (DPI: {{:.1}})",
+        monitor.name,
+        monitor.rect.width,
+        monitor.rect.height,
+        monitor.rect.x,
+        monitor.rect.y,
+        monitor.dpi()
+    );
+}}
+
+// Get primary monitor
+let primary = primary_monitor(&conn)?;
+
+// Find monitor at pointer location
+let monitor = monitor_at_point(&conn, 1000, 500)?;
+
+// Monitor properties
+let dpi = monitor.dpi();     // Average DPI
+let dpi_x = monitor.dpi_x(); // Horizontal DPI
+let dpi_y = monitor.dpi_y(); // Vertical DPI
+let center = monitor.center();  // Center point</pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                If RandR is unavailable or no monitors detected, falls back to screen dimensions.
+              </p>
+            </section>
+
+            <section id="keyboard" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Keyboard Handling</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gartk-x11 provides basic keyboard handling using evdev keycodes (offset by 8):
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_x11::{{key_from_keycode, modifiers_from_x11, key_event_from_x11}};
+
+// Convert X11 keycode to Key enum
+let modifiers = Modifiers::NONE;
+let key = key_from_keycode(36, &modifiers);  // 36 = Return
+
+// Extract modifiers from X11 state
+let mods = modifiers_from_x11(event.state);
+
+// Create KeyEvent from X11 event (used internally by EventLoop)
+let key_event = key_event_from_x11(&x11_key_press_event, true);</pre>
+              </div>
+
+              <div class="bg-gar-bg-accent/10 rounded-lg p-4 border-l-4 border-gar-accent-yellow">
+                <p class="text-sm text-gar-text-secondary">
+                  <strong class="text-gar-text-primary">Limitation:</strong> Keyboard handling uses hardcoded evdev
+                  mappings. For proper layout support (e.g., AZERTY, Dvorak), integrate xkbcommon or similar.
+                  Shift/CapsLock handling for alphabetic keys is implemented via XOR for toggling.
+                </p>
+              </div>
+            </section>
+
+            <section id="cursor" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Cursor Management</h2>
+              <p class="text-gar-text-secondary mb-4">
+                CursorManager creates and caches X11 cursors from the standard cursor font:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_x11::{{CursorManager, CursorShape}};
+
+let mut cursor_mgr = CursorManager::new(conn.clone())?;
+
+// Get a cursor (cached after first call)
+let cursor = cursor_mgr.get(CursorShape::Pointer)?;
+
+// Set window cursor
+cursor_mgr.set_window_cursor(window.id(), CursorShape::Text)?;</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Available Shapes</h4>
+              <div class="grid grid-cols-2 gap-2 text-sm text-gar-text-secondary">
+                <div>• Default (arrow)</div>
+                <div>• Text (I-beam)</div>
+                <div>• Pointer (hand)</div>
+                <div>• Wait</div>
+                <div>• Crosshair</div>
+                <div>• Move</div>
+                <div>• ResizeN/S/E/W</div>
+                <div>• ResizeNE/NW/SE/SW</div>
+                <div>• NotAllowed</div>
+              </div>
+            </section>
+
+            <section id="atoms" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">X11 Atoms</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Atoms struct pre-interns commonly used EWMH and ICCCM atoms:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_x11::Atoms;
+
+let atoms = Atoms::new(&conn)?;
+
+// WM protocols
+atoms.wm_protocols
+atoms.wm_delete_window
+atoms.wm_take_focus
+
+// EWMH window types
+atoms.net_wm_window_type
+atoms.net_wm_window_type_normal
+atoms.net_wm_window_type_dialog
+atoms.net_wm_window_type_utility
+atoms.net_wm_window_type_popup_menu
+
+// EWMH state
+atoms.net_wm_state
+atoms.net_wm_state_above
+atoms.net_wm_state_fullscreen
+
+// Clipboard
+atoms.clipboard
+atoms.primary
+atoms.utf8_string</pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                Atoms is used internally by Window for setting properties. It's Clone-able via Arc.
+              </p>
+            </section>
+
+            <!-- gartk-render -->
+            <section id="surface" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Cairo Surfaces</h2>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Surface</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Wrapper around Cairo ImageSurface (ARGB32 format):
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let surface = Surface::new(800, 600)?;
+
+let ctx = surface.context()?;  // Get Cairo context
+surface.clear(Color::BLACK)?;  // Clear to color
+surface.flush();               // Flush Cairo operations
+
+// Resize (creates new surface)
+surface.resize(1024, 768)?;
+
+// Access raw data
+let data = surface.data()?;    // Vec&lt;u8> of ARGB pixels
+let stride = surface.stride(); // Bytes per row</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">DoubleBufferedSurface</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Flicker-free rendering with front/back buffers:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let mut db_surface = DoubleBufferedSurface::new(800, 600)?;
+
+// Draw to back buffer
+let back = db_surface.back();
+let ctx = back.context()?;
+// ... render ...
+
+// Swap buffers (copies back to front)
+db_surface.swap()?;
+
+// Display front buffer
+let front = db_surface.front();
+copy_surface_to_window(front, &window, gc, 0, 0)?;</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Copy to Window</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Helper function to copy surface to X11 window via PutImage:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_render::copy_surface_to_window;
+
+// Create graphics context
+let gc = conn.generate_id()?;
+conn.inner().create_gc(gc, window.id(), &Default::default())?;
+
+// Copy surface
+copy_surface_to_window(&mut surface, &window, gc, 0, 0)?;</pre>
+              </div>
+            </section>
+
+            <section id="renderer" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">High-Level Renderer</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Renderer combines Surface, shape primitives, and TextRenderer:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let renderer = Renderer::new(800, 600)?;
+let renderer = Renderer::with_theme(800, 600, Theme::dark())?;
+
+// Clear
+renderer.clear()?;  // Uses theme background
+renderer.clear_color(Color::from_hex("#1e1e2e")?)?;
+
+// Shapes
+renderer.fill_rect(Rect::new(10, 10, 100, 50), Color::RED)?;
+renderer.fill_rounded_rect(
+    Rect::new(10, 70, 100, 50),
+    8.0,  // radius
+    Color::BLUE,
+)?;
+renderer.stroke_rect(
+    Rect::new(10, 130, 100, 50),
+    Color::GREEN,
+    2.0,  // line width
+)?;
+renderer.fill_circle(200.0, 100.0, 30.0, Color::YELLOW)?;
+renderer.line(50.0, 200.0, 150.0, 250.0, Color::CYAN, 1.0)?;
+
+// Text
+let style = TextStyle::new()
+    .font_size(16.0)
+    .color(Color::WHITE);
+
+renderer.text("Hello", 10.0, 300.0, &style)?;
+renderer.text_centered("Centered", Point::new(400, 400), &style)?;
+renderer.text_in_rect("In Rect", Rect::new(10, 450, 200, 50), &style)?;
+
+// Measure text
+let size = renderer.measure_text("Test", &style)?;
+
+// Access internals
+let ctx = renderer.context()?;  // Cairo context
+let surface = renderer.surface();
+let theme = renderer.theme();
+
+renderer.flush();</pre>
+              </div>
+            </section>
+
+            <section id="text" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Text Rendering</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Pango-based text rendering with layout support:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let text_renderer = TextRenderer::new();
+let text_renderer = TextRenderer::with_style(default_style);
+
+let ctx = surface.context()?;
+
+// Draw text
+text_renderer.draw(&ctx, "Text", 10.0, 10.0, &style);
+
+// Draw in rectangle (vertical centering)
+text_renderer.draw_in_rect(&ctx, "Text", rect, &style);
+
+// Draw centered at point
+text_renderer.draw_centered(&ctx, "Text", center_point, &style);
+
+// Measure
+let size = text_renderer.measure(&ctx, "Text", &style);
+
+// Create Pango layout directly
+let layout = text_renderer.create_layout(&ctx, "Text", &style);</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">TextStyle Options</h4>
+              <ul class="text-gar-text-secondary space-y-1">
+                <li>• <code class="text-gar-accent-cyan">align</code>: Left, Center, Right (Pango alignment)</li>
+                <li>• <code class="text-gar-accent-cyan">ellipsize</code>: Add "..." if text exceeds max_width</li>
+                <li>• <code class="text-gar-accent-cyan">wrap</code>: Wrap lines at word boundaries</li>
+                <li>• <code class="text-gar-accent-cyan">max_width</code>: Pixel width constraint (enables ellipsize/wrap)</li>
+              </ul>
+            </section>
+
+            <section id="shapes" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Shape Primitives</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Low-level shape drawing functions operating on Cairo Context:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_render::{{fill_rect, fill_rounded_rect, fill_circle}};
+use gartk_render::{{stroke_rect, stroke_rounded_rect, stroke_circle}};
+use gartk_render::{{line, hline, vline, set_color}};
+
+let ctx = surface.context()?;
+
+// Filled shapes
+fill_rect(&ctx, rect, color);
+fill_rounded_rect(&ctx, rect, radius, color);
+fill_circle(&ctx, cx, cy, radius, color);
+
+// Stroked shapes
+stroke_rect(&ctx, rect, color, line_width);
+stroke_rounded_rect(&ctx, rect, radius, color, line_width);
+stroke_circle(&ctx, cx, cy, radius, color, line_width);
+
+// Lines
+line(&ctx, x1, y1, x2, y2, color, line_width);
+hline(&ctx, y, x1, x2, color, line_width);
+vline(&ctx, x, y1, y2, color, line_width);
+
+// Path creation (no fill/stroke)
+rect_path(&ctx, rect);
+rounded_rect_path(&ctx, rect, radius);
+circle_path(&ctx, cx, cy, radius);
+
+// Set color
+set_color(&ctx, color);
+ctx.fill()?;</pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                These primitives are also available through the high-level Renderer API.
+              </p>
+            </section>
+
+            <!-- Integration -->
+            <section id="usage-patterns" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Common Patterns</h2>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Complete Application</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-6">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_core::{{Color, InputEvent, Key, Theme}};
+use gartk_render::Renderer;
+use gartk_x11::{{Connection, EventLoop, EventLoopConfig, Window, WindowConfig}};
+
+fn main() -> anyhow::Result&lt;()> {{
+    // Setup
+    let conn = Connection::connect(None)?;
+    let window = Window::create(conn.clone(), WindowConfig::new()
+        .title("App")
+        .size(800, 600))?;
+
+    let theme = Theme::dark();
+    let mut renderer = Renderer::with_theme(800, 600, theme)?;
+
+    // Graphics context for copying
+    let gc = conn.generate_id()?;
+    conn.inner().create_gc(gc, window.id(), &Default::default())?;
+
+    // Event loop
+    let mut event_loop = EventLoop::new(&window, EventLoopConfig::default())?;
+
+    event_loop.run(|el, event| {{
+        match event {{
+            InputEvent::Expose => {{
+                renderer.clear()?;
+                // ... draw ...
+                renderer.flush();
+                copy_surface_to_window(
+                    &mut renderer.surface().clone(),
+                    &window,
+                    gc,
+                    0, 0
+                )?;
+            }}
+            InputEvent::Key(k) if k.key == Key::Escape => {{
+                el.quit();
+                return Ok(false);
+            }}
+            _ => {{}}
+        }}
+        Ok(true)
+    }})?;
+
+    Ok(())
+}}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Popup Window</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-6">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">// Override-redirect window for menus/launchers
+let window = Window::create(conn.clone(), WindowConfig::popup()
+    .position(100, 100)
+    .size(400, 300)
+    .transparent(true))?;
+
+window.raise()?;  // Ensure on top
+window.focus()?;  // Grab focus</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Monitor-Aware Positioning</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">use gartk_x11::primary_monitor;
+
+let monitor = primary_monitor(&conn)?;
+let center = monitor.center();
+
+// Center on primary monitor
+let window_size = Size::new(400, 300);
+let pos = Point::new(
+    center.x - window_size.width as i32 / 2,
+    center.y - window_size.height as i32 / 2,
+);
+
+let window = Window::create(conn.clone(), WindowConfig::new()
+    .position(pos.x, pos.y)
+    .size(window_size.width, window_size.height))?;</pre>
+              </div>
+            </section>
+
+            <section id="transparency" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Transparency Support</h2>
+              <p class="text-gar-text-secondary mb-4">
+                ARGB transparency requires a compositor (picom, compton, xcompmgr):
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">// Request ARGB visual
+let window = Window::create(conn.clone(), WindowConfig::popup()
+    .transparent(true)  // Finds 32-bit ARGB visual
+    .size(400, 300))?;
+
+// Window will have depth 32 if ARGB visual found
+if window.depth() == 32 {{
+    println!("Transparency supported");
+}}
+
+// Render with alpha channel
+let renderer = Renderer::new(400, 300)?;
+renderer.clear_color(Color::from_hex("#1e1e2e80")?)?;  // 50% transparent
+renderer.fill_rounded_rect(
+    Rect::new(10, 10, 380, 280),
+    8.0,
+    Color::from_hex("#313244e0")?,  // Semi-transparent
+)?;</pre>
+              </div>
+
+              <div class="bg-gar-bg-accent/10 rounded-lg p-4 border-l-4 border-gar-accent-cyan">
+                <p class="text-sm text-gar-text-secondary">
+                  <strong class="text-gar-text-primary">Note:</strong> If no ARGB visual is found (no compositor
+                  or unsupported), gartk falls back to default 24-bit visual. Alpha channel is ignored in this case.
+                </p>
+              </div>
+            </section>
+
+            <section id="double-buffering" class="mb-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Double Buffering</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Use DoubleBufferedSurface to eliminate flicker:
+              </p>
+
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">let mut db_surface = DoubleBufferedSurface::new(800, 600)?;
+
+event_loop.run(|el, event| {{
+    match event {{
+        InputEvent::Expose | InputEvent::Resize {{ .. }} => {{
+            // Draw to back buffer
+            let back = db_surface.back();
+            let ctx = back.context()?;
+
+            // Clear
+            ctx.set_source_rgba(0.12, 0.12, 0.18, 1.0);
+            ctx.set_operator(cairo::Operator::Source);
+            ctx.paint()?;
+            ctx.set_operator(cairo::Operator::Over);
+
+            // Render content
+            // ...
+
+            // Swap buffers (copy back to front)
+            db_surface.swap()?;
+
+            // Copy front buffer to window
+            let front = db_surface.front();
+            copy_surface_to_window(front, &window, gc, 0, 0)?;
+        }}
+        _ => {{}}
+    }}
+    Ok(true)
+}})?;</pre>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </TabContent>
+
+      <TabContent id="workflows" tabs={tabs}>
+        <div class="prose prose-invert max-w-none">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Workflows</h2>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Building a Custom Launcher</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            Example of building a simple application launcher with fuzzy search:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">launcher.rs</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_core::{{Color, InputEvent, Key, Rect, Theme}};
+use gartk_render::{{Renderer, TextStyle}};
+use gartk_x11::{{Connection, EventLoop, EventLoopConfig, Window, WindowConfig}};
+
+struct Launcher {{
+    query: String,
+    selected: usize,
+    items: Vec&lt;String>,
+}}
+
+impl Launcher {{
+    fn new() -> Self {{
+        Self {{
+            query: String::new(),
+            selected: 0,
+            items: vec![
+                "Firefox".into(),
+                "Terminal".into(),
+                "Files".into(),
+            ],
+        }}
+    }}
+
+    fn handle_key(&mut self, key: Key) -> bool {{
+        match key {{
+            Key::Escape => return false,
+            Key::Return => {{
+                // Launch selected item
+                println!("Launch: {{}}", self.items[self.selected]);
+                return false;
+            }}
+            Key::Up if self.selected > 0 => self.selected -= 1,
+            Key::Down if self.selected < self.items.len() - 1 => self.selected += 1,
+            Key::Backspace => {{ self.query.pop(); }}
+            Key::Char(c) | Key::Space if c == ' ' => {{
+                self.query.push(c);
+            }}
+            _ => {{}}
+        }}
+        true
+    }}
+
+    fn render(&self, renderer: &Renderer, theme: &Theme) -> anyhow::Result&lt;()> {{
+        renderer.clear()?;
+
+        // Input box
+        let input_rect = Rect::new(10, 10, 380, 40);
+        renderer.fill_rounded_rect(input_rect, 8.0, theme.input_background)?;
+
+        let input_style = TextStyle::new()
+            .font_size(16.0)
+            .color(theme.input_foreground);
+        renderer.text(&self.query, 20.0, 25.0, &input_style)?;
+
+        // Items
+        let mut y = 60;
+        for (i, item) in self.items.iter().enumerate() {{
+            let item_rect = Rect::new(10, y, 380, 30);
+
+            if i == self.selected {{
+                renderer.fill_rect(item_rect, theme.item_selected_background)?;
+            }}
+
+            let item_style = TextStyle::new()
+                .font_size(14.0)
+                .color(if i == self.selected {{
+                    theme.item_selected_foreground
+                }} else {{
+                    theme.item_foreground
+                }});
+
+            renderer.text(item, 20.0, y as f64 + 8.0, &item_style)?;
+            y += 35;
+        }}
+
+        renderer.flush();
+        Ok(())
+    }}
+}}
+
+fn main() -> anyhow::Result&lt;()> {{
+    let conn = Connection::connect(None)?;
+
+    let window = Window::create(
+        conn.clone(),
+        WindowConfig::popup()
+            .title("Launcher")
+            .size(400, 300)
+            .centered(),
+    )?;
+
+    let theme = Theme::dark();
+    let renderer = Renderer::with_theme(400, 300, theme.clone())?;
+    let mut launcher = Launcher::new();
+
+    let gc = conn.generate_id()?;
+    conn.inner().create_gc(gc, window.id(), &Default::default())?;
+
+    let mut event_loop = EventLoop::new(&window, EventLoopConfig::default())?;
+
+    event_loop.run(|el, event| {{
+        match event {{
+            InputEvent::Expose => {{
+                launcher.render(&renderer, &theme)?;
+                let mut surface_clone = renderer.surface().clone();
+                gartk_render::copy_surface_to_window(
+                    &mut surface_clone,
+                    &window,
+                    gc,
+                    0, 0
+                )?;
+            }}
+
+            InputEvent::Key(key_event) if key_event.pressed => {{
+                if !launcher.handle_key(key_event.key) {{
+                    el.quit();
+                    return Ok(false);
+                }}
+                el.request_redraw();
+            }}
+
+            _ => {{}}
+        }}
+        Ok(true)
+    }})?;
+
+    Ok(())
+}}</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Creating a Status Widget</h3>
+
+          <p class="text-gar-text-secondary mb-4">
+            Example of a persistent status widget with transparency:
+          </p>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">widget.rs</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_core::{{Color, InputEvent, Rect}};
+use gartk_render::{{Renderer, TextStyle}};
+use gartk_x11::{{Connection, EventLoop, EventLoopConfig, Window, WindowConfig, WindowType}};
+use std::time::{{Duration, Instant}};
+
+struct StatusWidget {{
+    last_update: Instant,
+    text: String,
+}}
+
+impl StatusWidget {{
+    fn new() -> Self {{
+        Self {{
+            last_update: Instant::now(),
+            text: "Status".into(),
+        }}
+    }}
+
+    fn update(&mut self) {{
+        if self.last_update.elapsed() > Duration::from_secs(1) {{
+            self.text = format!("Time: {{}}", chrono::Local::now().format("%H:%M:%S"));
+            self.last_update = Instant::now();
+        }}
+    }}
+
+    fn render(&self, renderer: &Renderer) -> anyhow::Result&lt;()> {{
+        // Transparent background
+        renderer.clear_color(Color::from_hex("#00000000")?)?;
+
+        // Semi-transparent panel
+        renderer.fill_rounded_rect(
+            Rect::new(5, 5, 190, 40),
+            8.0,
+            Color::from_hex("#1e1e2ee0")?,
+        )?;
+
+        let style = TextStyle::new()
+            .font_size(14.0)
+            .color(Color::from_hex("#cdd6f4")?);
+
+        renderer.text(&self.text, 15.0, 20.0, &style)?;
+        renderer.flush();
+        Ok(())
+    }}
+}}
+
+fn main() -> anyhow::Result&lt;()> {{
+    let conn = Connection::connect(None)?;
+
+    // Utility window, always on top
+    let window = Window::create(
+        conn.clone(),
+        WindowConfig::new()
+            .title("Widget")
+            .window_type(WindowType::Utility)
+            .position(10, 10)
+            .size(200, 50)
+            .transparent(true),
+    )?;
+
+    window.raise()?;
+
+    let renderer = Renderer::new(200, 50)?;
+    let mut widget = StatusWidget::new();
+
+    let gc = conn.generate_id()?;
+    conn.inner().create_gc(gc, window.id(), &Default::default())?;
+
+    // Continuous redraw for updates
+    let config = EventLoopConfig {{
+        fps: 60,
+        continuous_redraw: true,
+    }};
+
+    let mut event_loop = EventLoop::new(&window, config)?;
+
+    event_loop.run(|el, event| {{
+        match event {{
+            InputEvent::Expose => {{
+                widget.update();
+                widget.render(&renderer)?;
+                let mut surface = renderer.surface().clone();
+                gartk_render::copy_surface_to_window(&mut surface, &window, gc, 0, 0)?;
+            }}
+
+            InputEvent::CloseRequested => {{
+                el.quit();
+                return Ok(false);
+            }}
+
+            _ => {{}}
+        }}
+        Ok(true)
+    }})?;
+
+    Ok(())
+}}</code></pre>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Multi-Monitor Layout</h3>
+
+          <div class="mb-8">
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">multi_monitor.rs</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">use gartk_x11::{{Connection, detect_monitors}};
+
+fn main() -> anyhow::Result&lt;()> {{
+    let conn = Connection::connect(None)?;
+    let monitors = detect_monitors(&conn)?;
+
+    println!("Detected {{}} monitors:", monitors.len());
+    for (i, monitor) in monitors.iter().enumerate() {{
+        println!("  [{{}}] {{}}", i, monitor.name);
+        println!("      Position: {{}},{{}}",monitor.rect.x, monitor.rect.y);
+        println!("      Size: {{}}x{{}}", monitor.rect.width, monitor.rect.height);
+        println!("      DPI: {{:.1}}", monitor.dpi());
+        println!("      Primary: {{}}", monitor.primary);
+    }}
+
+    // Create window on each monitor
+    for monitor in &monitors {{
+        let pos = monitor.center();
+        // ... create window at pos ...
+    }}
+
+    Ok(())
+}}</code></pre>
+            </div>
+          </div>
+
+          <div class="bg-gar-bg-accent/10 rounded-lg p-6 border-l-4 border-gar-accent-cyan mt-8">
+            <h4 class="font-semibold text-gar-text-primary mb-2">💡 Integration Examples</h4>
+            <p class="text-sm text-gar-text-secondary mb-4">
+              See <a href="/components/garlaunch" class="text-gar-accent-cyan hover:underline">garlaunch</a> source
+              for a real-world example of gartk usage:
+            </p>
+            <ul class="text-sm text-gar-text-secondary space-y-2">
+              <li>• Fuzzy search UI with item list rendering</li>
+              <li>• Input field with cursor blinking</li>
+              <li>• Keyboard navigation and text input</li>
+              <li>• Monitor-aware window positioning</li>
+              <li>• Theme integration</li>
+            </ul>
+          </div>
+        </div>
+      </TabContent>
+
+      <TabContent id="troubleshooting" tabs={tabs}>
+        <div class="prose prose-invert max-w-none">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Troubleshooting</h2>
+
+          <div class="space-y-8">
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Cannot connect to X11 display
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> <code>ConnectionFailed</code> error</p>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <div class="ml-4">
+                  <MultiTerminal
+                    tabs={['Check DISPLAY', 'Start X server']}
+                    commands={[
+                      'echo $DISPLAY\n# Should show :0 or similar',
+                      '# If no X server running:\nstartx\n# Or use Xephyr for testing:\nXephyr :1 -screen 1920x1080 &\nDISPLAY=:1 ./your_app'
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Transparency not working
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> Windows appear opaque despite using ARGB colors</p>
+                <p><strong class="text-gar-text-primary">Causes:</strong></p>
+                <ul class="ml-4 space-y-1">
+                  <li>• No compositor running (picom, compton, xcompmgr)</li>
+                  <li>• No ARGB visual available (check <code>window.depth() == 32</code>)</li>
+                </ul>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <div class="ml-4">
+                  <MultiTerminal
+                    tabs={['Install picom', 'Start picom', 'Check visual']}
+                    commands={[
+                      'sudo pacman -S picom  # Arch\nsudo apt install picom    # Debian/Ubuntu',
+                      'picom &\n# Or add to your .xinitrc',
+                      'xdpyinfo | grep -A 5 "depth 32"\n# Should show TrueColor visual at depth 32'
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Window flickers during rendering
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> Visible tearing or flashing during redraws</p>
+                <p><strong class="text-gar-text-primary">Solution:</strong> Use DoubleBufferedSurface instead of Surface</p>
+                <div class="bg-gar-bg-primary rounded p-4 mt-2">
+                  <pre class="text-sm font-mono">// Before (flickers)
+let surface = Surface::new(800, 600)?;
+
+// After (smooth)
+let db_surface = DoubleBufferedSurface::new(800, 600)?;
+// Draw to db_surface.back()
+// Then db_surface.swap()?</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Keyboard input not working correctly
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> Wrong characters or missing keys on non-QWERTY layouts</p>
+                <p><strong class="text-gar-text-primary">Cause:</strong> gartk uses hardcoded evdev keymaps (QWERTY-centric)</p>
+                <p><strong class="text-gar-text-primary">Workaround:</strong> For proper layout support, integrate xkbcommon:</p>
+                <div class="bg-gar-bg-primary rounded p-4 mt-2">
+                  <pre class="text-sm font-mono"># Add xkbcommon to Cargo.toml
+[dependencies]
+xkbcommon = "0.7"
+
+# Use xkb state to map keycodes to keysyms
+# See xkbcommon docs for integration details</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Text rendering looks blurry or wrong size
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptoms:</strong></p>
+                <ul class="ml-4 space-y-1">
+                  <li>• Text appears too small or large</li>
+                  <li>• Blurry text on high-DPI displays</li>
+                </ul>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <ul class="ml-4 space-y-1">
+                  <li>• Scale font size based on monitor DPI:</li>
+                </ul>
+                <div class="bg-gar-bg-primary rounded p-4 mt-2">
+                  <pre class="text-sm font-mono">let monitor = primary_monitor(&conn)?;
+let scale = monitor.dpi() / 96.0;  // 96 is baseline DPI
+let font_size = 14.0 * scale;
+
+let style = TextStyle::new().font_size(font_size);</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                RandR monitor detection fails
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> <code>RandRNotAvailable</code> error or empty monitor list</p>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <div class="ml-4">
+                  <MultiTerminal
+                    tabs={['Check RandR', 'Test manually']}
+                    commands={[
+                      'xrandr --version\n# Should show RandR version',
+                      'xrandr  # Should list monitors'
+                    ]}
+                  />
+                </div>
+                <p class="mt-2"><strong class="text-gar-text-primary">Fallback:</strong> gartk automatically falls back to screen dimensions if RandR unavailable</p>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Cursor not changing
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> CursorManager::set_window_cursor has no effect</p>
+                <p><strong class="text-gar-text-primary">Cause:</strong> Cursor font not available or WM overriding cursor</p>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <ul class="ml-4 space-y-1">
+                  <li>• Ensure cursor font is installed (usually in xorg-fonts-misc)</li>
+                  <li>• For override-redirect windows, cursor should work</li>
+                  <li>• For normal windows, WM may set its own cursor</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Compilation errors with Cairo/Pango
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> Linker errors or missing -lcairo, -lpango</p>
+                <p><strong class="text-gar-text-primary">Cause:</strong> Missing system libraries</p>
+                <p><strong class="text-gar-text-primary">Solutions:</strong></p>
+                <div class="ml-4">
+                  <MultiTerminal
+                    tabs={['Arch', 'Ubuntu/Debian', 'Fedora']}
+                    commands={[
+                      'sudo pacman -S cairo pango',
+                      'sudo apt install libcairo2-dev libpango1.0-dev',
+                      'sudo dnf install cairo-devel pango-devel'
+                    ]}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-secondary/50 rounded-lg p-6 border border-gar-text-muted/20">
+              <h3 class="text-lg font-semibold text-gar-accent-yellow mb-3">
+                Event loop high CPU usage
+              </h3>
+              <div class="text-sm text-gar-text-secondary space-y-2">
+                <p><strong class="text-gar-text-primary">Symptom:</strong> 100% CPU usage during event loop</p>
+                <p><strong class="text-gar-text-primary">Cause:</strong> Continuous redraw mode with high FPS</p>
+                <p><strong class="text-gar-text-primary">Solution:</strong> Adjust EventLoopConfig:</p>
+                <div class="bg-gar-bg-primary rounded p-4 mt-2">
+                  <pre class="text-sm font-mono">// Low CPU (redraw only on events)
+let config = EventLoopConfig {{
+    fps: 60,
+    continuous_redraw: false,  // Default
+}};
+
+// Or lower FPS if continuous redraw needed
+let config = EventLoopConfig {{
+    fps: 30,
+    continuous_redraw: true,
+}};</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gar-bg-accent/10 rounded-lg p-6 border-l-4 border-gar-accent-cyan">
+              <h4 class="font-semibold text-gar-text-primary mb-2">📋 Debug Checklist</h4>
+              <p class="text-sm text-gar-text-secondary mb-4">
+                For general gartk issues, verify:
+              </p>
+              <ul class="text-sm text-gar-text-secondary space-y-2">
+                <li>• X11 is running and DISPLAY is set</li>
+                <li>• All system dependencies installed (libx11, cairo, pango)</li>
+                <li>• Using latest gartk from trunk branch</li>
+                <li>• Enable RUST_LOG=debug for detailed traces</li>
+                <li>• Test in Xephyr for isolated environment</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </TabContent>
+
+    </div>
+  </div>
+</BaseLayout>
