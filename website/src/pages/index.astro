@@ -99,6 +99,40 @@ const components = [
     accentColor: 'cyan'
   },
   {
+    id: 'garlaunch',
+    name: 'garlaunch',
+    tagline: 'Application Launcher',
+    description: 'A rofi-like application launcher with fuzzy search. Browse .desktop entries, run commands, switch windows, or execute custom scripts.',
+    features: [
+      'Fuzzy search with nucleo',
+      'Desktop entry mode (drun)',
+      'Command execution mode (run)',
+      'Window switcher mode',
+      'Custom script mode with JSON protocol'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garlaunch application launcher screenshot',
+    accentColor: 'magenta'
+  },
+  {
+    id: 'gartk',
+    name: 'gartk',
+    tagline: 'UI Toolkit',
+    description: 'A shared UI toolkit library used by gardesk components. Provides X11 window management, Cairo/Pango rendering, and theming.',
+    features: [
+      'X11 connection and window management',
+      'Cairo/Pango text and shape rendering',
+      'Built-in dark, light, and high-contrast themes',
+      'Monitor detection with RandR',
+      'Keyboard and pointer grabbing'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'gartk toolkit diagram',
+    accentColor: 'cyan'
+  },
+  {
     id: 'garclip',
     name: 'garclip',
     tagline: 'Clipboard Manager',

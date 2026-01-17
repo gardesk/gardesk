@@ -1,0 +1,163 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `// Using gartk in Rust code
+
+use gartk_core::{Color, Theme, Rect};
+use gartk_x11::{Connection, Window, WindowConfig};
+use gartk_render::{Renderer, TextStyle};
+
+// Connect to X11
+let conn = Connection::connect(None)?;
+
+// Create a popup window
+let window = Window::create(
+    conn.clone(),
+    WindowConfig::popup()
+        .title("My App")
+        .class("myapp")
+        .size(400, 300)
+        .transparent(true),
+)?;
+
+// Get a theme
+let theme = Theme::dark();
+
+// Create renderer
+let renderer = Renderer::new(&window)?;
+
+// Draw something
+renderer.fill_rounded_rect(
+    Rect::new(10, 10, 100, 50),
+    8.0,
+    theme.selection_background,
+);
+
+renderer.draw_text(
+    "Hello, gartk!",
+    20, 30,
+    TextStyle::default()
+        .color(theme.foreground)
+        .size(14.0),
+);`;
+---
+
+<ComponentPageLayout
+  name="gartk"
+  tagline="UI Toolkit"
+  description="A shared UI toolkit library for gardesk components. Provides X11 window management, Cairo/Pango rendering, theming, and input handling."
+  status="beta"
+  accentColor="cyan"
+  features={[
+    'X11 connection and window creation',
+    'Cairo/Pango text and shape rendering',
+    'Double-buffered surfaces for flicker-free drawing',
+    'Built-in dark, light, and high-contrast themes',
+    'Color parsing (hex, RGB, named colors)',
+    'Monitor detection via RandR',
+    'Keyboard and pointer event handling',
+    'ARGB visual support for transparency'
+  ]}
+  installCommand="cargo add gartk-core gartk-x11 gartk-render"
+  configExample={configExample}
+  configLanguage="lua"
+  githubUrl="https://github.com/gardesk/gartk"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Crate Structure</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-core</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Core types: Color, Rect, Point, Size, Theme, InputEvent. No platform dependencies.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-x11</h3>
+        <p class="text-sm text-gar-text-secondary">
+          X11 integration: Connection, Window, Monitor, EventLoop, Cursor management.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-cyan mb-2">gartk-render</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Cairo/Pango rendering: Renderer, Surface, TextRenderer, shape primitives.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Themes</h2>
+    <p class="text-gar-text-secondary mb-4">
+      gartk includes three built-in themes with full customization support:
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-lg bg-[#1e1e2e] border border-[#45475a]">
+        <h3 class="font-semibold text-[#cdd6f4] mb-2">Dark (default)</h3>
+        <p class="text-sm text-[#6c7086]">
+          Catppuccin-inspired dark theme with soft contrasts.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-[#eff1f5] border border-[#bcc0cc]">
+        <h3 class="font-semibold text-[#4c4f69] mb-2">Light</h3>
+        <p class="text-sm text-[#8c8fa1]">
+          Clean light theme for bright environments.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-black border-2 border-white">
+        <h3 class="font-semibold text-white mb-2">High Contrast</h3>
+        <p class="text-sm text-gray-400">
+          Maximum contrast for accessibility.
+        </p>
+      </div>
+    </div>
+    <p class="mt-4 text-sm text-gar-text-muted">
+      Use <code class="text-gar-accent-cyan">Theme::builder()</code> to customize individual properties.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Window Types</h2>
+    <p class="text-gar-text-secondary mb-4">
+      Create different window types with preconfigured settings:
+    </p>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+      <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+        <span class="text-sm text-gar-text-secondary font-mono">WindowConfig examples</span>
+      </div>
+      <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">// Popup (override-redirect, bypasses WM)
+WindowConfig::popup()
+    .title("Menu")
+    .position(100, 100)
+    .size(200, 300)
+
+// Dialog (managed by WM, modal-like)
+WindowConfig::dialog()
+    .title("Settings")
+    .size(400, 500)
+
+// Normal window
+WindowConfig::new()
+    .title("My App")
+    .class("myapp")
+    .size(800, 600)</code></pre>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Used By</h2>
+    <p class="text-gar-text-secondary mb-4">
+      gartk is the foundation for:
+    </p>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-3">
+        <a href="/components/garlaunch" class="text-gar-accent-magenta hover:underline">garlaunch</a>
+        <span class="text-gar-text-muted">- Application launcher</span>
+      </li>
+      <li class="flex items-center gap-3">
+        <span class="text-gar-text-secondary">Future gardesk components</span>
+      </li>
+    </ul>
+  </section>
+</ComponentPageLayout>

@@ -1,0 +1,140 @@
+---
+import ComponentPageLayout from '../../layouts/ComponentPageLayout.astro';
+
+const configExample = `# ~/.config/garlaunch/config.toml (planned)
+
+[general]
+# Default mode
+default_mode = "drun"
+
+# Maximum visible items
+max_items = 10
+
+[theme]
+# Use gartk theme
+theme = "dark"
+
+# Override specific colors
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+selection = "#45475a"
+
+[modes.drun]
+# Directories to scan for .desktop files
+dirs = [
+  "/usr/share/applications",
+  "~/.local/share/applications"
+]
+
+[modes.script]
+# Default script timeout (seconds)
+timeout = 30`;
+---
+
+<ComponentPageLayout
+  name="garlaunch"
+  tagline="Application Launcher"
+  description="A rofi-like application launcher with fuzzy search and multiple modes. Launch applications, run commands, switch windows, or interact with custom scripts."
+  status="beta"
+  accentColor="magenta"
+  features={[
+    'Fuzzy search powered by nucleo',
+    'Desktop entry mode (drun) for .desktop files',
+    'Command execution mode (run) for PATH binaries',
+    'Window switcher mode',
+    'Custom script mode with JSON protocol',
+    'Daemon mode with IPC control',
+    'Keyboard-driven interface',
+    'Built on gartk for consistent UI'
+  ]}
+  installCommand="curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garlaunch"
+  configExample={configExample}
+  configLanguage="toml"
+  githubUrl="https://github.com/gardesk/garlaunch"
+>
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Usage</h2>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch</span> <span class="text-gar-text-muted"># Launch in drun mode (default)</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode run</span> <span class="text-gar-text-muted"># Run command mode</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode window</span> <span class="text-gar-text-muted"># Window switcher</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --mode script --source ./myscript.sh</span> <span class="text-gar-text-muted"># Custom script</span></div>
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunch --daemon</span> <span class="text-gar-text-muted"># Run as daemon for IPC control</span></div>
+    </div>
+    <p class="mt-4 text-gar-text-secondary">
+      Bind garlaunch to a key in your gar configuration:
+    </p>
+    <div class="mt-4 rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <code class="text-gar-text-primary">gar.key(&#123; gar.mod, "d", gar.spawn("garlaunch") &#125;)</code>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Modes</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-magenta mb-2">drun</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Scans XDG application directories for .desktop files. Shows application name, description, and icon.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-magenta mb-2">run</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Lists executables from $PATH. Type to filter and press Enter to run.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-magenta mb-2">window</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Shows open windows from EWMH-compliant window managers. Select to focus.
+        </p>
+      </div>
+      <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+        <h3 class="font-semibold text-gar-accent-magenta mb-2">script</h3>
+        <p class="text-sm text-gar-text-secondary">
+          Executes a script that outputs JSON items. Allows custom menus and actions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Control with garlaunchctl</h2>
+    <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 bg-gar-bg-primary p-4 font-mono text-sm">
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl show</span> <span class="text-gar-text-muted"># Show launcher (drun mode)</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl show --mode window</span> <span class="text-gar-text-muted"># Show window switcher</span></div>
+      <div class="mb-2"><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl toggle</span> <span class="text-gar-text-muted"># Toggle visibility</span></div>
+      <div><span class="text-gar-accent-green">$</span> <span class="text-gar-text-primary">garlaunchctl status</span> <span class="text-gar-text-muted"># Check daemon status</span></div>
+    </div>
+    <p class="mt-4 text-sm text-gar-text-muted">
+      If the daemon isn't running, garlaunchctl will spawn garlaunch directly.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Keyboard Shortcuts</h2>
+    <ul class="space-y-2 font-mono text-sm">
+      <li class="flex gap-4">
+        <span class="text-gar-accent-magenta w-32">Enter</span>
+        <span class="text-gar-text-secondary">Activate selected item</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-magenta w-32">Escape</span>
+        <span class="text-gar-text-secondary">Close launcher</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-magenta w-32">Up / Down</span>
+        <span class="text-gar-text-secondary">Navigate items</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-magenta w-32">Page Up / Down</span>
+        <span class="text-gar-text-secondary">Navigate by page</span>
+      </li>
+      <li class="flex gap-4">
+        <span class="text-gar-accent-magenta w-32">Home / End</span>
+        <span class="text-gar-text-secondary">Move cursor in input</span>
+      </li>
+    </ul>
+  </section>
+</ComponentPageLayout>
