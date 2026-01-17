@@ -26,3 +26,7 @@
 	path = garlaunch
 	url = git@github.com:gardesk/garlaunch.git
 	branch = trunk
+[submodule "garclip"]
+	path = garclip
+	url = git@github.com:gardesk/garclip.git
+	branch = trunk

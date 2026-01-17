@@ -1,0 +1,868 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garclipImages = [
+  { src: '/images/garclip1.png', alt: 'garclip clipboard manager - picker view' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'arch-daemon', label: 'Daemon Process' },
+      { id: 'arch-garclipctl', label: 'garclipctl CLI' },
+      { id: 'arch-picker', label: 'garclip-picker UI' },
+    ]
+  },
+  {
+    id: 'history',
+    label: 'History Management',
+    children: [
+      { id: 'history-storage', label: 'Storage & Persistence' },
+      { id: 'history-deduplication', label: 'Deduplication' },
+      { id: 'history-pinning', label: 'Pinning Entries' },
+    ]
+  },
+  {
+    id: 'x11',
+    label: 'X11 Integration',
+    children: [
+      { id: 'x11-selections', label: 'CLIPBOARD vs PRIMARY' },
+      { id: 'x11-xfixes', label: 'XFixes Extension' },
+    ]
+  },
+  {
+    id: 'filtering',
+    label: 'Content Filtering',
+  },
+  {
+    id: 'images',
+    label: 'Image Support',
+  },
+  {
+    id: 'picker-ui',
+    label: 'Picker Interface',
+  },
+];
+
+const garclipFeatures = [
+  'X11 clipboard monitoring (CLIPBOARD and PRIMARY)',
+  'XFixes event-driven detection with polling fallback',
+  'Persistent history with JSON storage',
+  'Text and image content support',
+  'Configurable max entries (default 1000)',
+  'blake3 hash-based deduplication',
+  'Pin entries to prevent removal',
+  'Regex and window class filtering',
+  'garclip-picker fuzzy search UI',
+  'Unix socket IPC with garclipctl',
+  'SIGHUP config reload',
+  'Systemd user service support',
+  'Auto-save every 5 minutes',
+  'gartk-based picker rendering'
+];
+---
+
+<BaseLayout title="garclip - gardesk" description="Clipboard Manager. An X11 clipboard manager with persistent history, image support, and fuzzy search picker.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-yellow">garclip</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Clipboard Manager</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          An X11 clipboard manager with persistent history and fuzzy search. garclip monitors both CLIPBOARD (Ctrl+C) and PRIMARY (selection) using the XFixes extension for event-driven detection. Supports text and images with configurable filtering, deduplication, and a gartk-powered picker UI.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garclip" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {garclipFeatures.map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-yellow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+
+          <div class="bg-gar-bg-secondary/50 rounded-lg p-6 mb-8 border border-gar-accent-yellow/20">
+            <h3 class="text-lg font-semibold text-gar-accent-yellow mb-4">What is garclip?</h3>
+            <p class="text-gar-text-secondary mb-4">
+              garclip is an X11 clipboard manager that maintains a persistent history of everything you copy.
+              It runs as a daemon, monitoring clipboard changes and storing entries (text and images) to disk.
+              Use garclip-picker or garclipctl to browse and restore previous clipboard contents.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div class="p-3 bg-gar-bg-primary rounded-lg border border-gar-text-muted/10">
+                <div class="text-gar-accent-yellow font-semibold mb-1">garclip</div>
+                <div class="text-gar-text-secondary text-sm">Daemon process that monitors clipboard</div>
+              </div>
+              <div class="p-3 bg-gar-bg-primary rounded-lg border border-gar-text-muted/10">
+                <div class="text-gar-accent-yellow font-semibold mb-1">garclipctl</div>
+                <div class="text-gar-text-secondary text-sm">CLI tool for clipboard operations</div>
+              </div>
+              <div class="p-3 bg-gar-bg-primary rounded-lg border border-gar-text-muted/10">
+                <div class="text-gar-accent-yellow font-semibold mb-1">garclip-picker</div>
+                <div class="text-gar-text-secondary text-sm">GUI picker with fuzzy search</div>
+              </div>
+            </div>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Installation</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'cd garclip && cargo build --release', comment: 'Build all binaries' },
+              { command: 'sudo install -Dm755 target/release/garclip /usr/local/bin/', comment: 'Install daemon' },
+              { command: 'sudo install -Dm755 target/release/garclipctl /usr/local/bin/', comment: 'Install CLI' },
+              { command: 'sudo install -Dm755 target/release/garclip-picker /usr/local/bin/', comment: 'Install picker' },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Starting the Daemon</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garclip daemon', comment: 'Run in foreground' },
+              { command: 'garclip daemon &', comment: 'Run in background' },
+              { command: 'systemctl --user enable --now garclip', comment: 'Enable as systemd service' },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Basic Usage</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garclipctl history', comment: 'Show recent clipboard entries' },
+              { command: 'garclipctl paste', comment: 'Get current clipboard content' },
+              { command: 'garclipctl select 5', comment: 'Restore entry #5 to clipboard' },
+              { command: 'garclip-picker', comment: 'Open interactive picker UI' },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">gar Keybinding</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Add to your <code class="text-gar-accent-cyan">~/.config/gar/init.lua</code>:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Mod+v to open clipboard picker
+gar.bind("mod+v", function()
+    gar.exec("garclip-picker")
+end)`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Configuration</h2>
+
+          <p class="text-gar-text-secondary mb-4">
+            Configuration file: <code class="text-gar-accent-yellow">~/.config/garclip/config.toml</code>
+          </p>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Complete Configuration</h3>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-8">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garclip/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[history]
+max_entries = 1000           # Maximum history entries
+persist = true               # Persist across restarts
+# persist_path = "..."       # Custom history file path
+
+[behavior]
+watch_primary = true         # Watch PRIMARY selection (middle-click)
+watch_clipboard = true       # Watch CLIPBOARD (Ctrl+C)
+deduplicate = true           # Move duplicates to front instead of adding
+ignore_empty = true          # Ignore empty content
+min_length = 1               # Minimum text length (bytes)
+max_length = 10485760        # Maximum text length (10MB)
+max_image_size = 52428800    # Maximum image size (50MB)
+poll_interval_ms = 250       # Fallback polling interval
+
+[filters]
+ignore_patterns = []         # Regex patterns to ignore
+ignore_classes = []          # Window classes to ignore
+
+[daemon]
+# socket_path = "..."        # Custom socket path
+log_level = "info"           # Log level: error, warn, info, debug, trace
+# log_file = "..."           # Optional log file`}</code></pre>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">History Options</h3>
+          <div class="overflow-x-auto mb-8">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">max_entries</td><td class="py-2 px-3">u32</td><td class="py-2 px-3">1000</td><td class="py-2 px-3">Maximum history size (pinned entries can exceed)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">persist</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Save history to disk</td></tr>
+                <tr><td class="py-2 px-3 font-mono">persist_path</td><td class="py-2 px-3">string</td><td class="py-2 px-3">~/.local/share/garclip/history.json</td><td class="py-2 px-3">Custom history file path</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Behavior Options</h3>
+          <div class="overflow-x-auto mb-8">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">watch_primary</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Monitor PRIMARY selection (text highlighting)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">watch_clipboard</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Monitor CLIPBOARD selection (Ctrl+C)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">deduplicate</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Move duplicates to front instead of adding new</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">ignore_empty</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Skip empty clipboard contents</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">min_length</td><td class="py-2 px-3">u64</td><td class="py-2 px-3">1</td><td class="py-2 px-3">Minimum text length in bytes</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">max_length</td><td class="py-2 px-3">u64</td><td class="py-2 px-3">10485760</td><td class="py-2 px-3">Maximum text length (10MB)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">max_image_size</td><td class="py-2 px-3">u64</td><td class="py-2 px-3">52428800</td><td class="py-2 px-3">Maximum image size (50MB)</td></tr>
+                <tr><td class="py-2 px-3 font-mono">poll_interval_ms</td><td class="py-2 px-3">u64</td><td class="py-2 px-3">250</td><td class="py-2 px-3">Fallback polling interval (when XFixes unavailable)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Filter Options</h3>
+          <div class="overflow-x-auto mb-8">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">ignore_patterns</td><td class="py-2 px-3">[string]</td><td class="py-2 px-3">Regex patterns to filter out (case-insensitive)</td></tr>
+                <tr><td class="py-2 px-3 font-mono">ignore_classes</td><td class="py-2 px-3">[string]</td><td class="py-2 px-3">Window classes to ignore (substring match)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-xl font-semibold text-gar-text-primary mb-4">Filter Examples</h3>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garclip/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[filters]
+# Ignore sensitive patterns
+ignore_patterns = [
+    "^password:",              # Lines starting with "password:"
+    "api[_-]?key",             # API keys
+    "\\\\d{16}",                  # Credit card numbers (16 digits)
+    "^ssh-rsa ",               # SSH keys
+]
+
+# Ignore password managers
+ignore_classes = [
+    "keepass",
+    "bitwarden",
+    "1password",
+]`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-1">
+              <DocsSidebar items={docsItems} />
+            </div>
+
+            <div class="md:col-span-3 space-y-12">
+              <!-- Overview -->
+              <section id="overview">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Overview</h2>
+                <p class="text-gar-text-secondary mb-4">
+                  garclip is an X11 clipboard manager designed for the gardesk suite. It runs as a background daemon that monitors clipboard changes using the XFixes extension for event-driven detection (falling back to polling if unavailable).
+                </p>
+                <p class="text-gar-text-secondary mb-4">
+                  The daemon stores both text and image content in a persistent history file, supporting up to 1000 entries by default. Entries can be pinned to prevent automatic removal, deduplicated to avoid spam, and filtered by regex patterns or source window class.
+                </p>
+              </section>
+
+              <!-- Architecture -->
+              <section id="architecture">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Architecture</h2>
+                <p class="text-gar-text-secondary mb-4">
+                  garclip consists of three binaries that work together:
+                </p>
+              </section>
+
+              <section id="arch-daemon">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">Daemon Process</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  The main <code class="text-gar-accent-yellow">garclip</code> daemon monitors X11 clipboard changes and maintains the history. It uses a Tokio async runtime with multiple concurrent tasks:
+                </p>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                  <li><strong>XFixes monitor</strong> - Receives selection change events</li>
+                  <li><strong>IPC server</strong> - Handles client connections via Unix socket</li>
+                  <li><strong>Event broadcaster</strong> - Pushes events to subscribed clients</li>
+                  <li><strong>Auto-save timer</strong> - Persists history every 5 minutes</li>
+                  <li><strong>Signal handler</strong> - SIGTERM/SIGINT for shutdown, SIGHUP for reload</li>
+                </ul>
+              </section>
+
+              <section id="arch-garclipctl">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">garclipctl CLI</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  Command-line interface for interacting with the daemon:
+                </p>
+                <div class="overflow-x-auto mb-4">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b border-gar-text-muted/20">
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-gar-text-secondary">
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">copy [TEXT]</td><td class="py-2 px-3">Copy text to clipboard (stdin if no arg)</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">paste</td><td class="py-2 px-3">Get current clipboard content</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">history [-l N]</td><td class="py-2 px-3">Show history (default 20 entries)</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">select ID</td><td class="py-2 px-3">Restore entry to clipboard</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">delete ID</td><td class="py-2 px-3">Delete entry from history</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">pin ID</td><td class="py-2 px-3">Pin entry (prevent removal)</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">unpin ID</td><td class="py-2 px-3">Unpin entry</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">pinned</td><td class="py-2 px-3">List all pinned entries</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">search QUERY</td><td class="py-2 px-3">Search history (text only)</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">clear</td><td class="py-2 px-3">Clear clipboard</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">clear-history</td><td class="py-2 px-3">Clear all history</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">status</td><td class="py-2 px-3">Show daemon status</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">reload</td><td class="py-2 px-3">Reload configuration</td></tr>
+                      <tr><td class="py-2 px-3 font-mono">stop</td><td class="py-2 px-3">Stop daemon gracefully</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section id="arch-picker">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">garclip-picker UI</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  A graphical picker window rendered with gartk (Cairo/Pango). Features:
+                </p>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                  <li>Fuzzy search filtering as you type</li>
+                  <li>Keyboard navigation (Up/Down, Page Up/Down)</li>
+                  <li>Enter to select, Delete to remove, Escape to close</li>
+                  <li>Shows pinned status (*), content type, and source window</li>
+                  <li>600x420px popup centered on primary monitor</li>
+                </ul>
+              </section>
+
+              <!-- History Management -->
+              <section id="history">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">History Management</h2>
+              </section>
+
+              <section id="history-storage">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">Storage & Persistence</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  History is stored in JSON format at <code class="text-gar-accent-yellow">~/.local/share/garclip/history.json</code>. Each entry contains:
+                </p>
+                <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                  <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "id": 42,
+  "content": { "Text": "Hello world" },
+  "source": "firefox",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "pinned": false,
+  "hash": "abc123..."
+}`}</code></pre>
+                </div>
+                <p class="text-gar-text-secondary">
+                  Images are base64-encoded in the JSON with their MIME type.
+                </p>
+              </section>
+
+              <section id="history-deduplication">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">Deduplication</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  When <code class="text-gar-accent-cyan">deduplicate = true</code>, copying the same content moves the existing entry to the front instead of creating a duplicate. Uses blake3 hashing for fast comparison.
+                </p>
+              </section>
+
+              <section id="history-pinning">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">Pinning Entries</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  Pinned entries are protected from automatic removal when history exceeds max_entries. Pin frequently used snippets to keep them available.
+                </p>
+                <MultiTerminal
+                  commands={[
+                    { command: 'garclipctl pin 5', comment: 'Pin entry #5' },
+                    { command: 'garclipctl unpin 5', comment: 'Unpin entry #5' },
+                    { command: 'garclipctl pinned', comment: 'List all pinned' },
+                    { command: 'garclipctl clear-history --keep-pinned', comment: 'Clear but keep pinned' },
+                  ]}
+                />
+              </section>
+
+              <!-- X11 Integration -->
+              <section id="x11">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">X11 Integration</h2>
+              </section>
+
+              <section id="x11-selections">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">CLIPBOARD vs PRIMARY</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  X11 has multiple clipboard selections. garclip monitors both by default:
+                </p>
+                <div class="overflow-x-auto mb-4">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b border-gar-text-muted/20">
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Selection</th>
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Trigger</th>
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Config</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-gar-text-secondary">
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">CLIPBOARD</td><td class="py-2 px-3">Ctrl+C, explicit copy</td><td class="py-2 px-3">watch_clipboard</td></tr>
+                      <tr><td class="py-2 px-3 font-mono">PRIMARY</td><td class="py-2 px-3">Text highlighting, middle-click paste</td><td class="py-2 px-3">watch_primary</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section id="x11-xfixes">
+                <h3 class="text-xl font-semibold text-gar-text-primary mb-3">XFixes Extension</h3>
+                <p class="text-gar-text-secondary mb-4">
+                  garclip uses the XFixes extension for event-driven clipboard monitoring. When a selection owner changes, XFixes sends an event immediately—no polling required.
+                </p>
+                <p class="text-gar-text-secondary">
+                  If XFixes is unavailable, garclip falls back to polling at <code class="text-gar-accent-cyan">poll_interval_ms</code> (default 250ms).
+                </p>
+              </section>
+
+              <!-- Filtering -->
+              <section id="filtering">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Content Filtering</h2>
+                <p class="text-gar-text-secondary mb-4">
+                  Filter clipboard content by pattern or source window to avoid storing sensitive data:
+                </p>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                  <li><strong>ignore_patterns</strong> - Regex patterns (case-insensitive) to reject</li>
+                  <li><strong>ignore_classes</strong> - Window class substrings to ignore</li>
+                  <li><strong>Size limits</strong> - min_length, max_length, max_image_size</li>
+                </ul>
+                <p class="text-gar-text-secondary">
+                  Reload filters without restart: <code class="text-gar-accent-cyan">garclipctl reload</code> or send SIGHUP.
+                </p>
+              </section>
+
+              <!-- Images -->
+              <section id="images">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Image Support</h2>
+                <p class="text-gar-text-secondary mb-4">
+                  garclip stores images in their original format (PNG, JPEG, GIF, WebP, BMP). Supported X11 targets:
+                </p>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                  <li><code class="text-gar-accent-cyan">image/png</code></li>
+                  <li><code class="text-gar-accent-cyan">image/jpeg</code></li>
+                  <li><code class="text-gar-accent-cyan">image/gif</code></li>
+                  <li><code class="text-gar-accent-cyan">image/webp</code></li>
+                  <li><code class="text-gar-accent-cyan">image/bmp</code></li>
+                </ul>
+                <p class="text-gar-text-secondary">
+                  Images are base64-encoded in the history file. The <code class="text-gar-accent-cyan">max_image_size</code> config limits storage (default 50MB).
+                </p>
+              </section>
+
+              <!-- Picker UI -->
+              <section id="picker-ui">
+                <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Picker Interface</h2>
+                <p class="text-gar-text-secondary mb-4">
+                  The garclip-picker provides a visual interface for browsing clipboard history:
+                </p>
+                <div class="overflow-x-auto mb-4">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b border-gar-text-muted/20">
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                        <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="text-gar-text-secondary">
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Up/Down</td><td class="py-2 px-3">Navigate entries</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Page Up/Down</td><td class="py-2 px-3">Jump by page</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Enter</td><td class="py-2 px-3">Select entry (copy to clipboard)</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Delete</td><td class="py-2 px-3">Delete selected entry</td></tr>
+                      <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">Escape</td><td class="py-2 px-3">Close without selecting</td></tr>
+                      <tr><td class="py-2 px-3 font-mono">Type</td><td class="py-2 px-3">Filter entries by search text</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Paste Previous Item</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Open the picker, select an older entry, and it becomes the current clipboard:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garclip-picker', comment: 'Open picker, navigate, press Enter' },
+              { command: 'garclipctl select 3', comment: 'Or select by ID directly' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Search History</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Find an entry by content:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garclipctl search "TODO"', comment: 'Search for TODO' },
+              { command: 'garclipctl search "http" -l 50', comment: 'Search URLs, show 50 results' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Pin Frequently Used Snippets</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Pin entries you use often so they don't get removed:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garclipctl history', comment: 'Find the ID' },
+              { command: 'garclipctl pin 42', comment: 'Pin entry #42' },
+              { command: 'garclipctl pinned', comment: 'List all pinned entries' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Copy from Script</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Pipe content to garclipctl:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'echo "Hello" | garclipctl copy', comment: 'Copy from stdin' },
+              { command: 'cat file.txt | garclipctl copy', comment: 'Copy file contents' },
+              { command: 'garclipctl copy "inline text"', comment: 'Copy inline argument' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Clear Sensitive Data</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Remove all history while keeping pinned entries:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garclipctl clear-history --keep-pinned', comment: 'Clear unpinned entries' },
+              { command: 'garclipctl clear-history', comment: 'Clear everything' },
+              { command: 'garclipctl clear', comment: 'Clear current clipboard only' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gar Integration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Bind garclip-picker to a key:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Mod+v to open clipboard picker
+gar.bind("mod+v", function()
+    gar.exec("garclip-picker")
+end)
+
+-- Mod+Shift+v to show history in terminal
+gar.bind("mod+shift+v", function()
+    gar.exec("alacritty -e garclipctl history -l 50")
+end)`}</code></pre>
+          </div>
+        </div>
+
+        <!-- IPC/API Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC & API Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garclip provides IPC via Unix domain sockets. The protocol uses newline-delimited JSON.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10 mb-6">
+            <code class="text-gar-accent-yellow">$XDG_RUNTIME_DIR/garclip.sock</code>
+            <p class="text-gar-text-secondary text-sm mt-2">Fallback: <code class="text-gar-accent-blue">/tmp/garclip.sock</code></p>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">IPC Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Args</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">copy</td><td class="py-2 px-3">text</td><td class="py-2 px-3">Copy text to clipboard</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">paste</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Get current clipboard</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">history</td><td class="py-2 px-3">limit?</td><td class="py-2 px-3">Get history entries</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">select</td><td class="py-2 px-3">id</td><td class="py-2 px-3">Restore entry to clipboard</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">delete</td><td class="py-2 px-3">id</td><td class="py-2 px-3">Delete entry</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">pin</td><td class="py-2 px-3">id</td><td class="py-2 px-3">Pin entry</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">unpin</td><td class="py-2 px-3">id</td><td class="py-2 px-3">Unpin entry</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">clear</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Clear clipboard</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">clearHistory</td><td class="py-2 px-3">keep_pinned?</td><td class="py-2 px-3">Clear history</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">search</td><td class="py-2 px-3">query, limit?</td><td class="py-2 px-3">Search history</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">status</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Daemon status</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">reload</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Reload config</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">quit</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Stop daemon</td></tr>
+                <tr><td class="py-2 px-3 font-mono">subscribe</td><td class="py-2 px-3">events[]</td><td class="py-2 px-3">Subscribe to events</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Request Format</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">History request</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "command": "history",
+  "limit": 20
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Success response</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "success": true,
+  "data": [...],
+  "error": null
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Entry Object</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{
+  "id": 42,
+  "content": { "Text": "Hello world" },
+  "source": "firefox",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "pinned": false,
+  "hash": "abc123def456..."
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Event Types</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Event</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">clipboard_changed</td><td class="py-2 px-3">New clipboard content captured</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">history_cleared</td><td class="py-2 px-3">History was cleared</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">entry_pinned</td><td class="py-2 px-3">Entry was pinned</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">entry_unpinned</td><td class="py-2 px-3">Entry was unpinned</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">entry_deleted</td><td class="py-2 px-3">Entry was deleted</td></tr>
+                <tr><td class="py-2 px-3 font-mono">entry_selected</td><td class="py-2 px-3">Entry was selected/restored</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Daemon not starting</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check if already running:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garclip', comment: 'Check for existing process' },
+                  { command: 'cat $XDG_RUNTIME_DIR/garclip.pid', comment: 'Check PID file' },
+                  { command: 'rm $XDG_RUNTIME_DIR/garclip.pid', comment: 'Remove stale PID file' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garclipctl connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify daemon is running and socket exists:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -l $XDG_RUNTIME_DIR/garclip.sock', comment: 'Check socket exists' },
+                  { command: 'garclip daemon &', comment: 'Start daemon if not running' },
+                  { command: 'garclipctl status', comment: 'Test connection' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Clipboard not being captured</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check X11 connection and XFixes:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $DISPLAY', comment: 'Verify DISPLAY is set' },
+                  { command: 'xdpyinfo | grep XFIXES', comment: 'Check XFixes extension' },
+                  { command: 'RUST_LOG=debug garclip daemon', comment: 'Run with debug logging' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Content being filtered unexpectedly</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check filter configuration:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat ~/.config/garclip/config.toml | grep -A5 filters', comment: 'Check filters' },
+                  { command: 'RUST_LOG=garclip=trace garclip daemon', comment: 'Trace filtering decisions' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garclip-picker won't open</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check X11 and daemon connection:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'DISPLAY=:0 garclip-picker', comment: 'Ensure DISPLAY is set' },
+                  { command: 'garclipctl status', comment: 'Verify daemon is running' },
+                  { command: 'RUST_LOG=debug garclip-picker', comment: 'Run with debug output' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">History not persisting</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check persistence settings and file:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'cat ~/.config/garclip/config.toml | grep persist', comment: 'Check persist setting' },
+                  { command: 'ls -l ~/.local/share/garclip/', comment: 'Check history file' },
+                  { command: 'cat ~/.local/share/garclip/history.json | head', comment: 'Inspect history' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Enable verbose logging</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=garclip=trace garclip daemon', comment: 'Maximum verbosity' },
+                  { command: 'RUST_LOG=debug garclipctl history', comment: 'Debug CLI operations' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Reload configuration</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'garclipctl reload', comment: 'Reload via IPC' },
+                  { command: 'kill -HUP $(pgrep garclip)', comment: 'Or send SIGHUP' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

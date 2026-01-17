@@ -136,14 +136,15 @@ const components = [
     id: 'garclip',
     name: 'garclip',
     tagline: 'Clipboard Manager',
-    description: 'A clipboard manager with history and search. Store text and images with easy recall.',
+    description: 'An X11 clipboard manager with persistent history. Monitors CLIPBOARD and PRIMARY selections, supports text and images, with XFixes event-driven detection.',
     features: [
-      'Clipboard history',
-      'Image support',
-      'Search and filtering',
-      'Keyboard navigation'
+      'Text and image history with persistence',
+      'XFixes event-driven clipboard monitoring',
+      'Regex and window class filtering',
+      'garclip-picker UI with fuzzy search',
+      'Systemd user service integration'
     ],
-    status: 'coming-soon' as const,
+    status: 'beta' as const,
     imagePosition: 'right' as const,
     imageAlt: 'garclip clipboard manager screenshot',
     accentColor: 'yellow'

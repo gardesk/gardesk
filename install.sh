@@ -10,6 +10,7 @@
 #   - garlock: Screen locker with PAM authentication
 #   - gardm: Display manager with graphical greeter
 #   - garlaunch: Application launcher with fuzzy search
+#   - garclip: Clipboard manager with history
 #   - gartk: Shared UI toolkit library
 #
 # Usage:
@@ -45,6 +46,7 @@ INSTALL_GARBG=false
 INSTALL_GARLOCK=false
 INSTALL_GARDM=false
 INSTALL_GARLAUNCH=false
+INSTALL_GARCLIP=false
 INSTALL_GARTK=false
 
 # Options
@@ -328,10 +330,11 @@ show_component_menu() {
     echo -e "  ${CYAN}4)${NC} garlock    ${DIM}-${NC} Screen locker with PAM auth"
     echo -e "  ${CYAN}5)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
     echo -e "  ${CYAN}6)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
-    echo -e "  ${CYAN}7)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch)${NC}"
+    echo -e "  ${CYAN}7)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
+    echo -e "  ${CYAN}8)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch, garclip-picker)${NC}"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
-    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-4,6, recommended for most users)"
+    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-4,6-7, recommended for most users)"
     echo -e "  ${MAGENTA}Q)${NC} Quit"
     echo ""
 }
@@ -344,6 +347,7 @@ prompt_components() {
         INSTALL_GARBG=true
         INSTALL_GARLOCK=true
         INSTALL_GARLAUNCH=true
+        INSTALL_GARCLIP=true
         return 0
     fi
 
@@ -360,6 +364,7 @@ prompt_components() {
     INSTALL_GARLOCK=false
     INSTALL_GARDM=false
     INSTALL_GARLAUNCH=false
+    INSTALL_GARCLIP=false
     INSTALL_GARTK=false
 
     case "${selection^^}" in
@@ -369,7 +374,8 @@ prompt_components() {
         4) INSTALL_GARLOCK=true ;;
         5) INSTALL_GARDM=true ;;
         6) INSTALL_GARLAUNCH=true ;;
-        7) INSTALL_GARTK=true ;;
+        7) INSTALL_GARCLIP=true ;;
+        8) INSTALL_GARTK=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARBAR=true
@@ -377,6 +383,7 @@ prompt_components() {
             INSTALL_GARLOCK=true
             INSTALL_GARDM=true
             INSTALL_GARLAUNCH=true
+            INSTALL_GARCLIP=true
             INSTALL_GARTK=true
             ;;
         D|DESKTOP)
@@ -385,6 +392,7 @@ prompt_components() {
             INSTALL_GARBG=true
             INSTALL_GARLOCK=true
             INSTALL_GARLAUNCH=true
+            INSTALL_GARCLIP=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -400,7 +408,8 @@ prompt_components() {
                     4) INSTALL_GARLOCK=true ;;
                     5) INSTALL_GARDM=true ;;
                     6) INSTALL_GARLAUNCH=true ;;
-                    7) INSTALL_GARTK=true ;;
+                    7) INSTALL_GARCLIP=true ;;
+                    8) INSTALL_GARTK=true ;;
                 esac
             done
             ;;
@@ -410,7 +419,7 @@ prompt_components() {
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
        [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -418,6 +427,12 @@ prompt_components() {
     # garlaunch requires gartk - auto-select if needed
     if [ "$INSTALL_GARLAUNCH" = true ] && [ "$INSTALL_GARTK" = false ]; then
         log_info "garlaunch requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
+
+    # garclip-picker requires gartk - auto-select if needed
+    if [ "$INSTALL_GARCLIP" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garclip-picker requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
 }
@@ -432,6 +447,7 @@ show_selection_summary() {
     [ "$INSTALL_GARLOCK" = true ] && echo -e "  ${GREEN}•${NC} garlock (screen locker)"
     [ "$INSTALL_GARDM" = true ] && echo -e "  ${YELLOW}•${NC} gardm (display manager)"
     [ "$INSTALL_GARLAUNCH" = true ] && echo -e "  ${GREEN}•${NC} garlaunch (application launcher)"
+    [ "$INSTALL_GARCLIP" = true ] && echo -e "  ${GREEN}•${NC} garclip (clipboard manager)"
     [ "$INSTALL_GARTK" = true ] && echo -e "  ${DIM}•${NC} gartk (UI toolkit library)"
 
     echo ""
@@ -753,6 +769,73 @@ EOF
     log_info "  Bind to a key: gar.key({ gar.mod, \"d\", gar.spawn(\"garlaunch\") })"
 }
 
+install_garclip() {
+    log_step "Building garclip (clipboard manager)..."
+
+    cd "$BUILD_DIR/garclip"
+    cargo build --release
+
+    log_info "Installing garclip binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garclip "$BIN_DIR/garclip"
+    sudo install -Dm755 target/release/garclipctl "$BIN_DIR/garclipctl"
+    sudo install -Dm755 target/release/garclip-picker "$BIN_DIR/garclip-picker"
+
+    # Install user systemd service
+    log_info "Installing systemd user service..."
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    cat << EOF > "$SYSTEMD_USER_DIR/garclip.service"
+[Unit]
+Description=garclip clipboard manager
+Documentation=https://gar.dev
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=$BIN_DIR/garclip daemon
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+    systemctl --user daemon-reload
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garclip"
+    if [ ! -f "$HOME/.config/garclip/config.toml" ]; then
+        log_info "Creating default garclip config..."
+        cat << 'EOF' > "$HOME/.config/garclip/config.toml"
+# garclip configuration
+# See https://gar.dev/components/garclip for options
+
+[history]
+max_entries = 1000
+persist = true
+
+[behavior]
+watch_primary = true
+watch_clipboard = true
+deduplicate = true
+ignore_empty = true
+min_length = 1
+max_length = 10485760
+max_image_size = 52428800
+poll_interval_ms = 250
+
+[filters]
+ignore_patterns = []
+ignore_classes = []
+EOF
+    fi
+
+    echo -e "${GREEN}  ✓ garclip installed successfully${NC}"
+    log_info "  Enable with: systemctl --user enable --now garclip"
+    log_info "  Bind picker to a key in ~/.config/gar/init.lua"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -814,6 +897,7 @@ parse_args() {
                         garlock) INSTALL_GARLOCK=true ;;
                         gardm) INSTALL_GARDM=true ;;
                         garlaunch) INSTALL_GARLAUNCH=true ;;
+                        garclip) INSTALL_GARCLIP=true ;;
                         gartk) INSTALL_GARTK=true ;;
                         all)
                             INSTALL_GAR=true
@@ -822,6 +906,7 @@ parse_args() {
                             INSTALL_GARLOCK=true
                             INSTALL_GARDM=true
                             INSTALL_GARLAUNCH=true
+                            INSTALL_GARCLIP=true
                             INSTALL_GARTK=true
                             ;;
                         desktop)
@@ -830,11 +915,16 @@ parse_args() {
                             INSTALL_GARBG=true
                             INSTALL_GARLOCK=true
                             INSTALL_GARLAUNCH=true
+                            INSTALL_GARCLIP=true
                             ;;
                     esac
                 done
                 # Auto-add gartk if garlaunch is selected
                 if [ "$INSTALL_GARLAUNCH" = true ]; then
+                    INSTALL_GARTK=true
+                fi
+                # Auto-add gartk if garclip is selected (for garclip-picker)
+                if [ "$INSTALL_GARCLIP" = true ]; then
                     INSTALL_GARTK=true
                 fi
                 shift
@@ -849,7 +939,7 @@ parse_args() {
                 echo "  --no-deps           Skip dependency installation"
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
-                echo "                      (gar,garbar,garbg,garlock,gardm,garlaunch,gartk,all,desktop)"
+                echo "                      (gar,garbar,garbg,garlock,gardm,garlaunch,garclip,gartk,all,desktop)"
                 echo "  --help              Show this help message"
                 echo ""
                 echo "Environment variables:"
@@ -899,7 +989,7 @@ main() {
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
        [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
         prompt_components
     fi
 
@@ -937,6 +1027,7 @@ main() {
     [ "$INSTALL_GARDM" = true ] && install_gardm
     [ "$INSTALL_GARTK" = true ] && install_gartk
     [ "$INSTALL_GARLAUNCH" = true ] && install_garlaunch
+    [ "$INSTALL_GARCLIP" = true ] && install_garclip
 
     # PATH setup
     setup_path
@@ -973,6 +1064,15 @@ main() {
     if [ "$INSTALL_GARLAUNCH" = true ]; then
         echo "  Bind garlaunch to a key in ~/.config/gar/init.lua:"
         echo "     gar.key({ gar.mod, \"d\", gar.spawn(\"garlaunch\") })"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARCLIP" = true ]; then
+        echo "  Enable clipboard manager:"
+        echo "     systemctl --user enable --now garclip"
+        echo ""
+        echo "  Bind garclip-picker to a key in ~/.config/gar/init.lua:"
+        echo "     gar.key({ gar.mod, \"v\", gar.spawn(\"garclip-picker\") })"
         echo ""
     fi
 
