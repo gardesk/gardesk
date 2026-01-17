@@ -13,6 +13,7 @@ const garImages = [
   { src: '/images/gar1.png', alt: 'gar window manager screenshot - tiled windows' },
   { src: '/images/gar2.png', alt: 'gar window manager screenshot - workspace view' },
   { src: '/images/gar3.png', alt: 'gar window manager screenshot - multi-monitor setup' },
+  { src: '/images/gar4.png', alt: 'gar window manager screenshot - floating windows' },
 ];
 
 const tabs = [
@@ -30,11 +31,19 @@ const docsItems = [
     label: 'Overview',
   },
   {
+    id: 'lua-api',
+    label: 'Lua API',
+    children: [
+      { id: 'lua-api-functions', label: 'Functions' },
+      { id: 'lua-api-actions', label: 'Actions' },
+    ]
+  },
+  {
     id: 'keybindings',
     label: 'Keybindings',
     children: [
       { id: 'keybindings-modifiers', label: 'Modifiers' },
-      { id: 'keybindings-actions', label: 'Actions' },
+      { id: 'keybindings-keys', label: 'Key Names' },
     ]
   },
   {
@@ -47,8 +56,16 @@ const docsItems = [
     ]
   },
   {
+    id: 'layout',
+    label: 'Tree Layout',
+  },
+  {
     id: 'window-rules',
     label: 'Window Rules',
+  },
+  {
+    id: 'floating',
+    label: 'Floating Windows',
   },
   {
     id: 'workspaces',
@@ -61,6 +78,18 @@ const docsItems = [
   {
     id: 'picom',
     label: 'Picom Integration',
+  },
+  {
+    id: 'bar',
+    label: 'Bar Integration',
+  },
+  {
+    id: 'session',
+    label: 'Session Management',
+  },
+  {
+    id: 'mouse',
+    label: 'Mouse Bindings',
   },
 ];
 ---
@@ -78,7 +107,7 @@ const docsItems = [
         </h1>
         <p class="text-xl text-gar-text-secondary mb-6">Tiling Window Manager</p>
         <p class="text-gar-text-secondary leading-relaxed mb-8">
-          An event-driven X11 tiling window manager with a binary tree layout engine. gar gives you full control over your windows with intuitive keyboard-driven navigation and a powerful Lua configuration system.
+          An event-driven X11 tiling window manager with a binary tree layout engine. gar gives you full control over your windows with intuitive keyboard-driven navigation, powerful Lua configuration, and deep integration with the gardesk ecosystem.
         </p>
 
         <div class="flex flex-wrap gap-4">
@@ -104,16 +133,18 @@ const docsItems = [
         <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
         <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            'Binary tree layout with smart splits',
+            'Binary space partition (BSP) tree layout with smart splits',
             'Full Lua 5.4 scripting for configuration',
             'Multi-monitor support with per-monitor workspaces',
             'EWMH compliant for compatibility with bars and tools',
+            'i3-compatible IPC for polybar and other tools',
             'Unix socket IPC for runtime control via garctl',
-            'Customizable gaps, borders, and colors',
-            'Window rules for automatic placement',
-            'Keyboard and mouse input handling',
-            'Integration with picom compositor',
-            'Session management with systemd'
+            'Customizable gaps, borders, and gradient colors',
+            'Window rules for automatic placement and floating',
+            'Click-to-focus with keyboard navigation',
+            'Mouse drag for moving/resizing floating windows',
+            'Automatic picom compositor configuration',
+            'Session management with systemd integration'
           ].map(feature => (
             <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
               <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -157,6 +188,7 @@ const docsItems = [
             title="terminal"
             commands={[
               { command: 'startx /usr/local/share/gar/gar-session.sh', comment: 'Start from TTY' },
+              { command: 'Xephyr :1 -screen 1920x1080 & DISPLAY=:1 gar', comment: 'Test in nested X' },
             ]}
             class="mb-6"
           />
@@ -178,21 +210,25 @@ const docsItems = [
                 </tr>
               </thead>
               <tbody class="text-gar-text-secondary">
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + Return</td><td class="py-2 px-3">Open terminal</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + q</td><td class="py-2 px-3">Close focused window</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + h/j/k/l</td><td class="py-2 px-3">Focus left/down/up/right</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + Shift + h/l</td><td class="py-2 px-3">Swap window left/right</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + 1-9</td><td class="py-2 px-3">Switch to workspace</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + Shift + 1-9</td><td class="py-2 px-3">Move window to workspace</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Super + Shift + r</td><td class="py-2 px-3">Reload configuration</td></tr>
-                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Super + Shift + Escape</td><td class="py-2 px-3">Exit gar</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Return</td><td class="py-2 px-3">Open terminal</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + q</td><td class="py-2 px-3">Close focused window</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + h/j/k/l</td><td class="py-2 px-3">Focus left/down/up/right</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Shift + h/j/k/l</td><td class="py-2 px-3">Swap window in direction</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Ctrl + h/j/k/l</td><td class="py-2 px-3">Resize split in direction</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + 1-9, 0</td><td class="py-2 px-3">Switch to workspace 1-10</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Shift + 1-9, 0</td><td class="py-2 px-3">Move window to workspace</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + f</td><td class="py-2 px-3">Toggle floating</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Shift + f</td><td class="py-2 px-3">Toggle fullscreen</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + e</td><td class="py-2 px-3">Equalize all splits</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Shift + r</td><td class="py-2 px-3">Reload configuration</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Shift + Escape</td><td class="py-2 px-3">Exit gar</td></tr>
               </tbody>
             </table>
           </div>
 
           <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Configuration File</h4>
           <p class="text-gar-text-secondary mb-4">
-            Edit your config at <code class="text-gar-accent-blue">~/.config/gar/init.lua</code>. Changes apply after reload (<code class="text-gar-accent-green">Super + Shift + r</code>).
+            Edit your config at <code class="text-gar-accent-blue">~/.config/gar/init.lua</code>. Changes apply after reload (<code class="text-gar-accent-green">Mod + Shift + r</code>).
           </p>
           <MultiTerminal
             title="terminal"
@@ -265,26 +301,42 @@ end`}</code></pre>
             <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
               <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
             </div>
-            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-96"><code class="text-sm text-gar-text-primary font-mono">{`-- gar configuration
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-[32rem]"><code class="text-sm text-gar-text-primary font-mono">{`-- ═══════════════════════════════════════════
+-- gar configuration
+-- ═══════════════════════════════════════════
 local mod = "mod"  -- Use "alt" for testing in Xephyr
 
 -- ═══════════════════════════════════════════
--- Appearance
+-- Window Borders
 -- ═══════════════════════════════════════════
 
--- Borders
 gar.set("border_width", 2)
 gar.set("border_color_focused", "#5294e2")
 gar.set("border_color_unfocused", "#2d2d2d")
 gar.set("border_color_urgent", "#ff5555")
 
--- Gaps
-gar.set("gap_inner", 8)
-gar.set("gap_outer", 8)
+-- Gradient borders (optional)
+gar.set("border_gradient_enabled", false)
+gar.set("border_gradient_start_focused", "#5294e2")
+gar.set("border_gradient_end_focused", "#1a5fb4")
+gar.set("border_gradient_direction", "vertical")
 
--- Title bars (optional)
+-- ═══════════════════════════════════════════
+-- Gaps
+-- ═══════════════════════════════════════════
+
+gar.set("gap_inner", 8)   -- Between windows
+gar.set("gap_outer", 8)   -- At screen edges
+
+-- ═══════════════════════════════════════════
+-- Title Bars (optional)
+-- ═══════════════════════════════════════════
+
 gar.set("titlebar_enabled", false)
 gar.set("titlebar_height", 20)
+gar.set("titlebar_color_focused", "#3d3d3d")
+gar.set("titlebar_color_unfocused", "#2d2d2d")
+gar.set("titlebar_text_color", "#ffffff")
 
 -- ═══════════════════════════════════════════
 -- Behavior
@@ -302,6 +354,8 @@ gar.set("blur_enabled", true)
 gar.set("blur_method", "dual_kawase")
 gar.set("blur_strength", 5)
 gar.set("shadow_enabled", true)
+gar.set("shadow_radius", 12)
+gar.set("shadow_opacity", 0.75)
 gar.set("opacity_focused", 1.0)
 gar.set("opacity_unfocused", 0.95)
 
@@ -311,10 +365,9 @@ gar.set("animation_close", "fly-out")
 gar.set("animation_duration", 0.2)
 
 -- ═══════════════════════════════════════════
--- Keybindings
+-- Keybindings - Launchers
 -- ═══════════════════════════════════════════
 
--- Launchers
 gar.bind(mod .. "+Return", function()
     gar.exec("alacritty || kitty || foot || xterm")
 end)
@@ -322,12 +375,16 @@ gar.bind(mod .. "+space", function()
     gar.exec("garlaunch")
 end)
 
--- Window management
+-- ═══════════════════════════════════════════
+-- Keybindings - Window Management
+-- ═══════════════════════════════════════════
+
 gar.bind(mod .. "+q", gar.close_window)
 gar.bind(mod .. "+shift+q", gar.force_close_window)
-gar.bind(mod .. "+f", gar.toggle_fullscreen)
-gar.bind(mod .. "+shift+space", gar.toggle_floating)
+gar.bind(mod .. "+f", gar.toggle_floating)
+gar.bind(mod .. "+shift+f", gar.toggle_fullscreen)
 gar.bind(mod .. "+e", gar.equalize)
+gar.bind(mod .. "+grave", gar.cycle_floating)
 
 -- Navigation
 gar.bind(mod .. "+h", gar.focus("left"))
@@ -347,7 +404,10 @@ gar.bind(mod .. "+ctrl+j", gar.resize("down", 0.05))
 gar.bind(mod .. "+ctrl+k", gar.resize("up", 0.05))
 gar.bind(mod .. "+ctrl+l", gar.resize("right", 0.05))
 
--- Workspaces
+-- ═══════════════════════════════════════════
+-- Keybindings - Workspaces
+-- ═══════════════════════════════════════════
+
 for i = 1, 9 do
     gar.bind(mod .. "+" .. i, gar.workspace(i))
     gar.bind(mod .. "+shift+" .. i, gar.move_to_workspace(i))
@@ -355,20 +415,25 @@ end
 gar.bind(mod .. "+0", gar.workspace(10))
 gar.bind(mod .. "+shift+0", gar.move_to_workspace(10))
 
--- Multi-monitor
+gar.bind(mod .. "+bracketleft", gar.workspace_prev())
+gar.bind(mod .. "+bracketright", gar.workspace_next())
+
+-- ═══════════════════════════════════════════
+-- Keybindings - Multi-Monitor
+-- ═══════════════════════════════════════════
+
 gar.bind(mod .. "+comma", gar.focus_monitor("prev"))
 gar.bind(mod .. "+period", gar.focus_monitor("next"))
 gar.bind(mod .. "+shift+comma", gar.move_to_monitor("prev"))
 gar.bind(mod .. "+shift+period", gar.move_to_monitor("next"))
 
--- Session
+-- ═══════════════════════════════════════════
+-- Keybindings - Session
+-- ═══════════════════════════════════════════
+
 gar.bind(mod .. "+shift+r", gar.reload)
 gar.bind(mod .. "+shift+Escape", gar.exit)
-
--- Screenshots
-gar.bind("Print", function()
-    gar.exec("scrot ~/Pictures/screenshot-%Y%m%d-%H%M%S.png")
-end)
+gar.bind(mod .. "+Escape", function() gar.exec("garlock") end)
 
 -- ═══════════════════════════════════════════
 -- Window Rules
@@ -378,6 +443,7 @@ end)
 gar.rule({ class = "Pavucontrol" }, { floating = true })
 gar.rule({ class = "Nm-connection-editor" }, { floating = true })
 gar.rule({ title = "File Upload" }, { floating = true })
+gar.rule({ instance = "dialog" }, { floating = true })
 
 -- Assign apps to workspaces
 gar.rule({ class = "Firefox" }, { workspace = 2 })
@@ -385,14 +451,26 @@ gar.rule({ class = "Slack" }, { workspace = 4 })
 gar.rule({ class = "Spotify" }, { workspace = 9 })
 
 -- ═══════════════════════════════════════════
+-- Per-Window Picom Rules
+-- ═══════════════════════════════════════════
+
+gar.picom_rule({
+    match = "class_g = 'Firefox'",
+    corner_radius = 0,
+    opacity = 1.0
+})
+
+-- ═══════════════════════════════════════════
 -- Startup Applications
 -- ═══════════════════════════════════════════
 
 gar.exec_once("nm-applet")
-gar.exec_once("blueman-applet")`}</code></pre>
+gar.exec_once("blueman-applet")
+gar.exec_once("garbg daemon")
+gar.exec_once("garbg set ~/Pictures/wallpaper.png")`}</code></pre>
           </div>
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options Reference</h4>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">All Configuration Options</h4>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
               <thead>
@@ -407,11 +485,18 @@ gar.exec_once("blueman-applet")`}</code></pre>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_width</td><td class="py-2 px-3">int</td><td class="py-2 px-3">2</td><td class="py-2 px-3">Border width in pixels</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_focused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#5294e2</td><td class="py-2 px-3">Focused window border</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_unfocused</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#2d2d2d</td><td class="py-2 px-3">Unfocused window border</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_inner</td><td class="py-2 px-3">int</td><td class="py-2 px-3">8</td><td class="py-2 px-3">Gap between windows</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_outer</td><td class="py-2 px-3">int</td><td class="py-2 px-3">8</td><td class="py-2 px-3">Gap at screen edges</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">follow_window_on_move</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Follow window when moving to workspace</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">border_color_urgent</td><td class="py-2 px-3">hex</td><td class="py-2 px-3">#ff5555</td><td class="py-2 px-3">Urgent window border</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_inner</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Gap between windows</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_outer</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Gap at screen edges</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">follow_window_on_move</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Follow window to new workspace</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">mouse_follows_focus</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Warp mouse to focused window</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">corner_radius</td><td class="py-2 px-3">int</td><td class="py-2 px-3">12</td><td class="py-2 px-3">Window corner radius (picom)</td></tr>
-                <tr><td class="py-2 px-3 font-mono text-xs">blur_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable blur effect</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable blur effect</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_method</td><td class="py-2 px-3">string</td><td class="py-2 px-3">dual_kawase</td><td class="py-2 px-3">gaussian, dual_kawase, box</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_strength</td><td class="py-2 px-3">int</td><td class="py-2 px-3">5</td><td class="py-2 px-3">Blur intensity (1-20)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable window shadows</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">opacity_unfocused</td><td class="py-2 px-3">float</td><td class="py-2 px-3">1.0</td><td class="py-2 px-3">Unfocused window opacity</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">animation_open</td><td class="py-2 px-3">string</td><td class="py-2 px-3">none</td><td class="py-2 px-3">fly-in, slide-in, appear, none</td></tr>
               </tbody>
             </table>
           </div>
@@ -433,7 +518,7 @@ gar.exec_once("blueman-applet")`}</code></pre>
                 <li><strong>Layout Engine:</strong> BSP tree with smart splitting (wider containers split vertically, taller split horizontally)</li>
                 <li><strong>Configuration:</strong> Embedded Lua 5.4 via mlua</li>
                 <li><strong>X11 Backend:</strong> x11rb for zero-copy event handling</li>
-                <li><strong>IPC:</strong> JSON over Unix domain sockets</li>
+                <li><strong>IPC:</strong> JSON over Unix domain sockets + i3-compatible protocol</li>
                 <li><strong>EWMH:</strong> Full compliance for status bar integration</li>
               </ul>
 
@@ -444,14 +529,116 @@ gar.exec_once("blueman-applet")`}</code></pre>
                     <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">~/.config/gar/init.lua</td><td class="py-2 px-3">Configuration file</td></tr>
                     <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">~/.config/gar/picom.conf</td><td class="py-2 px-3">Auto-generated picom config</td></tr>
                     <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">/tmp/gar.log</td><td class="py-2 px-3">Log file</td></tr>
-                    <tr><td class="py-2 px-3 font-mono text-gar-accent-blue">$XDG_RUNTIME_DIR/gar.sock</td><td class="py-2 px-3">IPC socket</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">$XDG_RUNTIME_DIR/gar.sock</td><td class="py-2 px-3">IPC socket</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-blue">$XDG_RUNTIME_DIR/gar-i3.sock</td><td class="py-2 px-3">i3-compatible IPC socket</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Lua API -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Lua API</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar exposes a comprehensive Lua API for configuration. All functions are available in the global <code class="text-gar-accent-blue">gar</code> table.
+              </p>
+            </div>
+
+            <!-- Lua API - Functions -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Lua Functions</h3>
+
+              <div class="space-y-6">
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.set(key, value)</h4>
+                  <p class="text-gar-text-secondary text-sm">Sets a configuration option. See the Config tab for all available keys.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.set("border_width", 2)
+gar.set("gap_inner", 8)</code></pre>
+                </div>
+
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.bind(keyspec, action)</h4>
+                  <p class="text-gar-text-secondary text-sm">Registers a keybinding. Action can be a function or built-in action.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.bind("mod+Return", function() gar.exec("alacritty") end)
+gar.bind("mod+q", gar.close_window)
+gar.bind("mod+h", gar.focus("left"))</code></pre>
+                </div>
+
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.exec(command)</h4>
+                  <p class="text-gar-text-secondary text-sm">Executes a shell command. Runs every time the binding is triggered.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.exec("alacritty")
+gar.exec("notify-send 'Hello!'")</code></pre>
+                </div>
+
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.exec_once(command)</h4>
+                  <p class="text-gar-text-secondary text-sm">Executes a shell command only once per session. Useful for autostart.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.exec_once("nm-applet")
+gar.exec_once("garbg daemon")</code></pre>
+                </div>
+
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.rule(match, actions)</h4>
+                  <p class="text-gar-text-secondary text-sm">Registers a window rule for automatic configuration.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.rule({ class = "Firefox" }, { workspace = 2 })
+gar.rule({ title = "Dialog" }, { floating = true })</code></pre>
+                </div>
+
+                <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+                  <h4 class="font-mono text-gar-accent-green mb-2">gar.picom_rule(config)</h4>
+                  <p class="text-gar-text-secondary text-sm">Registers per-window picom compositor rules.</p>
+                  <pre class="mt-2 bg-gar-bg-primary p-2 rounded text-xs"><code>gar.picom_rule({`}{`}
+    match = "class_g = 'Firefox'",
+    corner_radius = 0,
+    opacity = 1.0
+{`}`})</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lua API - Actions -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Built-in Actions</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Simple Actions</h4>
+              <p class="text-gar-text-secondary text-sm mb-4">These can be passed directly to <code class="text-gar-accent-blue">gar.bind()</code>:</p>
+              <div class="overflow-x-auto mb-6">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.close_window</td><td class="py-2 px-3">Close focused window gracefully</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.force_close_window</td><td class="py-2 px-3">Force kill window</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.toggle_floating</td><td class="py-2 px-3">Toggle floating state</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.toggle_fullscreen</td><td class="py-2 px-3">Toggle fullscreen</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.equalize</td><td class="py-2 px-3">Reset all splits to 50/50</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.cycle_floating</td><td class="py-2 px-3">Cycle through floating windows</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.reload</td><td class="py-2 px-3">Reload configuration</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">gar.exit</td><td class="py-2 px-3">Exit gar</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Parameterized Actions</h4>
+              <p class="text-gar-text-secondary text-sm mb-4">These return an action when called:</p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.focus(dir)</td><td class="py-2 px-3">Focus window in direction (left/right/up/down)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.swap(dir)</td><td class="py-2 px-3">Swap with window in direction</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.resize(dir, amt)</td><td class="py-2 px-3">Resize split (amt default: 0.05 = 5%)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.workspace(n)</td><td class="py-2 px-3">Switch to workspace n (1-10)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.workspace_next()</td><td class="py-2 px-3">Switch to next workspace (wraps)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.workspace_prev()</td><td class="py-2 px-3">Switch to previous workspace (wraps)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.move_to_workspace(n)</td><td class="py-2 px-3">Move window to workspace</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.focus_monitor(target)</td><td class="py-2 px-3">Focus monitor (next/prev/name)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">gar.move_to_monitor(target)</td><td class="py-2 px-3">Move window to monitor</td></tr>
                   </tbody>
                 </table>
               </div>
             </div>
 
             <!-- Keybindings -->
-            <div slot="doc-1">
+            <div slot="doc-4">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keybindings</h3>
               <p class="text-gar-text-secondary mb-4">
                 Use <code class="text-gar-accent-blue">gar.bind(keyspec, action)</code> to register keybindings. The keyspec format is <code class="text-gar-accent-green">"modifier+key"</code>.
@@ -470,14 +657,15 @@ end)
 gar.bind("mod+h", gar.focus("left"))
 
 -- Multiple modifiers
-gar.bind("mod+shift+q", gar.force_close_window)`}</code></pre>
+gar.bind("mod+shift+q", gar.force_close_window)
+gar.bind("mod+ctrl+h", gar.resize("left", 0.05))`}</code></pre>
               </div>
             </div>
 
             <!-- Keybindings - Modifiers -->
-            <div slot="doc-2">
+            <div slot="doc-5">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Modifier Keys</h3>
-              <div class="overflow-x-auto">
+              <div class="overflow-x-auto mb-6">
                 <table class="w-full text-sm">
                   <thead>
                     <tr class="border-b border-gar-text-muted/20">
@@ -494,52 +682,51 @@ gar.bind("mod+shift+q", gar.force_close_window)`}</code></pre>
                   </tbody>
                 </table>
               </div>
+              <p class="text-gar-text-secondary text-sm">
+                Modifiers are combined with <code class="text-gar-accent-blue">+</code> in lowercase: <code class="text-gar-accent-green">"mod+shift+q"</code>
+              </p>
             </div>
 
-            <!-- Keybindings - Actions -->
-            <div slot="doc-3">
-              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Available Actions</h3>
+            <!-- Keybindings - Keys -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Key Names</h3>
 
-              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Simple Actions</h4>
-              <div class="overflow-x-auto mb-6">
-                <table class="w-full text-sm">
-                  <tbody class="text-gar-text-secondary">
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.close_window</td><td class="py-2 px-3">Close focused window</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.force_close_window</td><td class="py-2 px-3">Force kill window</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.toggle_floating</td><td class="py-2 px-3">Toggle floating state</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.toggle_fullscreen</td><td class="py-2 px-3">Toggle fullscreen</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.equalize</td><td class="py-2 px-3">Reset all splits to 50/50</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.reload</td><td class="py-2 px-3">Reload configuration</td></tr>
-                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">gar.exit</td><td class="py-2 px-3">Exit gar</td></tr>
-                  </tbody>
-                </table>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Special Keys</h4>
+              <div class="flex flex-wrap gap-2 mb-4">
+                {['return', 'escape', 'tab', 'space', 'backspace', 'delete', 'left', 'right', 'up', 'down', 'home', 'end', 'page_up', 'page_down', 'f1-f12'].map(key => (
+                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
+                ))}
               </div>
 
-              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Parameterized Actions</h4>
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <tbody class="text-gar-text-secondary">
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.focus(dir)</td><td class="py-2 px-3">Focus window in direction (left/right/up/down)</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.swap(dir)</td><td class="py-2 px-3">Swap with window in direction</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.resize(dir, amt)</td><td class="py-2 px-3">Resize split (amount default: 0.05)</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.workspace(n)</td><td class="py-2 px-3">Switch to workspace n (1-10)</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.move_to_workspace(n)</td><td class="py-2 px-3">Move window to workspace</td></tr>
-                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">gar.focus_monitor(target)</td><td class="py-2 px-3">Focus monitor (next/prev/name)</td></tr>
-                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">gar.move_to_monitor(target)</td><td class="py-2 px-3">Move window to monitor</td></tr>
-                  </tbody>
-                </table>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Punctuation</h4>
+              <div class="flex flex-wrap gap-2 mb-4">
+                {['comma', 'period', 'semicolon', 'apostrophe', 'bracketleft', 'bracketright', 'backslash', 'slash', 'minus', 'equal', 'grave'].map(key => (
+                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
+                ))}
               </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Media Keys (XF86)</h4>
+              <div class="flex flex-wrap gap-2 mb-4">
+                {['XF86AudioRaiseVolume', 'XF86AudioLowerVolume', 'XF86AudioMute', 'XF86MonBrightnessUp', 'XF86MonBrightnessDown', 'Print'].map(key => (
+                  <span class="px-2 py-1 rounded text-xs bg-gar-bg-secondary border border-gar-text-muted/20 font-mono text-gar-text-primary">{key}</span>
+                ))}
+              </div>
+
+              <p class="text-gar-text-secondary text-sm">
+                Letters: <code class="text-gar-accent-blue">a</code> through <code class="text-gar-accent-blue">z</code> (lowercase). Numbers: <code class="text-gar-accent-blue">0</code> through <code class="text-gar-accent-blue">9</code>.
+              </p>
             </div>
 
             <!-- Appearance -->
-            <div slot="doc-4">
+            <div slot="doc-7">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Appearance</h3>
               <p class="text-gar-text-secondary mb-4">
                 Configure the visual appearance of windows using <code class="text-gar-accent-blue">gar.set()</code>.
               </p>
             </div>
 
-            <div slot="doc-5">
+            <!-- Appearance - Borders -->
+            <div slot="doc-8">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Borders</h3>
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
                 <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Border settings
@@ -548,15 +735,18 @@ gar.set("border_color_focused", "#5294e2")    -- Focused window
 gar.set("border_color_unfocused", "#2d2d2d")  -- Unfocused windows
 gar.set("border_color_urgent", "#ff5555")     -- Urgent windows
 
--- Gradient borders (requires titlebar_enabled)
+-- Gradient borders (optional)
 gar.set("border_gradient_enabled", true)
 gar.set("border_gradient_start_focused", "#5294e2")
 gar.set("border_gradient_end_focused", "#1a5fb4")
+gar.set("border_gradient_start_unfocused", "#3d3d3d")
+gar.set("border_gradient_end_unfocused", "#1d1d1d")
 gar.set("border_gradient_direction", "vertical")  -- or "horizontal", "diagonal"`}</code></pre>
               </div>
             </div>
 
-            <div slot="doc-6">
+            <!-- Appearance - Gaps -->
+            <div slot="doc-9">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Gaps</h3>
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
                 <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Gap settings
@@ -569,7 +759,8 @@ gar.set("gap_outer", 0)`}</code></pre>
               </div>
             </div>
 
-            <div slot="doc-7">
+            <!-- Appearance - Title Bars -->
+            <div slot="doc-10">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Title Bars</h3>
               <p class="text-gar-text-secondary mb-4">
                 Title bars are optional frame windows drawn by gar. They enable gradient borders and window titles.
@@ -584,8 +775,35 @@ gar.set("titlebar_text_color", "#ffffff")`}</code></pre>
               </div>
             </div>
 
+            <!-- Tree Layout -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Tree Layout (BSP)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar uses a Binary Space Partition (BSP) tree for tiling windows. Each node is either a Leaf (window) or Internal (containing two children).
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Smart Split Direction</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Container width &gt; height → split <strong>Vertically</strong> (side-by-side)</li>
+                <li>Container height &gt;= width → split <strong>Horizontally</strong> (stacked)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Split Behavior</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>New splits start at 50/50 ratio</li>
+                <li>Resize with <code class="text-gar-accent-blue">gar.resize(dir, amt)</code></li>
+                <li>Ratio clamped to 10%-90% to prevent collapse</li>
+                <li><code class="text-gar-accent-blue">gar.equalize</code> resets all splits to 50/50</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Focus Navigation</h4>
+              <p class="text-gar-text-secondary mb-4">
+                <code class="text-gar-accent-blue">gar.focus(direction)</code> finds the geometrically adjacent window in that direction, not based on tree structure. This allows intuitive navigation.
+              </p>
+            </div>
+
             <!-- Window Rules -->
-            <div slot="doc-8">
+            <div slot="doc-12">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Window Rules</h3>
               <p class="text-gar-text-secondary mb-4">
                 Automatically configure windows based on their class, instance, or title.
@@ -597,34 +815,59 @@ gar.set("titlebar_text_color", "#ffffff")`}</code></pre>
 -- Float specific windows
 gar.rule({ class = "Pavucontrol" }, { floating = true })
 gar.rule({ title = "File Upload" }, { floating = true })
+gar.rule({ instance = "dialog" }, { floating = true })
 
 -- Assign to workspaces
 gar.rule({ class = "Firefox" }, { workspace = 2 })
-gar.rule({ class = "Spotify" }, { workspace = 9, floating = true })
-
--- Match by instance
-gar.rule({ instance = "dialog" }, { floating = true })`}</code></pre>
+gar.rule({ class = "Spotify" }, { workspace = 9, floating = true })`}</code></pre>
               </div>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Match Criteria</h4>
               <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
-                <li><code class="text-gar-accent-blue">class</code> - WM_CLASS (case-insensitive substring)</li>
-                <li><code class="text-gar-accent-blue">instance</code> - Window instance</li>
+                <li><code class="text-gar-accent-blue">class</code> - WM_CLASS class component (e.g., "Firefox")</li>
+                <li><code class="text-gar-accent-blue">instance</code> - WM_CLASS instance component</li>
                 <li><code class="text-gar-accent-blue">title</code> - Window title (_NET_WM_NAME)</li>
               </ul>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Actions</h4>
               <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
-                <li><code class="text-gar-accent-blue">floating = true/false</code> - Float by default</li>
-                <li><code class="text-gar-accent-blue">workspace = n</code> - Open on workspace n</li>
+                <li><code class="text-gar-accent-blue">floating = true/false</code> - Start floating or tiled</li>
+                <li><code class="text-gar-accent-blue">workspace = n</code> - Open on workspace n (1-10)</li>
               </ul>
             </div>
 
+            <!-- Floating Windows -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Floating Windows</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Floating windows are not part of the tiling layout and can be freely moved and resized.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Toggling Float</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><code class="text-gar-accent-blue">gar.toggle_floating</code> - Toggle between tiled/floating</li>
+                <li>Window rules with <code class="text-gar-accent-blue">floating = true</code></li>
+                <li>Dialog/utility windows auto-detected as floating</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Mouse Interaction</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><code class="text-gar-accent-green">Mod + Left Click</code> - Drag to move</li>
+                <li><code class="text-gar-accent-green">Mod + Right Click</code> - Drag to resize</li>
+                <li>Click near edges to resize without modifier</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Stacking Order</h4>
+              <p class="text-gar-text-secondary">
+                Clicking or focusing a floating window raises it to the top. Use <code class="text-gar-accent-blue">gar.cycle_floating</code> to cycle through floating windows.
+              </p>
+            </div>
+
             <!-- Workspaces -->
-            <div slot="doc-9">
+            <div slot="doc-14">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Workspaces</h3>
               <p class="text-gar-text-secondary mb-4">
-                gar provides 10 workspaces (numbered 1-10). Each monitor has its own set of workspaces in multi-monitor setups.
+                gar provides 10 workspaces (numbered 1-10). Each workspace maintains its own tiling tree and floating window list.
               </p>
 
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
@@ -639,19 +882,26 @@ gar.bind("mod+shift+1", gar.move_to_workspace(1))
 gar.bind("mod+bracketleft", gar.workspace_prev())
 gar.bind("mod+bracketright", gar.workspace_next())
 
--- Loop for workspaces 1-9
+-- Loop for workspaces 1-10
 for i = 1, 9 do
     gar.bind("mod+" .. i, gar.workspace(i))
     gar.bind("mod+shift+" .. i, gar.move_to_workspace(i))
-end`}</code></pre>
+end
+gar.bind("mod+0", gar.workspace(10))
+gar.bind("mod+shift+0", gar.move_to_workspace(10))`}</code></pre>
               </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Follow Window on Move</h4>
+              <p class="text-gar-text-secondary">
+                Set <code class="text-gar-accent-blue">gar.set("follow_window_on_move", true)</code> to automatically switch to the workspace when moving a window.
+              </p>
             </div>
 
             <!-- Multi-Monitor -->
-            <div slot="doc-10">
+            <div slot="doc-15">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Multi-Monitor</h3>
               <p class="text-gar-text-secondary mb-4">
-                gar supports multiple monitors with i3-style workspace assignment. Each workspace belongs to one monitor, and workspaces are per-monitor.
+                gar supports multiple monitors with i3-style workspace assignment. Each workspace can be assigned to any monitor.
               </p>
 
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
@@ -667,18 +917,18 @@ gar.bind("mod+shift+period", gar.move_to_monitor("next"))`}</code></pre>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Monitor Detection</h4>
               <p class="text-gar-text-secondary mb-4">
-                gar uses RandR to detect monitors. Use <code class="text-gar-accent-blue">xrandr</code> to see monitor names and configure layouts.
+                gar uses RandR to detect monitors. Use <code class="text-gar-accent-blue">xrandr</code> to see monitor names.
               </p>
               <MultiTerminal
                 commands={[
-                  { command: 'xrandr --query', comment: 'List monitors and modes' },
+                  { command: 'xrandr --query | grep " connected"', comment: 'List monitors' },
                   { command: 'garctl get_monitors', comment: 'Query gar monitor info' },
                 ]}
               />
             </div>
 
             <!-- Picom -->
-            <div slot="doc-11">
+            <div slot="doc-16">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Picom Integration</h3>
               <p class="text-gar-text-secondary mb-4">
                 gar auto-generates a picom configuration at <code class="text-gar-accent-blue">~/.config/gar/picom.conf</code> based on your Lua settings.
@@ -695,24 +945,135 @@ gar.set("blur_strength", 5)            -- 1-20 for dual_kawase
 gar.set("shadow_enabled", true)
 gar.set("shadow_radius", 12)
 gar.set("shadow_opacity", 0.75)
+gar.set("shadow_offset_x", -7)
+gar.set("shadow_offset_y", -7)
 
 -- Opacity
 gar.set("opacity_focused", 1.0)
 gar.set("opacity_unfocused", 0.95)
+
+-- Fading
+gar.set("fade_enabled", true)
+gar.set("fade_delta", 10)
 
 -- Animations (picom v12+)
 gar.set("animation_open", "fly-in")    -- "slide-in", "appear", "none"
 gar.set("animation_close", "fly-out")  -- "slide-out", "disappear", "none"
 gar.set("animation_duration", 0.2)
 
--- Per-window rules
-gar.picom_rule({
+-- Custom shader
+gar.set("picom_shader", "~/.config/gar/shaders/custom.glsl")`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Per-Window Rules</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.picom_rule({
     match = "class_g = 'Firefox'",
     corner_radius = 0,
-    opacity = 1.0
+    opacity = 1.0,
+    shadow = false,
+    blur_background = true,
+    shader = "~/.config/gar/shaders/focused-glow.glsl"
 })`}</code></pre>
               </div>
             </div>
+
+            <!-- Bar Integration -->
+            <div slot="doc-17">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Bar Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar can automatically spawn garbar and communicates via EWMH properties.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Automatic garbar</h4>
+              <p class="text-gar-text-secondary mb-4">
+                If <code class="text-gar-accent-blue">gar.bar</code> table exists in your config, garbar is spawned automatically:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Enable garbar auto-spawn
+gar.bar = {}
+
+-- Or manually start garbar
+gar.exec_once("garbar")`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">EWMH Properties</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gar sets these properties for status bars:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><code class="text-gar-accent-blue">_NET_CURRENT_DESKTOP</code> - Active workspace</li>
+                <li><code class="text-gar-accent-blue">_NET_ACTIVE_WINDOW</code> - Focused window</li>
+                <li><code class="text-gar-accent-blue">_NET_NUMBER_OF_DESKTOPS</code> - Workspace count</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">i3-Compatible IPC</h4>
+              <p class="text-gar-text-secondary">
+                The <code class="text-gar-accent-blue">I3SOCK</code> environment variable points to an i3-compatible socket for polybar and other tools.
+              </p>
+            </div>
+
+            <!-- Session Management -->
+            <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Management</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The <code class="text-gar-accent-blue">gar-session.sh</code> script handles session setup.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">What it does</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Imports DISPLAY/XAUTHORITY to systemd user session</li>
+                <li>Starts picom compositor before gar</li>
+                <li>Starts <code class="text-gar-accent-blue">gar-session.target</code> for user services</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Environment Variables</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">GAR_LOG</td><td class="py-2 px-3">Log level (debug, info, warn, error)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">RUST_LOG</td><td class="py-2 px-3">Alternative log level</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-blue">I3SOCK</td><td class="py-2 px-3">i3-compatible IPC socket path</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Mouse Bindings -->
+            <div slot="doc-19">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Mouse Bindings</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar has built-in mouse bindings for window interaction. These are not configurable via Lua.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Click-to-Focus</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Clicking any window focuses it. This works for both tiled and floating windows.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Floating Window Manipulation</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Binding</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Move window</td><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Left Click + Drag</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Resize window</td><td class="py-2 px-3 font-mono text-gar-accent-green">Mod + Right Click + Drag</td></tr>
+                    <tr><td class="py-2 px-3">Edge resize</td><td class="py-2 px-3 font-mono text-gar-accent-green">Click near edge + Drag</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Edge Detection</h4>
+              <p class="text-gar-text-secondary">
+                Hovering near a floating window's edge (20px margin) changes the cursor. You can resize by clicking and dragging without the modifier key. 8 resize directions are supported (corners + sides).
+              </p>
+            </div>
+
           </DocsSidebar>
         </div>
 
@@ -755,17 +1116,17 @@ gar.bind("mod+r", function() gar.exec("garlaunch --mode run") end)
 gar.bind("mod+w", function() gar.exec("garlaunch --mode window") end)`}</code></pre>
           </div>
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lock Screen on Idle</h4>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lock Screen</h4>
           <p class="text-gar-text-secondary mb-4">
-            Combine garlock with xidlehook for automatic screen locking:
+            Bind garlock for screen locking:
           </p>
-          <MultiTerminal
-            title="terminal"
-            commands={[
-              { command: 'xidlehook --timer 300 "garlock" ""', comment: 'Lock after 5 min idle' },
-            ]}
-            class="mb-6"
-          />
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Manual lock
+gar.bind("mod+Escape", function() gar.exec("garlock") end)
+
+-- Auto-lock with xidlehook (run in exec_once)
+gar.exec_once('xidlehook --timer 300 "garlock" ""')`}</code></pre>
+          </div>
 
           <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Screenshot Workflow</h4>
           <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
@@ -785,9 +1146,9 @@ gar.bind("mod+Print", function()
 end)`}</code></pre>
           </div>
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Volume Control</h4>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Media Controls</h4>
           <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
-            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Media keys
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Volume
 gar.bind("XF86AudioRaiseVolume", function()
     gar.exec("pactl set-sink-volume @DEFAULT_SINK@ +5%")
 end)
@@ -796,6 +1157,14 @@ gar.bind("XF86AudioLowerVolume", function()
 end)
 gar.bind("XF86AudioMute", function()
     gar.exec("pactl set-sink-mute @DEFAULT_SINK@ toggle")
+end)
+
+-- Brightness
+gar.bind("XF86MonBrightnessUp", function()
+    gar.exec("brightnessctl set +10%")
+end)
+gar.bind("XF86MonBrightnessDown", function()
+    gar.exec("brightnessctl set 10%-")
 end)`}</code></pre>
           </div>
 
@@ -819,19 +1188,19 @@ end)`}</code></pre>
           <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
 
           <p class="text-gar-text-secondary mb-6">
-            gar exposes a Unix domain socket for inter-process communication. Use <code class="text-gar-accent-blue">garctl</code> or send JSON directly.
+            gar exposes two IPC sockets: a native JSON socket and an i3-compatible binary socket.
           </p>
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Locations</h4>
           <MultiTerminal
             commands={[
-              { command: 'echo $XDG_RUNTIME_DIR/gar.sock', comment: 'Primary socket path' },
-              { command: 'ls /tmp/gar.sock', comment: 'Fallback location' },
+              { command: 'echo $XDG_RUNTIME_DIR/gar.sock', comment: 'Native JSON socket' },
+              { command: 'echo $I3SOCK', comment: 'i3-compatible socket' },
             ]}
             class="mb-6"
           />
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Command Reference</h4>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garctl Commands</h4>
           <div class="overflow-x-auto mb-6">
             <table class="w-full text-sm">
               <thead>
@@ -849,9 +1218,10 @@ end)`}</code></pre>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">move_to_workspace</td><td class="py-2 px-3">1-10</td><td class="py-2 px-3">Move window</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">close</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Close focused window</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">toggle_floating</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Toggle floating state</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">equalize</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Equalize splits</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">reload</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Reload config</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">exit</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Exit gar</td></tr>
-                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">get_workspaces</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query workspace info</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">get_workspaces</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query workspaces</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">get_focused</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query focused window</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-blue">get_tree</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query window tree</td></tr>
                 <tr><td class="py-2 px-3 font-mono text-gar-accent-blue">get_monitors</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Query monitors</td></tr>
@@ -860,9 +1230,6 @@ end)`}</code></pre>
           </div>
 
           <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
-          <p class="text-gar-text-secondary mb-4">
-            Send JSON objects over the socket for scripting:
-          </p>
           <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
             <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
               <span class="text-sm text-gar-text-secondary font-mono">Request format</span>
@@ -889,17 +1256,25 @@ end)`}</code></pre>
 {"success": false, "error": "No focused window"}`}</code></pre>
           </div>
 
-          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Scripting Example</h4>
-          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
-            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
-              <span class="text-sm text-gar-text-secondary font-mono">workspace-info.sh</span>
-            </div>
-            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
-# Get current workspace number
-SOCK="\${XDG_RUNTIME_DIR:-/tmp}/gar.sock"
-
-echo '{"command": "get_workspaces"}' | nc -U "$SOCK" | \\
-  jq -r '.data[] | select(.focused) | .id'`}</code></pre>
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">i3-Compatible IPC</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The i3 socket supports polybar and other i3 ecosystem tools:
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">GET_WORKSPACES</td><td class="py-2 px-3">Returns workspace array</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">GET_OUTPUTS</td><td class="py-2 px-3">Returns monitor info</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">SUBSCRIBE</td><td class="py-2 px-3">Subscribe to events</td></tr>
+                <tr><td class="py-2 px-3 font-mono">GET_VERSION</td><td class="py-2 px-3">Returns WM version</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -925,17 +1300,15 @@ echo '{"command": "get_workspaces"}' | nc -U "$SOCK" | \\
               <MultiTerminal
                 commands={[
                   { command: 'lua ~/.config/gar/init.lua', comment: 'Check Lua syntax' },
+                  { command: 'xev | grep -A2 KeyPress', comment: 'Verify key names' },
                   { command: 'garctl reload', comment: 'Reload after fixing' },
                 ]}
               />
-              <p class="text-gar-text-secondary text-sm mt-3">
-                Use <code class="text-gar-accent-blue">xev</code> to verify key names match your keymap.
-              </p>
             </div>
 
             <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
               <h4 class="font-semibold text-gar-text-primary mb-2">Windows not tiling correctly</h4>
-              <p class="text-gar-text-secondary text-sm mb-3">Some apps set incorrect window types. Check with:</p>
+              <p class="text-gar-text-secondary text-sm mb-3">Some apps set incorrect window types:</p>
               <MultiTerminal
                 commands={[
                   { command: 'xprop | grep WM_CLASS', comment: 'Get window class (click window)' },
@@ -965,11 +1338,9 @@ echo '{"command": "get_workspaces"}' | nc -U "$SOCK" | \\
                 commands={[
                   { command: 'pgrep -x picom', comment: 'Check if picom is running' },
                   { command: 'picom --config ~/.config/gar/picom.conf --diagnostics', comment: 'Test picom config' },
+                  { command: 'glxinfo | grep "direct rendering"', comment: 'Check GPU support' },
                 ]}
               />
-              <p class="text-gar-text-secondary text-sm mt-3">
-                Ensure your GPU supports GLX. Use <code class="text-gar-accent-blue">glxinfo | grep "direct rendering"</code>.
-              </p>
             </div>
 
             <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
@@ -997,6 +1368,20 @@ echo '{"command": "get_workspaces"}' | nc -U "$SOCK" | \\
               />
               <p class="text-gar-text-secondary text-sm mt-3">
                 Configure monitors with <code class="text-gar-accent-blue">xrandr</code> or <code class="text-gar-accent-blue">arandr</code> before starting gar.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garbar not appearing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check if gar.bar is configured:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'grep "gar.bar" ~/.config/gar/init.lua', comment: 'Check for gar.bar table' },
+                  { command: 'pgrep -x garbar', comment: 'Check if garbar is running' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Add <code class="text-gar-accent-blue">gar.bar = {"{}"}</code> to your config or run <code class="text-gar-accent-blue">gar.exec_once("garbar")</code>.
               </p>
             </div>
           </div>
