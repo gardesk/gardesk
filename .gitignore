@@ -1,0 +1,28 @@
+# Build artifacts
+target/
+*.o
+*.a
+*.so
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rust
+Cargo.lock
+**/*.rs.bk
+
+# Local development
+.env
+.env.local
+
+# Claude Code local files
+.claude/
+garlaunch/

@@ -1,0 +1,20 @@
+[submodule "gar"]
+	path = gar
+	url = git@github.com:gardesk/gar.git
+	branch = trunk
+[submodule "garbar"]
+	path = garbar
+	url = git@github.com:gardesk/garbar.git
+	branch = trunk
+[submodule "garbg"]
+	path = garbg
+	url = git@github.com:gardesk/garbg.git
+	branch = trunk
+[submodule "gardm"]
+	path = gardm
+	url = git@github.com:gardesk/gardm.git
+	branch = trunk
+[submodule "garlock"]
+	path = garlock
+	url = git@github.com:gardesk/garlock.git
+	branch = trunk
