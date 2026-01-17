@@ -25,6 +25,17 @@ echo "▶ Building site"
 npm run build
 
 echo ""
+echo "▶ Copying install.sh from gardesk root"
+# Go up to gardesk repo root to get the latest install.sh
+GARDESK_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+if [ -f "$GARDESK_ROOT/install.sh" ]; then
+    cp "$GARDESK_ROOT/install.sh" dist/install.sh
+    echo "  Copied install.sh to dist/"
+else
+    echo "  WARNING: install.sh not found at $GARDESK_ROOT/install.sh"
+fi
+
+echo ""
 echo "▶ Creating release directory"
 sudo mkdir -p "$SITE_DIR/releases/$STAMP"
 
