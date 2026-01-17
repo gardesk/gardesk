@@ -6,6 +6,7 @@ import Badge from '../components/ui/Badge.astro';
 import Button from '../components/ui/Button.astro';
 import Terminal from '../components/ui/Terminal.astro';
 import ImagePlaceholder from '../components/ui/ImagePlaceholder.astro';
+import ImageCarousel from '../components/ui/ImageCarousel.astro';
 
 interface Props {
   name: string;
@@ -18,6 +19,7 @@ interface Props {
   configExample?: string;
   configLanguage?: string;
   githubUrl: string;
+  images?: { src: string; alt: string }[];
 }
 
 const {
@@ -30,7 +32,8 @@ const {
   installCommand,
   configExample,
   configLanguage = 'lua',
-  githubUrl
+  githubUrl,
+  images
 } = Astro.props;
 
 const accentClasses: Record<string, string> = {
@@ -70,14 +73,18 @@ const accentClasses: Record<string, string> = {
         </div>
       </div>
 
-      <!-- Screenshot placeholder -->
+      <!-- Screenshot -->
       <div class="mb-12">
-        <ImagePlaceholder
-          alt={`${name} screenshot`}
-          width={1200}
-          height={700}
-          class="w-full"
-        />
+        {images && images.length > 0 ? (
+          <ImageCarousel images={images} />
+        ) : (
+          <ImagePlaceholder
+            alt={`${name} screenshot`}
+            width={1200}
+            height={700}
+            class="w-full"
+          />
+        )}
       </div>
 
       <!-- Features -->

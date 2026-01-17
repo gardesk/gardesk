@@ -35,6 +35,12 @@ gar.rules({
 -- Gaps and borders
 gar.gaps = { inner = 8, outer = 12 }
 gar.border = { width = 2, color = "#61afef", focus = "#98c379" }`;
+
+const garImages = [
+  { src: '/images/gar1.png', alt: 'gar window manager screenshot - tiled windows' },
+  { src: '/images/gar2.png', alt: 'gar window manager screenshot - workspace view' },
+  { src: '/images/gar3.png', alt: 'gar window manager screenshot - multi-monitor setup' },
+];
 ---
 
 <ComponentPageLayout
@@ -43,6 +49,7 @@ gar.border = { width = 2, color = "#61afef", focus = "#98c379" }`;
   description="An event-driven X11 tiling window manager with a binary tree layout engine. gar gives you full control over your windows with intuitive keyboard-driven navigation and a powerful Lua configuration system."
   status="stable"
   accentColor="blue"
+  images={garImages}
   features={[
     'Binary tree layout with smart splits',
     'Full Lua 5.4 scripting for configuration',
