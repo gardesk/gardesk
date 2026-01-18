@@ -1,36 +1,36 @@
 [submodule "gar"]
 	path = gar
-	url = git@github.com:gardesk/gar.git
+	url = https://github.com/gardesk/gar.git
 	branch = trunk
 [submodule "garbar"]
 	path = garbar
-	url = git@github.com:gardesk/garbar.git
+	url = https://github.com/gardesk/garbar.git
 	branch = trunk
 [submodule "garbg"]
 	path = garbg
-	url = git@github.com:gardesk/garbg.git
+	url = https://github.com/gardesk/garbg.git
 	branch = trunk
 [submodule "gardm"]
 	path = gardm
-	url = git@github.com:gardesk/gardm.git
+	url = https://github.com/gardesk/gardm.git
 	branch = trunk
 [submodule "garlock"]
 	path = garlock
-	url = git@github.com:gardesk/garlock.git
+	url = https://github.com/gardesk/garlock.git
 	branch = trunk
 [submodule "gartk"]
 	path = gartk
-	url = git@github.com:gardesk/gartk.git
+	url = https://github.com/gardesk/gartk.git
 	branch = trunk
 [submodule "garlaunch"]
 	path = garlaunch
-	url = git@github.com:gardesk/garlaunch.git
+	url = https://github.com/gardesk/garlaunch.git
 	branch = trunk
 [submodule "garclip"]
 	path = garclip
-	url = git@github.com:gardesk/garclip.git
+	url = https://github.com/gardesk/garclip.git
 	branch = trunk
 [submodule "garshot"]
 	path = garshot
-	url = git@github.com:gardesk/garshot.git
+	url = https://github.com/gardesk/garshot.git
 	branch = trunk
