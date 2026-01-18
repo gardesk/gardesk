@@ -118,7 +118,13 @@ const components = [
     status: 'beta' as const,
     imagePosition: 'right' as const,
     imageAlt: 'garlaunch application launcher screenshot',
-    accentColor: 'magenta'
+    accentColor: 'magenta',
+    images: [
+      { src: '/images/garlaunch1.png', alt: 'garlaunch application launcher - main view' },
+      { src: '/images/garlaunch2.png', alt: 'garlaunch launcher - search results' },
+      { src: '/images/garlaunch3.png', alt: 'garlaunch launcher - window switcher mode' },
+      { src: '/images/garlaunch4.png', alt: 'garlaunch launcher - drun mode' }
+    ]
   },
   {
     id: 'gartk',
@@ -153,6 +159,29 @@ const components = [
     imagePosition: 'right' as const,
     imageAlt: 'garclip clipboard manager screenshot',
     accentColor: 'yellow'
+  },
+  {
+    id: 'garshot',
+    name: 'garshot',
+    tagline: 'Screenshot Utility',
+    description: 'A fast X11 screenshot tool with interactive region selection, built-in annotation editor, and multiple output formats.',
+    features: [
+      'MIT-SHM for fast captures (~50ms)',
+      'Built-in annotation editor with 8 tools',
+      'Interactive region selection with blur',
+      'Color picker with HSV, RGB, and eyedropper',
+      'PNG, JPEG, WebP output formats'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'garshot screenshot utility',
+    accentColor: 'yellow',
+    images: [
+      { src: '/images/garshot1.png', alt: 'garshot screenshot with annotation editor' },
+      { src: '/images/garshot2.png', alt: 'garshot region selection with blur' },
+      { src: '/images/garshot3.png', alt: 'garshot annotation tools' },
+      { src: '/images/garshot4.png', alt: 'garshot color picker' }
+    ]
   }
 ];
 ---

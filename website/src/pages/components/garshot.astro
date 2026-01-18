@@ -1,0 +1,1098 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garshotImages = [
+  { src: '/images/garshot1.png', alt: 'garshot screenshot with annotation editor' },
+  { src: '/images/garshot2.png', alt: 'garshot region selection with blur' },
+  { src: '/images/garshot3.png', alt: 'garshot annotation tools' },
+  { src: '/images/garshot4.png', alt: 'garshot color picker' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'capture-modes',
+    label: 'Capture Modes',
+    children: [
+      { id: 'screen-capture', label: 'Screen' },
+      { id: 'region-capture', label: 'Region' },
+      { id: 'window-capture', label: 'Window' },
+      { id: 'active-window', label: 'Active Window' },
+    ]
+  },
+  {
+    id: 'annotations',
+    label: 'Annotations',
+    children: [
+      { id: 'annotation-tools', label: 'Tools' },
+      { id: 'annotation-colors', label: 'Colors' },
+      { id: 'annotation-keyboard', label: 'Keyboard Shortcuts' },
+    ]
+  },
+  {
+    id: 'output',
+    label: 'Output',
+    children: [
+      { id: 'formats', label: 'Formats' },
+      { id: 'clipboard', label: 'Clipboard' },
+      { id: 'naming', label: 'Naming Patterns' },
+    ]
+  },
+  {
+    id: 'daemon',
+    label: 'Daemon Mode',
+    children: [
+      { id: 'ipc', label: 'IPC Protocol' },
+      { id: 'garshotctl', label: 'garshotctl' },
+    ]
+  },
+  {
+    id: 'selection-ui',
+    label: 'Selection UI',
+  },
+  {
+    id: 'monitors',
+    label: 'Multi-Monitor',
+  },
+];
+---
+
+<BaseLayout title="garshot - gardesk" description="Screenshot Utility. A fast X11 screenshot tool with built-in annotation editor, interactive selection, and multiple output formats.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-yellow">garshot</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Screenshot Utility</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A fast X11 screenshot tool with built-in annotation editor, interactive region selection, and multiple output formats. garshot uses MIT-SHM for performance (~50ms full-screen captures) and includes 8 annotation tools with a color picker featuring HSV, RGB, and eyedropper modes.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garshot" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garshotImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'MIT-SHM for fast captures (~50ms full-screen)',
+            'Built-in annotation editor with 8 tools',
+            'Color picker with HSV, RGB, palette & eyedropper',
+            'Interactive region selection with blur overlay',
+            'Window capture with optional decorations',
+            'Multiple formats: PNG, JPEG, WebP',
+            'Automatic clipboard copy via xclip/xsel',
+            'Daemon mode for instant subsequent captures',
+            'Undo/redo with 50 history levels',
+            'Multi-monitor support via XRandR'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-yellow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get up and running with garshot in just a few steps. This guide covers installation, basic usage, and essential commands.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garshot using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.dev/install.sh | bash -s -- --component=garshot', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garshot && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. System Dependencies</h4>
+          <p class="text-gar-text-secondary mb-4">
+            garshot requires X11 and optionally xclip for clipboard support:
+          </p>
+          <MultiTerminal
+            title="Install dependencies"
+            commands={[
+              { command: 'sudo pacman -S libx11 xclip', comment: 'Arch' },
+              { command: 'sudo apt install libx11-dev xclip', comment: 'Debian/Ubuntu' },
+              { command: 'sudo dnf install libX11-devel xclip', comment: 'Fedora' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Basic Usage</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Take your first screenshots with these commands:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garshot', comment: 'Capture full screen (default)' },
+              { command: 'garshot region', comment: 'Interactive region selection' },
+              { command: 'garshot window', comment: 'Capture active window' },
+              { command: 'garshot screen -m HDMI-1', comment: 'Capture specific monitor' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Output Options</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Control where screenshots go:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garshot -o ~/screenshot.png', comment: 'Save to specific path' },
+              { command: 'garshot -f jpeg', comment: 'Use JPEG format' },
+              { command: 'garshot --no-clipboard', comment: 'Skip clipboard copy' },
+              { command: 'garshot -c', comment: 'Include cursor in screenshot' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Annotation Mode</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Edit screenshots with the built-in annotation editor:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garshot screen --annotate', comment: 'Capture + annotate' },
+              { command: 'garshot region --annotate', comment: 'Select region + annotate' },
+              { command: 'garshot annotate screenshot.png', comment: 'Annotate existing file' },
+            ]}
+            class="mb-6"
+          />
+          <p class="text-gar-text-secondary mb-4">
+            In the editor, use <code class="text-gar-accent-yellow">Ctrl+Enter</code> to save or <code class="text-gar-accent-yellow">Escape</code> to cancel.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">6. Daemon Mode</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run garshot as a daemon for faster subsequent captures:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garshot daemon &', comment: 'Start daemon in background' },
+              { command: 'garshotctl screen', comment: 'Capture via daemon' },
+              { command: 'garshotctl region', comment: 'Region select via daemon' },
+              { command: 'garshotctl status', comment: 'Check daemon status' },
+            ]}
+          />
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garshot uses TOML for configuration. The config file is located at <code class="text-gar-accent-yellow">~/.config/garshot/config.toml</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garshot/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[general]
+# Default save directory (supports ~ expansion)
+save_dir = "~/Pictures/Screenshots"
+
+# Default output format: png, jpeg, webp, ppm
+format = "png"
+
+# Quality for JPEG/WebP (1-100)
+quality = 90
+
+# Include cursor in screenshots by default
+include_cursor = false
+
+[selection]
+# Blur radius for background during selection (pixels)
+blur_radius = 15
+
+# Selection border color (hex)
+line_color = "#ff6600"
+
+# Selection border width (pixels)
+line_width = 2
+
+[naming]
+# Filename pattern with tokens:
+#   %Y %m %d %H %M %S - strftime tokens
+#   %N - global counter (persistent)
+#   %n - daily counter (resets each day)
+#   %w - window name (for window captures)
+pattern = "screenshot-%Y%m%d-%H%M%S"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">General Settings</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">save_dir</td><td class="py-2 px-3">~/Pictures/Screenshots</td><td class="py-2 px-3">Default save directory</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">format</td><td class="py-2 px-3">png</td><td class="py-2 px-3">Output format</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">quality</td><td class="py-2 px-3">90</td><td class="py-2 px-3">JPEG/WebP quality (1-100)</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">include_cursor</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Include cursor by default</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Selection Settings</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">blur_radius</td><td class="py-2 px-3">15</td><td class="py-2 px-3">Background blur amount</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">line_color</td><td class="py-2 px-3">#ff6600</td><td class="py-2 px-3">Selection border color</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">line_width</td><td class="py-2 px-3">2</td><td class="py-2 px-3">Selection border width</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Naming Pattern Tokens</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Token</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Example</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%Y</td><td class="py-2 px-3">Year (4 digits)</td><td class="py-2 px-3">2026</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%m</td><td class="py-2 px-3">Month (01-12)</td><td class="py-2 px-3">01</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%d</td><td class="py-2 px-3">Day (01-31)</td><td class="py-2 px-3">17</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%H</td><td class="py-2 px-3">Hour (00-23)</td><td class="py-2 px-3">14</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%M</td><td class="py-2 px-3">Minute (00-59)</td><td class="py-2 px-3">30</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%S</td><td class="py-2 px-3">Second (00-59)</td><td class="py-2 px-3">45</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%N</td><td class="py-2 px-3">Global counter</td><td class="py-2 px-3">42</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">%n</td><td class="py-2 px-3">Daily counter</td><td class="py-2 px-3">5</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">%w</td><td class="py-2 px-3">Window name</td><td class="py-2 px-3">firefox</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garshot is a screenshot utility designed for the gardesk desktop environment. It provides fast screen capture using MIT-SHM (shared memory), interactive region selection with a blur overlay, and flexible output options.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garshot consists of three crates:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><code class="text-gar-accent-yellow">garshot</code> - Main binary for captures and daemon</li>
+                <li><code class="text-gar-accent-yellow">garshotctl</code> - Control client for daemon communication</li>
+                <li><code class="text-gar-accent-yellow">garshot-ipc</code> - Shared IPC protocol types</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Performance</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garshot uses the MIT-SHM X11 extension for zero-copy screen capture:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>~50ms for full-screen 1920x1080 capture</li>
+                <li>Instant subsequent captures in daemon mode</li>
+                <li>Fast PNG compression with Sub filter</li>
+              </ul>
+            </div>
+
+            <!-- Capture Modes -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Capture Modes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garshot supports multiple capture modes for different use cases. Use the appropriate command for your needs.
+              </p>
+            </div>
+
+            <!-- Screen Capture -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Screen Capture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Capture the entire screen or a specific monitor.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot screen', comment: 'Capture entire screen' },
+                  { command: 'garshot screen -m HDMI-1', comment: 'Capture specific monitor' },
+                  { command: 'garshot screen -c', comment: 'Include cursor' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Options</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-m, --monitor</td><td class="py-2 px-3">Monitor name (e.g., HDMI-1, eDP-1)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-c, --cursor</td><td class="py-2 px-3">Include cursor in capture</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-o, --output</td><td class="py-2 px-3">Output file path</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">-f, --format</td><td class="py-2 px-3">Output format (png, jpeg, webp)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Region Capture -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Region Capture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Interactive region selection with a blur overlay. Click and drag to select an area.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot region', comment: 'Start region selection' },
+                  { command: 'garshot region -b 20', comment: 'Custom blur radius' },
+                  { command: 'garshot region -c', comment: 'Include cursor' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Controls</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><strong>Left Click + Drag</strong> - Select region</li>
+                <li><strong>Escape</strong> - Cancel selection</li>
+                <li><strong>Release</strong> - Confirm and capture</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Options</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-b, --blur</td><td class="py-2 px-3">Blur radius (default: 15)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-c, --cursor</td><td class="py-2 px-3">Include cursor in capture</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">--no-clipboard</td><td class="py-2 px-3">Skip clipboard copy</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Window Capture -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Window Capture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Capture a specific window by ID or the currently focused window.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot window', comment: 'Capture active window' },
+                  { command: 'garshot window -i 0x1c00004', comment: 'Capture by window ID (hex)' },
+                  { command: 'garshot window -d', comment: 'Include window decorations' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Options</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-i, --id</td><td class="py-2 px-3">Window ID (hex 0x... or decimal)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">-d, --decorations</td><td class="py-2 px-3">Include WM decorations/frame</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">-c, --cursor</td><td class="py-2 px-3">Include cursor if visible</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-4">Finding Window IDs</h4>
+              <MultiTerminal
+                commands={[
+                  { command: 'xwininfo', comment: 'Click window to get ID' },
+                  { command: 'xdotool getactivewindow', comment: 'Get active window ID' },
+                ]}
+              />
+            </div>
+
+            <!-- Active Window -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Active Window Capture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Quick capture of the currently focused window using EWMH _NET_ACTIVE_WINDOW.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshotctl active', comment: 'Capture active window via daemon' },
+                  { command: 'garshotctl active -d', comment: 'Include decorations' },
+                ]}
+              />
+            </div>
+
+            <!-- Annotations -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Annotations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garshot includes a built-in annotation editor for marking up screenshots. Add arrows, text, highlights, blur regions, and more.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot screen --annotate', comment: 'Capture and annotate' },
+                  { command: 'garshot annotate existing.png', comment: 'Annotate existing file' },
+                ]}
+                class="mb-4"
+              />
+              <p class="text-gar-text-secondary text-sm">
+                The annotation editor opens in a dialog window with a toolbar at the top. Use <code class="text-gar-accent-yellow">Ctrl+Enter</code> to save or <code class="text-gar-accent-yellow">Escape</code> to cancel.
+              </p>
+            </div>
+
+            <!-- Annotation Tools -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Annotation Tools</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Eight drawing tools are available via toolbar or keyboard shortcuts:
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Tool</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Arrow</td><td class="py-2 px-3 font-mono text-gar-accent-green">A</td><td class="py-2 px-3">Lines with arrowhead (default tool)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Brush</td><td class="py-2 px-3 font-mono text-gar-accent-green">B</td><td class="py-2 px-3">Freehand drawing</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Line</td><td class="py-2 px-3 font-mono text-gar-accent-green">L</td><td class="py-2 px-3">Straight lines</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Rectangle</td><td class="py-2 px-3 font-mono text-gar-accent-green">R</td><td class="py-2 px-3">Boxes (stroke or fill)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Ellipse</td><td class="py-2 px-3 font-mono text-gar-accent-green">E</td><td class="py-2 px-3">Circles and ovals</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Text</td><td class="py-2 px-3 font-mono text-gar-accent-green">T</td><td class="py-2 px-3">Text annotations</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Blur</td><td class="py-2 px-3 font-mono text-gar-accent-green">X</td><td class="py-2 px-3">Pixelate/redact regions</td></tr>
+                    <tr><td class="py-2 px-3 font-medium">Highlight</td><td class="py-2 px-3 font-mono text-gar-accent-green">H</td><td class="py-2 px-3">Semi-transparent highlighter (40% opacity)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tool Properties</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><strong>Line width:</strong> Adjust with <code class="text-gar-accent-green">+</code> / <code class="text-gar-accent-green">-</code> keys (1-50px)</li>
+                <li><strong>Color:</strong> Click toolbar swatch or use number keys 1-9 for presets</li>
+                <li><strong>Fill mode:</strong> Rectangle and Ellipse can be filled or stroked</li>
+              </ul>
+            </div>
+
+            <!-- Annotation Colors -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Colors</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The color picker provides three ways to select colors:
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">HSV Tab</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Hue ring around a saturation/value square. Click the ring to change hue, click the square for saturation and brightness.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">RGB Tab</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Sliders for Red, Green, Blue, and Alpha (0-255 each).
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Palette Tab</h4>
+              <p class="text-gar-text-secondary mb-4">
+                9 preset colors (keyboard 1-9), extended palette with 36 colors, and recent colors history.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Quick Color Presets</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Color</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">1</td><td class="py-2 px-3">Red</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">2</td><td class="py-2 px-3">Orange (default)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">3</td><td class="py-2 px-3">Yellow</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">4</td><td class="py-2 px-3">Green</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">5</td><td class="py-2 px-3">Cyan</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">6</td><td class="py-2 px-3">Blue</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">7</td><td class="py-2 px-3">Magenta</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">8</td><td class="py-2 px-3">White</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">9</td><td class="py-2 px-3">Black</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Eyedropper</h4>
+              <p class="text-gar-text-secondary">
+                Click the eyedropper button in the color picker to sample any color from the screen. Click to pick, Escape to cancel.
+              </p>
+            </div>
+
+            <!-- Annotation Keyboard Shortcuts -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keyboard Shortcuts</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Global</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Enter</td><td class="py-2 px-3">Save and close</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Escape</td><td class="py-2 px-3">Cancel (if not editing text)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Z</td><td class="py-2 px-3">Undo</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+Z / Ctrl+Y</td><td class="py-2 px-3">Redo</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tool Selection</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">A</td><td class="py-2 px-3">Arrow</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">B</td><td class="py-2 px-3">Brush</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">L</td><td class="py-2 px-3">Line</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">R</td><td class="py-2 px-3">Rectangle</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">E</td><td class="py-2 px-3">Ellipse</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">T</td><td class="py-2 px-3">Text</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">X</td><td class="py-2 px-3">Blur</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">H</td><td class="py-2 px-3">Highlight</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Line Width</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">+ or =</td><td class="py-2 px-3">Increase width (max 50px)</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">-</td><td class="py-2 px-3">Decrease width (min 1px)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Text Tool</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Click</td><td class="py-2 px-3">Start typing at position</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Return</td><td class="py-2 px-3">Finish text entry</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Backspace</td><td class="py-2 px-3">Delete character</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Escape</td><td class="py-2 px-3">Cancel text entry</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Output -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Output</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garshot supports multiple output formats and destinations.
+              </p>
+            </div>
+
+            <!-- Formats -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Output Formats</h3>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Format</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Extension</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">png</td><td class="py-2 px-3">.png</td><td class="py-2 px-3">Lossless, fast compression (default)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">jpeg</td><td class="py-2 px-3">.jpg</td><td class="py-2 px-3">Lossy, configurable quality</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">webp</td><td class="py-2 px-3">.webp</td><td class="py-2 px-3">Modern format, good compression</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">ppm</td><td class="py-2 px-3">.ppm</td><td class="py-2 px-3">Uncompressed, debugging/archival</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot -f png', comment: 'PNG (default)' },
+                  { command: 'garshot -f jpeg -q 85', comment: 'JPEG with custom quality' },
+                ]}
+              />
+            </div>
+
+            <!-- Clipboard -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Clipboard</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Screenshots are automatically copied to the clipboard by default. garshot uses xclip (preferred) or xsel as a fallback.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot', comment: 'Saves file + copies to clipboard' },
+                  { command: 'garshot --no-clipboard', comment: 'Save file only' },
+                ]}
+                class="mb-4"
+              />
+              <p class="text-gar-text-secondary text-sm">
+                Clipboard errors are logged but don't fail the capture. Install xclip for full MIME type support.
+              </p>
+            </div>
+
+            <!-- Naming -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Naming Patterns</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Customize output filenames using the <code class="text-gar-accent-yellow">[naming]</code> section in config:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[naming]
+# Examples:
+pattern = "screenshot-%Y%m%d-%H%M%S"     # screenshot-20260117-143045.png
+pattern = "screen-%N"                     # screen-42.png (persistent counter)
+pattern = "%w-%n"                         # firefox-5.png (daily counter)
+pattern = "capture-%Y-%m-%d_%H-%M-%S"     # capture-2026-01-17_14-30-45.png`}</code></pre>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                If a file with the same name exists, garshot appends <code class="text-gar-accent-yellow">-1</code>, <code class="text-gar-accent-yellow">-2</code>, etc.
+              </p>
+            </div>
+
+            <!-- Daemon -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Running garshot as a daemon provides instant subsequent captures by keeping the X11 connection and SHM buffer allocated.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot daemon', comment: 'Start daemon (foreground)' },
+                  { command: 'garshot daemon &', comment: 'Start daemon (background)' },
+                  { command: 'systemctl --user start garshot', comment: 'Start via systemd' },
+                ]}
+              />
+            </div>
+
+            <!-- IPC -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The daemon listens on a Unix socket for JSON-formatted commands.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+              <code class="text-gar-accent-yellow">$XDG_RUNTIME_DIR/garshot.sock</code> or <code class="text-gar-accent-yellow">/tmp/garshot.sock</code>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3 mt-4">Request Types</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{"type": "Screen", "monitor": null, "cursor": false}
+{"type": "Region", "cursor": false}
+{"type": "Window", "id": null, "decorations": false, "cursor": false}
+{"type": "ActiveWindow", "decorations": false, "cursor": false}
+{"type": "Status"}
+{"type": "ListMonitors"}
+{"type": "Shutdown"}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success with file path
+{"success": true, "path": "/home/user/Pictures/screenshot.png"}
+
+// Success with base64 data (stdout mode)
+{"success": true, "data": "iVBORw0KGgo..."}
+
+// Error
+{"success": false, "error": "No active window"}`}</code></pre>
+              </div>
+            </div>
+
+            <!-- garshotctl -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">garshotctl</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Command-line client for controlling the garshot daemon.
+              </p>
+
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">screen [OPTIONS]</td><td class="py-2 px-3">Full screen capture</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">region [OPTIONS]</td><td class="py-2 px-3">Interactive region selection</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">window [OPTIONS]</td><td class="py-2 px-3">Window capture</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">active [OPTIONS]</td><td class="py-2 px-3">Active window capture</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">monitors</td><td class="py-2 px-3">List available monitors</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">status</td><td class="py-2 px-3">Check daemon status</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">shutdown</td><td class="py-2 px-3">Stop the daemon</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <MultiTerminal
+                commands={[
+                  { command: 'garshotctl screen -m eDP-1', comment: 'Capture laptop screen' },
+                  { command: 'garshotctl region -b 20', comment: 'Region with custom blur' },
+                  { command: 'garshotctl monitors', comment: 'List monitors' },
+                ]}
+              />
+            </div>
+
+            <!-- Selection UI -->
+            <div slot="doc-17">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Selection UI</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The region selection overlay uses a blurred background to help you focus on the selection area.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">How It Works</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Full-screen capture is taken and blurred</li>
+                <li>Selected region shows the original (unblurred) image</li>
+                <li>Orange border shows selection bounds</li>
+                <li>Dimensions displayed in top-left corner</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Technical Details</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Box blur approximation (3 passes ≈ Gaussian)</li>
+                <li>Server-side pixmaps for fast rendering</li>
+                <li>CopyArea for instant region updates</li>
+                <li>Crosshair cursor during selection</li>
+              </ul>
+            </div>
+
+            <!-- Multi-Monitor -->
+            <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Multi-Monitor Support</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garshot uses XRandR to detect and capture from multiple monitors.
+              </p>
+              <MultiTerminal
+                commands={[
+                  { command: 'garshot monitors', comment: 'List all monitors' },
+                  { command: 'garshot screen -m HDMI-1', comment: 'Capture specific monitor' },
+                  { command: 'garshot screen', comment: 'Capture entire virtual screen' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Monitor Info</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The <code class="text-gar-accent-yellow">monitors</code> command shows:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Monitor name (e.g., HDMI-1, eDP-1)</li>
+                <li>Resolution and position</li>
+                <li>Primary monitor flag</li>
+              </ul>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Practical examples of using garshot for everyday screenshot tasks.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keybinding with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Add screenshot keybindings to your gar configuration:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Screenshot keybindings
+gar.bind("Print", function() gar.exec("garshot screen") end)
+gar.bind("shift+Print", function() gar.exec("garshot region") end)
+gar.bind("ctrl+Print", function() gar.exec("garshot window") end)
+gar.bind("mod+Print", function() gar.exec("garshot screen -c") end)
+
+-- Or using garshotctl with daemon
+gar.bind("Print", function() gar.exec("garshotctl screen") end)
+gar.bind("shift+Print", function() gar.exec("garshotctl region") end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Quick Share to Clipboard</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Take a screenshot and immediately paste into chat/email:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'garshot region', comment: 'Select area (auto-copied to clipboard)' },
+              { command: 'Ctrl+V', comment: 'Paste in application' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Timed Screenshots</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use sleep for delayed captures:
+          </p>
+          <MultiTerminal
+            commands={[
+              { command: 'sleep 5 && garshot screen', comment: '5 second delay' },
+              { command: 'sleep 3 && garshot region', comment: '3 seconds then select' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Batch Screenshots</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Capture multiple monitors or windows in sequence:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">batch-screenshots.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+# Capture all monitors
+for monitor in $(garshot monitors | grep -oP '^\S+'); do
+    garshot screen -m "$monitor" -o "~/Screenshots/$monitor.png"
+done`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Auto-Upload Script</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Upload screenshots automatically:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">screenshot-upload.sh</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`#!/bin/bash
+FILE=$(garshot region -o /tmp/screenshot.png 2>&1 | grep -oP 'Saved to: \K.*')
+if [ -f "$FILE" ]; then
+    URL=$(curl -s -F "file=@$FILE" https://your-image-host.com/upload)
+    echo "$URL" | xclip -selection clipboard
+    notify-send "Screenshot uploaded" "$URL"
+fi`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Systemd User Service</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run garshot daemon automatically on login:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/systemd/user/garshot.service</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Unit]
+Description=garshot screenshot daemon
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/garshot daemon
+Restart=on-failure
+
+[Install]
+WantedBy=default.target`}</code></pre>
+          </div>
+          <MultiTerminal
+            commands={[
+              { command: 'systemctl --user enable garshot', comment: 'Enable on login' },
+              { command: 'systemctl --user start garshot', comment: 'Start now' },
+            ]}
+          />
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Clipboard not working</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Ensure xclip is installed:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'which xclip', comment: 'Check if xclip is installed' },
+                  { command: 'sudo pacman -S xclip', comment: 'Install on Arch' },
+                  { command: 'sudo apt install xclip', comment: 'Install on Debian/Ubuntu' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">MIT-SHM error</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">SHM extension may not be available:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xdpyinfo | grep MIT-SHM', comment: 'Check SHM support' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                If running over SSH, use <code class="text-gar-accent-yellow">-X</code> (not <code class="text-gar-accent-yellow">-Y</code>) or consider running garshot locally.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garshotctl: connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">The daemon may not be running:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pgrep -x garshot', comment: 'Check if daemon is running' },
+                  { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garshot.sock', comment: 'Check socket exists' },
+                  { command: 'garshot daemon &', comment: 'Start daemon' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Selection overlay not appearing</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check DISPLAY environment:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $DISPLAY', comment: 'Should show :0 or similar' },
+                  { command: 'DISPLAY=:0 garshot region', comment: 'Explicitly set display' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Monitor not found</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify monitor name with xrandr:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xrandr --query | grep " connected"', comment: 'List connected monitors' },
+                  { command: 'garshot monitors', comment: 'List monitors known to garshot' },
+                ]}
+              />
+              <p class="text-gar-text-secondary text-sm mt-3">
+                Use the exact name shown (e.g., <code class="text-gar-accent-yellow">HDMI-1</code> not <code class="text-gar-accent-yellow">hdmi-1</code>).
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Cursor not appearing in screenshot</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">XFixes extension may not be available:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'xdpyinfo | grep XFIXES', comment: 'Check XFixes support' },
+                  { command: 'garshot -c screen', comment: 'Explicitly request cursor' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Screenshots save with wrong permissions</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check umask settings:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'umask', comment: 'Check current umask' },
+                  { command: 'chmod 644 ~/Pictures/Screenshots/*.png', comment: 'Fix permissions' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Debug logging</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Enable verbose output:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=debug garshot screen', comment: 'Debug mode' },
+                  { command: 'RUST_LOG=trace garshot region', comment: 'Trace mode (very verbose)' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
