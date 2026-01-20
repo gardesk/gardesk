@@ -34,3 +34,6 @@
 	path = garshot
 	url = https://github.com/gardesk/garshot.git
 	branch = trunk
+[submodule "gartray"]
+	path = gartray
+	url = https://github.com/gardesk/gartray.git
