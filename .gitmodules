@@ -37,3 +37,7 @@
 [submodule "gartray"]
 	path = gartray
 	url = https://github.com/gardesk/gartray.git
+[submodule "garfield"]
+	path = garfield
+	url = https://github.com/gardesk/garfield.git
+	branch = trunk
