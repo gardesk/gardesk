@@ -84,6 +84,10 @@ const docsItems = [
     label: 'Bar Integration',
   },
   {
+    id: 'terminal',
+    label: 'Terminal Integration',
+  },
+  {
     id: 'session',
     label: 'Session Management',
   },
@@ -1015,8 +1019,76 @@ gar.exec_once("garbar")`}</code></pre>
               </p>
             </div>
 
-            <!-- Session Management -->
+            <!-- Terminal Integration -->
             <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Terminal Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar integrates with <a href="/components/garterm" class="text-gar-accent-blue hover:underline">garterm</a> for shared Lua configuration and easy spawning.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configure garterm via Lua</h4>
+              <p class="text-gar-text-secondary mb-4">
+                When garterm starts, it reads the <code class="text-gar-accent-blue">gar.terminal</code> table from your gar config:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Configure garterm from gar's init.lua
+gar.terminal = {
+    shell = "/bin/zsh",
+    font = {
+        family = "JetBrains Mono",
+        size = 14.0,
+    },
+    colors = {
+        preset = "tokyo_night",  -- or catppuccin, gruvbox, dracula, nord, etc.
+    },
+    tab_bar = {
+        position = "top",
+        show_single_tab = false,
+    },
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Spawn garterm</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Set garterm as default terminal
+gar.set("spawns", {
+    terminal = "garterm"
+})
+
+-- Keybind to spawn terminal
+gar.bind("Mod + Return", function()
+    gar.spawn("terminal")
+end)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Named Sessions</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Define reusable terminal layouts:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.terminal.sessions = {
+    webdev = {
+        tabs = {
+            { title = "Frontend", cwd = "~/app", cmd = "npm run dev" },
+            { title = "Backend", cmd = "cargo watch -x run" },
+            { title = "Shell" },
+        }
+    },
+}
+
+-- Load session via keybind or gartermctl
+gar.bind("Mod + Shift + w", function()
+    os.execute("gartermctl load-session webdev")
+end)`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                See the <a href="/components/garterm" class="text-gar-accent-blue hover:underline">garterm documentation</a> for full configuration options.
+              </p>
+            </div>
+
+            <!-- Session Management -->
+            <div slot="doc-19">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Management</h3>
               <p class="text-gar-text-secondary mb-4">
                 The <code class="text-gar-accent-blue">gar-session.sh</code> script handles session setup.
@@ -1042,7 +1114,7 @@ gar.exec_once("garbar")`}</code></pre>
             </div>
 
             <!-- Mouse Bindings -->
-            <div slot="doc-19">
+            <div slot="doc-20">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Mouse Bindings</h3>
               <p class="text-gar-text-secondary mb-4">
                 gar has built-in mouse bindings for window interaction. These are not configurable via Lua.

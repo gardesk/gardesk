@@ -1,0 +1,1478 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const gartermImages = [
+  { src: '/images/thumbs/garterm1.png', alt: 'garterm terminal - default view' },
+  { src: '/images/thumbs/garterm2.png', alt: 'garterm terminal - split panes' },
+  { src: '/images/thumbs/garterm3.png', alt: 'garterm terminal - tabs' },
+  { src: '/images/thumbs/garterm4.png', alt: 'garterm terminal - color themes' },
+  { src: '/images/thumbs/garterm5.png', alt: 'garterm terminal - configuration' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'keybinds', label: 'Keybinds' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'workspace', label: 'Workspace Structure' },
+      { id: 'rendering', label: 'GPU Rendering' },
+    ]
+  },
+  {
+    id: 'terminal',
+    label: 'Terminal Emulation',
+    children: [
+      { id: 'escape-sequences', label: 'Escape Sequences' },
+      { id: 'mouse-support', label: 'Mouse Support' },
+      { id: 'clipboard', label: 'Clipboard' },
+    ]
+  },
+  {
+    id: 'ui-features',
+    label: 'UI Features',
+    children: [
+      { id: 'tabs', label: 'Tab Management' },
+      { id: 'splits', label: 'Pane Splits' },
+      { id: 'selection', label: 'Text Selection' },
+      { id: 'search', label: 'Search' },
+      { id: 'scrollback', label: 'Scrollback' },
+    ]
+  },
+  {
+    id: 'color-themes',
+    label: 'Color Themes',
+  },
+  {
+    id: 'gar-integration',
+    label: 'gar Integration',
+  },
+  {
+    id: 'sessions',
+    label: 'Sessions',
+  },
+];
+---
+
+<BaseLayout title="garterm - gardesk" description="GPU-accelerated terminal emulator with tabs, splits, and deep gar integration. VT100-compatible with 8 color themes.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-cyan">garterm</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">GPU-Accelerated Terminal Emulator</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A fast terminal emulator with GPU-accelerated rendering via wgpu. Features tabbed interface with split panes,
+          VT100-compatible terminal emulation, 8 built-in color themes, and deep integration with gar's Lua configuration.
+          Control running instances via gartermctl for scripting and automation.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garterm" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={gartermImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'GPU-accelerated rendering with wgpu',
+            'Tabbed interface with horizontal/vertical splits',
+            'VT100/xterm-compatible terminal emulation',
+            '8 built-in color themes (Tokyo Night, Catppuccin, etc.)',
+            'Lua + TOML configuration',
+            'Deep integration with gar window manager',
+            'IPC control via gartermctl',
+            'Declarative session management',
+            'Text selection (normal, line, block modes)',
+            'Incremental search with highlighting',
+            '10,000 line scrollback buffer',
+            'Mouse support (X10, SGR, urxvt encodings)',
+            'OSC 52 clipboard operations',
+            'Shell integration (OSC 133)',
+            'Font fallbacks with Nerd Font support',
+            'Configurable tab bar with path shortening',
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-cyan" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get garterm running standalone or integrated with the gar window manager.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garterm', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garterm && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Running garterm</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garterm', comment: 'Start with default config' },
+              { command: 'garterm --shell /bin/zsh', comment: 'Start with specific shell' },
+              { command: 'garterm --font-size 14', comment: 'Custom font size' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a configuration file or integrate with gar:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'mkdir -p ~/.config/garterm', comment: 'Create config directory' },
+              { command: '$EDITOR ~/.config/garterm/config.toml', comment: 'Edit TOML config (standalone)' },
+              { command: '$EDITOR ~/.config/gar/init.lua', comment: 'Or configure via gar.terminal table' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Control with gartermctl</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartermctl new-tab', comment: 'Open new tab' },
+              { command: 'gartermctl split --horizontal', comment: 'Split pane horizontally' },
+              { command: 'gartermctl next-tab', comment: 'Switch to next tab' },
+              { command: 'gartermctl send "ls -la\\n"', comment: 'Send text to terminal' },
+              { command: 'gartermctl load-session webdev', comment: 'Load named session' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Basic Navigation</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">New tab</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+T</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Close tab</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+W</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Next/prev tab</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+] / Alt+[</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Split vertical</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+Enter</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Split horizontal</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+\</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Focus direction</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+Arrow</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3">Search</td>
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+F</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garterm can be configured via TOML at <code class="text-gar-accent-cyan">~/.config/garterm/config.toml</code>
+            or via Lua in gar's <code class="text-gar-accent-cyan">~/.config/gar/init.lua</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garterm/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[general]
+shell = "/bin/zsh"
+shell_args = ["-l"]
+working_directory = "~"
+vsync = true
+log_level = "info"
+
+[font]
+family = "JetBrains Mono"
+size = 14.0
+bold_family = "JetBrains Mono Bold"
+italic_family = "JetBrains Mono Italic"
+bold_is_bright = false
+letter_spacing = 0
+line_spacing = 0
+
+[window]
+title = "garterm"
+class = "garterm"
+padding = [8, 8]
+columns = 120
+rows = 36
+opacity = 1.0
+
+[terminal]
+scrollback_lines = 10000
+scroll_lines = 3
+bracketed_paste = true
+clipboard_write = true
+clipboard_read = false    # Security: disabled by default
+close_on_exit = true
+term = "xterm-256color"
+
+[colors]
+preset = "tokyo_night"
+# Override individual colors:
+# foreground = "#c0caf5"
+# background = "#1a1b26"
+# cursor = "#c0caf5"
+
+[mouse]
+copy_on_select = true
+middle_click_paste = true
+right_click = "paste"
+word_chars = "-_"
+
+[bell]
+visual = true
+visual_duration_ms = 100
+audio = false
+
+[tab_bar]
+height = 24
+position = "top"
+show_single_tab = false
+max_tab_width = 200
+shorten_paths = true`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lua Configuration (with gar)</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.terminal = {
+    shell = "/bin/zsh",
+    font = {
+        family = "JetBrains Mono",
+        size = 14.0,
+    },
+    colors = {
+        preset = "catppuccin",
+    },
+    tab_bar = {
+        height = 28,
+        position = "top",
+        show_single_tab = false,
+        shorten_paths = true,
+    },
+    -- Named sessions for quick workspace setup
+    sessions = {
+        webdev = {
+            tabs = {
+                { title = "Frontend", cwd = "~/app", cmd = "npm run dev" },
+                { title = "Backend", cmd = "python manage.py runserver" },
+                { title = "Shell" },
+            }
+        },
+    },
+}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Priority</h4>
+          <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-1">
+            <li>CLI arguments (highest priority)</li>
+            <li>Lua config (<code class="text-gar-accent-cyan">gar.terminal</code> table)</li>
+            <li>TOML config (<code class="text-gar-accent-cyan">~/.config/garterm/config.toml</code>)</li>
+            <li>Built-in defaults (lowest priority)</li>
+          </ol>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- doc-0: Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm is a GPU-accelerated terminal emulator designed for the gardesk X11 desktop environment.
+                It features modern rendering with wgpu, a tabbed interface with split panes, and deep integration
+                with gar's Lua configuration system.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Components</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Binary</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">garterm</td>
+                      <td class="py-2 px-3">Main terminal emulator daemon</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">gartermctl</td>
+                      <td class="py-2 px-3">Control client for IPC commands</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Dependencies</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>wgpu</strong> - GPU-accelerated rendering</li>
+                <li><strong>fontdue</strong> - Font rasterization</li>
+                <li><strong>vte</strong> - VT100 terminal parsing</li>
+                <li><strong>gartk</strong> - X11 window integration</li>
+                <li><strong>mlua</strong> - Lua configuration support</li>
+              </ul>
+            </div>
+
+            <!-- doc-1: Architecture (parent) -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Architecture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm is built as a Rust workspace with three crates. Select a topic from the sidebar to learn more.
+              </p>
+            </div>
+
+            <!-- doc-2: Workspace Structure -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Workspace Structure</h3>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garterm/
+├── garterm/           # Main terminal emulator
+│   └── src/
+│       ├── app.rs         # Application logic, event loop
+│       ├── config/        # Config loading (TOML + Lua)
+│       ├── terminal/      # VTE parsing, grid, cursor
+│       ├── render/        # GPU rendering pipeline
+│       ├── ui/            # Tabs, panes, splits
+│       ├── input/         # Keyboard, mouse, clipboard
+│       ├── pty/           # PTY management
+│       └── ipc.rs         # IPC server
+├── garterm-ipc/       # Shared IPC protocol types
+└── gartermctl/        # Control CLI client`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Event Loop</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The main loop runs at ~60fps (16ms intervals):
+              </p>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>Poll signals and X11 file descriptors</li>
+                <li>Handle signals (SIGHUP for config reload)</li>
+                <li>Process X11 events (keyboard, mouse, resize)</li>
+                <li>Read PTY data from all panes (non-blocking)</li>
+                <li>Render dirty panes to GPU</li>
+              </ol>
+            </div>
+
+            <!-- doc-3: GPU Rendering -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">GPU Rendering</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm uses wgpu for GPU-accelerated rendering, providing smooth scrolling and efficient text display.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rendering Pipeline</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>Vertex Generation</strong> - Emit quads for each visible cell</li>
+                <li><strong>Glyph Atlas</strong> - Cache rasterized glyphs in GPU texture</li>
+                <li><strong>Shader Rendering</strong> - Sample atlas for glyphs, solid colors for backgrounds</li>
+                <li><strong>Compositing</strong> - Alpha blending for selection overlay</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Font Handling</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Fonts are loaded with automatic fallbacks:
+              </p>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>JetBrains Mono (with Nerd Font variants)</li>
+                <li>DejaVu Sans Mono</li>
+                <li>Noto Sans Mono</li>
+                <li>System monospace fallback</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">VSync Mode</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Configure via <code class="text-gar-accent-cyan">vsync</code> option:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>true</strong> - Only render when dirty (lower CPU)</li>
+                <li><strong>false</strong> - Continuous 60fps (required on some systems)</li>
+              </ul>
+            </div>
+
+            <!-- doc-4: Terminal Emulation (parent) -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Terminal Emulation</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm provides VT100/xterm-compatible terminal emulation using the vte crate.
+                Select a topic from the sidebar for details.
+              </p>
+            </div>
+
+            <!-- doc-5: Escape Sequences -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Escape Sequences</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Terminal Modes</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Mode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Code</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">DECCKM</td>
+                      <td class="py-2 px-3 font-mono">1</td>
+                      <td class="py-2 px-3">Application cursor keys</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">DECAWM</td>
+                      <td class="py-2 px-3 font-mono">7</td>
+                      <td class="py-2 px-3">Auto-wrap mode</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">DECTCEM</td>
+                      <td class="py-2 px-3 font-mono">25</td>
+                      <td class="py-2 px-3">Cursor visibility</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">Alt Screen</td>
+                      <td class="py-2 px-3 font-mono">1049</td>
+                      <td class="py-2 px-3">Alternate screen buffer</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">Bracketed Paste</td>
+                      <td class="py-2 px-3 font-mono">2004</td>
+                      <td class="py-2 px-3">Wrap pasted text in escape sequences</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">OSC Sequences</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">OSC</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">OSC 0/2</td>
+                      <td class="py-2 px-3">Set window/tab title</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">OSC 7</td>
+                      <td class="py-2 px-3">Set current working directory</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">OSC 8</td>
+                      <td class="py-2 px-3">Hyperlinks</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">OSC 52</td>
+                      <td class="py-2 px-3">Clipboard operations (base64)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">OSC 133</td>
+                      <td class="py-2 px-3">Shell integration (prompt markers)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Color Support</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>16 ANSI colors (normal + bright)</li>
+                <li>256-color indexed palette</li>
+                <li>24-bit true color (RGB)</li>
+                <li>SGR attributes: bold, dim, italic, underline, blink, inverse, strikethrough</li>
+              </ul>
+            </div>
+
+            <!-- doc-6: Mouse Support -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Mouse Support</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Mouse Modes</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Mode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Code</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Behavior</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">X10</td>
+                      <td class="py-2 px-3 font-mono">1000</td>
+                      <td class="py-2 px-3">Button press only</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">VT200</td>
+                      <td class="py-2 px-3 font-mono">1002</td>
+                      <td class="py-2 px-3">Button press/release</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">ButtonEvent</td>
+                      <td class="py-2 px-3 font-mono">1002</td>
+                      <td class="py-2 px-3">Motion while button pressed</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">AnyEvent</td>
+                      <td class="py-2 px-3 font-mono">1003</td>
+                      <td class="py-2 px-3">All motion events</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Encoding Formats</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>X10</strong> - Limited to 223 columns/rows</li>
+                <li><strong>UTF-8 (1005)</strong> - Extended range via UTF-8</li>
+                <li><strong>SGR (1006)</strong> - Modern format, no position limits</li>
+                <li><strong>urxvt (1015)</strong> - Similar to UTF-8</li>
+              </ul>
+            </div>
+
+            <!-- doc-7: Clipboard -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Clipboard</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm supports both X11 selections and OSC 52 clipboard operations.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">X11 Selections</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>PRIMARY</strong> - Auto-populated on text selection release</li>
+                <li><strong>CLIPBOARD</strong> - Explicit copy (Ctrl+Shift+C)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[terminal]
+clipboard_write = true   # Allow terminal to set clipboard (default)
+clipboard_read = false   # Allow terminal to read clipboard (security risk)`}</code></pre>
+              </div>
+
+              <div class="bg-gar-bg-secondary/50 border border-gar-accent-yellow/30 rounded-lg p-4 mb-4">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-accent-yellow">Security:</strong> <code class="text-gar-accent-cyan">clipboard_read</code> is
+                  disabled by default. Enabling it allows programs in the terminal to read your clipboard contents,
+                  which could expose sensitive data to malicious scripts.
+                </p>
+              </div>
+            </div>
+
+            <!-- doc-8: UI Features (parent) -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">UI Features</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm provides a modern tabbed interface with split panes.
+                Select a topic from the sidebar for details.
+              </p>
+            </div>
+
+            <!-- doc-9: Tab Management -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Tab Management</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tab Operations</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">gartermctl</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">New tab</td>
+                      <td class="py-2 px-3 font-mono">Ctrl+Shift+T</td>
+                      <td class="py-2 px-3 font-mono">new-tab</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Close tab</td>
+                      <td class="py-2 px-3 font-mono">Ctrl+Shift+W</td>
+                      <td class="py-2 px-3 font-mono">close-tab</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Next tab</td>
+                      <td class="py-2 px-3 font-mono">Alt+]</td>
+                      <td class="py-2 px-3 font-mono">next-tab</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Previous tab</td>
+                      <td class="py-2 px-3 font-mono">Alt+[</td>
+                      <td class="py-2 px-3 font-mono">prev-tab</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Go to tab N</td>
+                      <td class="py-2 px-3 font-mono">Alt+1-9</td>
+                      <td class="py-2 px-3 font-mono">tab N</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tab Bar Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[tab_bar]
+height = 24              # Height in pixels
+position = "top"         # "top" or "bottom"
+show_single_tab = false  # Hide bar with only 1 tab
+max_tab_width = 200      # Max tab width in pixels
+shorten_paths = true     # Abbreviate long paths`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-10: Pane Splits -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Pane Splits</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Each tab can contain multiple panes arranged in a binary split tree.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Split Operations</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">gartermctl</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Split vertical</td>
+                      <td class="py-2 px-3 font-mono">Ctrl+Shift+Enter</td>
+                      <td class="py-2 px-3 font-mono">split</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Split horizontal</td>
+                      <td class="py-2 px-3 font-mono">Ctrl+Shift+\</td>
+                      <td class="py-2 px-3 font-mono">split --horizontal</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Close pane</td>
+                      <td class="py-2 px-3 font-mono">Ctrl+Shift+X</td>
+                      <td class="py-2 px-3 font-mono">close-pane</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Focus direction</td>
+                      <td class="py-2 px-3 font-mono">Alt+Arrow</td>
+                      <td class="py-2 px-3 font-mono">focus {"{dir}"}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-11: Text Selection -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Text Selection</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Selection Modes</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Mode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Trigger</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Behavior</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Normal</td>
+                      <td class="py-2 px-3">Click + drag</td>
+                      <td class="py-2 px-3">Character-by-character, respects wrapping</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Word</td>
+                      <td class="py-2 px-3">Double-click</td>
+                      <td class="py-2 px-3">Select word (configurable word_chars)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Line</td>
+                      <td class="py-2 px-3">Triple-click</td>
+                      <td class="py-2 px-3">Select entire line</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Block</td>
+                      <td class="py-2 px-3">Ctrl+Click</td>
+                      <td class="py-2 px-3">Rectangular selection</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Copy/Paste</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>Release selection</strong> - Copies to PRIMARY</li>
+                <li><strong>Ctrl+Shift+C</strong> - Copy to CLIPBOARD</li>
+                <li><strong>Ctrl+Shift+V</strong> - Paste from CLIPBOARD</li>
+                <li><strong>Middle-click</strong> - Paste from PRIMARY</li>
+              </ul>
+            </div>
+
+            <!-- doc-12: Search -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Search</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Search Controls</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Start search</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+F</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Next match</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+N or Enter</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Previous match</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+N</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Toggle case sensitivity</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+I</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Cancel search</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Escape</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-gar-text-secondary mb-4">
+                Search results are highlighted with match count displayed (e.g., "3/15").
+                Searches include both visible content and scrollback buffer.
+              </p>
+            </div>
+
+            <!-- doc-13: Scrollback -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Scrollback</h3>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Scrollback Controls</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Scroll up</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+PageUp or Mouse wheel</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Scroll down</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+PageDown or Mouse wheel</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Scroll to top</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+Home</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Scroll to bottom</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+End</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[terminal]
+scrollback_lines = 10000  # Max history (default: 10,000)
+scroll_lines = 3          # Lines per wheel tick (default: 3)`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-14: Color Themes -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Color Themes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm includes 8 built-in color themes. Set via <code class="text-gar-accent-cyan">colors.preset</code>:
+              </p>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #1a1b26;">
+                  <p class="font-mono text-sm mb-2" style="color: #c0caf5;">tokyo_night (default)</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #f7768e;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #9ece6a;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #7aa2f7;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #bb9af7;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #1e1e2e;">
+                  <p class="font-mono text-sm mb-2" style="color: #cdd6f4;">catppuccin</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #f38ba8;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #a6e3a1;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #89b4fa;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #cba6f7;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #282828;">
+                  <p class="font-mono text-sm mb-2" style="color: #ebdbb2;">gruvbox</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #cc241d;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #98971a;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #458588;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #b16286;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #282a36;">
+                  <p class="font-mono text-sm mb-2" style="color: #f8f8f2;">dracula</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #ff5555;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #50fa7b;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #bd93f9;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #ff79c6;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #2e3440;">
+                  <p class="font-mono text-sm mb-2" style="color: #d8dee9;">nord</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #bf616a;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #a3be8c;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #81a1c1;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #b48ead;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #002b36;">
+                  <p class="font-mono text-sm mb-2" style="color: #839496;">solarized</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #dc322f;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #859900;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #268bd2;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #d33682;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #282c34;">
+                  <p class="font-mono text-sm mb-2" style="color: #abb2bf;">one_dark</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #e06c75;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #98c379;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #61afef;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #c678dd;"></span>
+                  </div>
+                </div>
+                <div class="p-4 rounded-lg border border-gar-text-muted/20" style="background: #fafafa;">
+                  <p class="font-mono text-sm mb-2" style="color: #383a42;">one_light</p>
+                  <div class="flex gap-2">
+                    <span class="w-4 h-4 rounded" style="background: #e45649;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #50a14f;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #4078f2;"></span>
+                    <span class="w-4 h-4 rounded" style="background: #a626a4;"></span>
+                  </div>
+                </div>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Color Overrides</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[colors]
+preset = "tokyo_night"
+# Override specific colors:
+foreground = "#ffffff"
+background = "#000000"
+cursor = "#ff0000"
+red = "#ff6666"`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-15: gar Integration -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gar Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garterm integrates deeply with the gar window manager via shared Lua configuration.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Spawning from gar</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Set garterm as default terminal
+gar.set("spawns", {
+    terminal = "garterm"
+})
+
+-- Keybind to spawn terminal
+gar.bind("Super+Return", function()
+    gar.spawn("terminal")
+end)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Shared Configuration</h4>
+              <p class="text-gar-text-secondary mb-4">
+                When garterm starts, it reads the <code class="text-gar-accent-cyan">gar.terminal</code> table from gar's init.lua:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.terminal = {
+    shell = "/bin/zsh",
+    font = { family = "JetBrains Mono", size = 14 },
+    colors = { preset = "catppuccin" },
+    window = { padding = {12, 12} },
+    tab_bar = { position = "bottom" },
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lua Callbacks</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Define keybinds that call Lua functions:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.terminal.keybinds = {
+    ["alt+e"] = function()
+        gar.terminal.split({ direction = "vertical" })
+        gar.terminal.send_text(nil, "nvim .\\n")
+    end,
+}`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-16: Sessions -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Sessions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Define named sessions for quick workspace setup.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Defining Sessions</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`gar.terminal.sessions = {
+    webdev = {
+        tabs = {
+            { title = "Frontend", cwd = "~/app/frontend", cmd = "npm run dev" },
+            { title = "Backend", cwd = "~/app/backend", cmd = "cargo watch -x run" },
+            { title = "Database", cmd = "docker compose up db" },
+            { title = "Shell" },
+        }
+    },
+    dotfiles = {
+        tabs = {
+            { title = "Config", cwd = "~/.config", cmd = "nvim ." },
+        }
+    },
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Loading Sessions</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'gartermctl load-session webdev', comment: 'Load webdev session' },
+                  { command: 'garterm --session webdev', comment: 'Start with session' },
+                ]}
+                class="mb-4"
+              />
+
+              <p class="text-gar-text-secondary mb-4">
+                Sessions use OSC 133 shell integration to detect when the shell is ready before sending startup commands.
+                This ensures commands run after shell initialization is complete.
+              </p>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Keybinds Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keybindings Reference</h3>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tab Management</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+T</td>
+                  <td class="py-2 px-3">New tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+W</td>
+                  <td class="py-2 px-3">Close tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+]</td>
+                  <td class="py-2 px-3">Next tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+[</td>
+                  <td class="py-2 px-3">Previous tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+1-9</td>
+                  <td class="py-2 px-3">Switch to tab N</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Pane Management</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+Enter</td>
+                  <td class="py-2 px-3">Split vertical (top/bottom)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+\</td>
+                  <td class="py-2 px-3">Split horizontal (left/right)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+X</td>
+                  <td class="py-2 px-3">Close pane</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Alt+Up/Down/Left/Right</td>
+                  <td class="py-2 px-3">Focus pane in direction</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Clipboard & Selection</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+C</td>
+                  <td class="py-2 px-3">Copy selection to CLIPBOARD</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+V</td>
+                  <td class="py-2 px-3">Paste from CLIPBOARD</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+Insert</td>
+                  <td class="py-2 px-3">Paste from CLIPBOARD</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Middle-click</td>
+                  <td class="py-2 px-3">Paste from PRIMARY</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Search & Scrollback</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+F</td>
+                  <td class="py-2 px-3">Start search</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+PageUp</td>
+                  <td class="py-2 px-3">Scroll page up</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+PageDown</td>
+                  <td class="py-2 px-3">Scroll page down</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+Home</td>
+                  <td class="py-2 px-3">Scroll to top</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Shift+End</td>
+                  <td class="py-2 px-3">Scroll to bottom</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Other</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Keybind</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Shift+Plus</td>
+                  <td class="py-2 px-3">Increase font size</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+Minus</td>
+                  <td class="py-2 px-3">Decrease font size</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">Ctrl+0</td>
+                  <td class="py-2 px-3">Reset font size</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-cyan">F11</td>
+                  <td class="py-2 px-3">Toggle fullscreen</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- IPC/API Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garterm exposes a Unix socket for IPC. Control running instances with gartermctl.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Each garterm window creates its own socket:
+          </p>
+          <ul class="list-disc list-inside text-gar-text-secondary mb-6 space-y-1">
+            <li><code class="text-gar-accent-cyan">$XDG_RUNTIME_DIR/garterm/garterm-{"{PID}"}.sock</code></li>
+            <li>Focus tracking: <code class="text-gar-accent-cyan">$XDG_RUNTIME_DIR/garterm/focused</code></li>
+          </ul>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gartermctl Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">list</td>
+                  <td class="py-2 px-3">Show all running instances</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">new-tab [--cwd dir] [--exec cmd]</td>
+                  <td class="py-2 px-3">Create new tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">close-tab</td>
+                  <td class="py-2 px-3">Close current tab</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">next-tab / prev-tab</td>
+                  <td class="py-2 px-3">Navigate tabs</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">tab N</td>
+                  <td class="py-2 px-3">Switch to tab N (1-indexed)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">split [--horizontal]</td>
+                  <td class="py-2 px-3">Split current pane</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">close-pane</td>
+                  <td class="py-2 px-3">Close current pane</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">focus {"{up|down|left|right}"}</td>
+                  <td class="py-2 px-3">Move focus to adjacent pane</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">send "text"</td>
+                  <td class="py-2 px-3">Send text to focused pane</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">load-session name</td>
+                  <td class="py-2 px-3">Load named session</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">info</td>
+                  <td class="py-2 px-3">Get tab count and dimensions</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">reload</td>
+                  <td class="py-2 px-3">Reload configuration</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">quit</td>
+                  <td class="py-2 px-3">Exit garterm</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Targeting Options</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartermctl new-tab', comment: 'Target last focused window (default)' },
+              { command: 'gartermctl -w 12345 new-tab', comment: 'Target specific PID' },
+              { command: 'gartermctl -a send "hello"', comment: 'Broadcast to all instances' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Commands are JSON objects sent over the socket:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Request
+{"NewTab": {"cwd": "~", "startup_cmd": "nvim", "title": "Editor"}}
+
+// Response
+{"success": true, "message": null, "data": {"tab_id": 3}}`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">GPU rendering issues</h4>
+              <p class="text-gar-text-secondary mb-3">
+                If garterm crashes or shows rendering artifacts:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'WGPU_BACKEND=vulkan garterm', comment: 'Force Vulkan backend' },
+                  { command: 'WGPU_BACKEND=gl garterm', comment: 'Force OpenGL backend' },
+                ]}
+                class="mb-2"
+              />
+              <p class="text-gar-text-secondary text-sm">
+                On Asahi Linux, set <code class="text-gar-accent-cyan">vsync = false</code> in config.
+              </p>
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Font not found</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check available fonts and font paths:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'fc-list | grep -i "jetbrains"', comment: 'Check if font is installed' },
+                  { command: 'fc-match monospace', comment: 'Check default monospace' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">gartermctl can't connect</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check socket files:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'ls $XDG_RUNTIME_DIR/garterm/', comment: 'List garterm sockets' },
+                  { command: 'cat $XDG_RUNTIME_DIR/garterm/focused', comment: 'Check focused PID' },
+                  { command: 'gartermctl list', comment: 'List running instances' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Sessions not working</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Startup commands may fail if shell doesn't support OSC 133. Add to your shell config:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-2">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.zshrc or ~/.bashrc</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# OSC 133 shell integration
+precmd() { printf '\\e]133;A\\a'; }
+preexec() { printf '\\e]133;B\\a'; }`}</code></pre>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Debug logging</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Enable verbose logging:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'RUST_LOG=debug garterm', comment: 'Debug logging' },
+                  { command: 'RUST_LOG=garterm=trace garterm', comment: 'Trace-level logging' },
+                  { command: 'tail -f /tmp/garterm.log', comment: 'View log file' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Config not loading</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check config locations and syntax:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'cat ~/.config/garterm/config.toml', comment: 'Check TOML config' },
+                  { command: 'lua -e "dofile(os.getenv(\'HOME\')..\'/.config/gar/init.lua\')"', comment: 'Validate Lua syntax' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+
+      <!-- Back Link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

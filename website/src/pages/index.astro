@@ -56,6 +56,30 @@ const components = [
     ]
   },
   {
+    id: 'garterm',
+    name: 'garterm',
+    tagline: 'Terminal Emulator',
+    description: 'A GPU-accelerated terminal emulator with tabbed and split-pane interface. Integrates tightly with gar via Lua configuration, supporting multiple color themes and rich IPC control.',
+    features: [
+      'GPU-accelerated wgpu rendering',
+      'Tabs and horizontal/vertical splits',
+      'Lua + TOML configuration',
+      '8 built-in color themes',
+      'IPC control via gartermctl'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'garterm terminal emulator screenshot',
+    accentColor: 'cyan',
+    images: [
+      { src: '/images/thumbs/garterm1.png', alt: 'garterm terminal - default view' },
+      { src: '/images/thumbs/garterm2.png', alt: 'garterm terminal - split panes' },
+      { src: '/images/thumbs/garterm3.png', alt: 'garterm terminal - tabs' },
+      { src: '/images/thumbs/garterm4.png', alt: 'garterm terminal - color themes' },
+      { src: '/images/thumbs/garterm5.png', alt: 'garterm terminal - configuration' }
+    ]
+  },
+  {
     id: 'garbar',
     name: 'garbar',
     tagline: 'Async Status Bar',
