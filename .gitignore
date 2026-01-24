@@ -26,3 +26,4 @@ Cargo.lock
 # Claude Code local files
 .claude/
 CLAUDE.md
+TRANSFER.md
