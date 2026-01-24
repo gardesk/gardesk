@@ -34,3 +34,7 @@
 	path = garshot
 	url = https://github.com/gardesk/garshot.git
 	branch = trunk
+[submodule "garfield"]
+	path = garfield
+	url = git@github.com:gardesk/garfield.git
+	branch = trunk

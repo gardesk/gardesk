@@ -11,7 +11,7 @@ const distros: Distro[] = [
   {
     id: 'universal',
     name: 'Universal',
-    commands: ['curl -fsSL https://gar.dev/install.sh | bash'],
+    commands: ['curl -fsSL https://gar.musicsian.com/install.sh | bash'],
     available: true
   },
   {

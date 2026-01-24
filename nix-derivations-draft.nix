@@ -1,6 +1,6 @@
 # ============ GARDESK SUITE ============
 # Modular X11 desktop environment
-# https://gar.dev
+# https://gar.musicsian.com
 #
 # NOTE: garlaunch and garclip use path dependencies to gartk,
 # so they need the full monorepo source.

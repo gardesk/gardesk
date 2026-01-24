@@ -1,7 +1,7 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
 # gar Desktop Suite Installer
-# https://gar.dev
+# https://gar.musicsian.com
 #
 # A modular X11 desktop environment featuring:
 #   - gar: Tiling window manager with Lua config
@@ -15,7 +15,7 @@
 #   - gartk: Shared UI toolkit library
 #
 # Usage:
-#   curl -fsSL https://gar.dev/install.sh | bash
+#   curl -fsSL https://gar.musicsian.com/install.sh | bash
 #   ./install.sh [--prefix=/path] [--no-deps] [--component=gar,garbar,...]
 #
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -316,7 +316,7 @@ show_banner() {
     echo -e "${CYAN}║   ${BOLD}gar Desktop Suite${NC}${CYAN}                                            ║${NC}"
     echo -e "${CYAN}║   ${DIM}Modular X11 desktop environment${NC}${CYAN}                              ║${NC}"
     echo -e "${CYAN}║                                                                  ║${NC}"
-    echo -e "${CYAN}║   ${DIM}https://gar.dev${NC}${CYAN}                                               ║${NC}"
+    echo -e "${CYAN}║   ${DIM}https://gar.musicsian.com${NC}${CYAN}                                               ║${NC}"
     echo -e "${CYAN}║                                                                  ║${NC}"
     echo -e "${CYAN}╚══════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
@@ -577,7 +577,7 @@ install_garbg() {
     cat << EOF > "$SYSTEMD_USER_DIR/garbg.service"
 [Unit]
 Description=garbg wallpaper daemon
-Documentation=https://gar.dev
+Documentation=https://gar.musicsian.com
 After=graphical-session.target
 PartOf=graphical-session.target
 
@@ -612,7 +612,7 @@ install_garshot() {
         log_info "Creating default garshot config..."
         cat << 'EOF' > "$HOME/.config/garshot/config.toml"
 # garshot configuration
-# See https://gar.dev/components/garshot for options
+# See https://gar.musicsian.com/components/garshot for options
 
 [general]
 save_dir = "~/Pictures/Screenshots"
@@ -664,7 +664,7 @@ EOF
         log_info "Creating default garlock config..."
         cat << 'EOF' > "$HOME/.config/garlock/config.toml"
 # garlock configuration
-# See https://gar.dev/docs/garlock for options
+# See https://gar.musicsian.com/docs/garlock for options
 
 [general]
 grace_period = 0
@@ -791,7 +791,7 @@ install_garlaunch() {
         log_info "Creating default garlaunch config..."
         cat << 'EOF' > "$HOME/.config/garlaunch/config.toml"
 # garlaunch configuration
-# See https://gar.dev/components/garlaunch for options
+# See https://gar.musicsian.com/components/garlaunch for options
 
 [general]
 # Default mode when launching without arguments
@@ -839,7 +839,7 @@ install_garclip() {
     cat << EOF > "$SYSTEMD_USER_DIR/garclip.service"
 [Unit]
 Description=garclip clipboard manager
-Documentation=https://gar.dev
+Documentation=https://gar.musicsian.com
 After=graphical-session.target
 PartOf=graphical-session.target
 
@@ -861,7 +861,7 @@ EOF
         log_info "Creating default garclip config..."
         cat << 'EOF' > "$HOME/.config/garclip/config.toml"
 # garclip configuration
-# See https://gar.dev/components/garclip for options
+# See https://gar.musicsian.com/components/garclip for options
 
 [history]
 max_entries = 1000
@@ -1141,7 +1141,7 @@ main() {
         echo ""
     fi
 
-    echo -e "${DIM}Documentation: https://gar.dev${NC}"
+    echo -e "${DIM}Documentation: https://gar.musicsian.com${NC}"
     echo ""
 }
 
