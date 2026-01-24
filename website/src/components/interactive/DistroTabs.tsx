@@ -11,7 +11,13 @@ const distros: Distro[] = [
   {
     id: 'universal',
     name: 'Universal',
-    commands: ['curl -fsSL https://gar.musicsian.com/install.sh | bash'],
+    commands: [
+      '# Full desktop (gar, garbar, garbg, garlock)',
+      'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=desktop',
+      '# Individual components',
+      'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garfield',
+      'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garshot',
+    ],
     available: true
   },
   {
@@ -136,9 +142,11 @@ export default function DistroTabs() {
         {/* Terminal body */}
         <div className="bg-gar-bg-primary p-4 font-mono text-sm">
           {activeDistro.commands.map(function(cmd, i) {
+            const isComment = cmd.startsWith('#');
+            const needsTopMargin = isComment && i > 0;
             return (
-              <div key={i} className="mb-1 last:mb-0">
-                {cmd.startsWith('#') ? (
+              <div key={i} className={`mb-1 last:mb-0 ${needsTopMargin ? 'mt-3' : ''}`}>
+                {isComment ? (
                   <span className="text-gar-text-muted">{cmd}</span>
                 ) : (
                   <div className="flex gap-2">
