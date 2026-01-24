@@ -31,6 +31,31 @@ const components = [
     ]
   },
   {
+    id: 'garfield',
+    name: 'garfield',
+    tagline: 'File Manager',
+    description: 'A multi-paned graphical file manager with tabbed navigation, multiple view modes, and full file operations. Features undo/redo, Freedesktop trash support, and IPC control.',
+    features: [
+      'List, grid, and column view modes',
+      'Multi-tab, split-pane layouts',
+      'Copy, move, trash with undo/redo',
+      'Bookmarks and XDG places sidebar',
+      'Inline rename and conflict resolution'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garfield file manager screenshot',
+    accentColor: 'orange',
+    images: [
+      { src: '/images/garfield1.png', alt: 'garfield file manager - list view' },
+      { src: '/images/garfield2.png', alt: 'garfield file manager - grid view' },
+      { src: '/images/garfield3.png', alt: 'garfield file manager - column view' },
+      { src: '/images/garfield4.png', alt: 'garfield file manager - split panes' },
+      { src: '/images/garfield5.png', alt: 'garfield file manager - conflict dialog' },
+      { src: '/images/garfield6.png', alt: 'garfield file manager - bookmarks' }
+    ]
+  },
+  {
     id: 'garbar',
     name: 'garbar',
     tagline: 'Async Status Bar',

@@ -1,0 +1,1051 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garfieldImages = [
+  { src: '/images/garfield1.png', alt: 'garfield file manager - list view' },
+  { src: '/images/garfield2.png', alt: 'garfield file manager - grid view' },
+  { src: '/images/garfield3.png', alt: 'garfield file manager - column view' },
+  { src: '/images/garfield4.png', alt: 'garfield file manager - split panes' },
+  { src: '/images/garfield5.png', alt: 'garfield file manager - conflict dialog' },
+  { src: '/images/garfield6.png', alt: 'garfield file manager - bookmarks sidebar' },
+  { src: '/images/garfield7.png', alt: 'garfield file manager - help modal' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'view-modes',
+    label: 'View Modes',
+    children: [
+      { id: 'list-view', label: 'List View' },
+      { id: 'grid-view', label: 'Grid View' },
+      { id: 'column-view', label: 'Column View' },
+    ]
+  },
+  {
+    id: 'navigation',
+    label: 'Navigation',
+    children: [
+      { id: 'keyboard-nav', label: 'Keyboard' },
+      { id: 'history', label: 'History' },
+    ]
+  },
+  {
+    id: 'tabs-panes',
+    label: 'Tabs & Panes',
+    children: [
+      { id: 'tabs', label: 'Tabs' },
+      { id: 'panes', label: 'Split Panes' },
+    ]
+  },
+  {
+    id: 'file-ops',
+    label: 'File Operations',
+    children: [
+      { id: 'copy-cut-paste', label: 'Copy/Cut/Paste' },
+      { id: 'trash-delete', label: 'Trash & Delete' },
+      { id: 'rename', label: 'Rename' },
+      { id: 'new-folder', label: 'New Folder' },
+    ]
+  },
+  {
+    id: 'selection',
+    label: 'Selection',
+  },
+  {
+    id: 'undo-redo',
+    label: 'Undo/Redo',
+  },
+  {
+    id: 'bookmarks',
+    label: 'Bookmarks',
+  },
+  {
+    id: 'sidebar',
+    label: 'Sidebar',
+  },
+  {
+    id: 'conflicts',
+    label: 'Conflict Resolution',
+  },
+];
+---
+
+<BaseLayout title="garfield - gardesk" description="File Manager. A multi-paned graphical file manager with tabbed navigation, multiple view modes, and full file operations.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-orange">garfield</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">File Manager</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A multi-paned graphical file manager with tabbed navigation, multiple view modes, and full file operations. garfield features list, grid, and column views, split-pane layouts, undo/redo history, Freedesktop trash support, and IPC control via garfieldctl.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garfield" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garfieldImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'List, grid, and column view modes',
+            'Multi-tab navigation with keyboard shortcuts',
+            'Horizontal and vertical split panes',
+            'Copy, cut, paste with conflict resolution',
+            'Freedesktop trash support with metadata',
+            'Undo/redo for all file operations (100 levels)',
+            'Inline rename with cursor editing',
+            'Bookmarks sidebar with drag-and-drop',
+            'XDG places (Home, Desktop, Documents, Downloads)',
+            'Built-in help modal (F1)',
+            'IPC control via garfieldctl',
+            'Address bar for direct path editing'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-orange" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get up and running with garfield in a few steps. This guide covers installation, launching, and essential keybindings.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garfield using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garfield', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garfield && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Launch</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run garfield from a terminal or application launcher:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garfield', comment: 'Open home directory' },
+              { command: 'garfield /path/to/directory', comment: 'Open specific directory' },
+              { command: 'garfield ~/Documents', comment: 'Example: open Documents' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Essential Keybindings</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Up/Down or k/j</td><td class="py-2 px-3">Navigate files</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Enter</td><td class="py-2 px-3">Open file/directory</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Backspace</td><td class="py-2 px-3">Go to parent directory</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+C / Ctrl+X</td><td class="py-2 px-3">Copy / Cut</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+V</td><td class="py-2 px-3">Paste</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Delete</td><td class="py-2 px-3">Move to trash</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">F2</td><td class="py-2 px-3">Rename</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+T</td><td class="py-2 px-3">New tab</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+1/2/3</td><td class="py-2 px-3">List/Grid/Column view</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Z / Ctrl+Y</td><td class="py-2 px-3">Undo / Redo</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">F1</td><td class="py-2 px-3">Show help</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">q or Escape</td><td class="py-2 px-3">Quit</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. View Modes</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Switch between view modes with keyboard shortcuts or toolbar buttons:
+          </p>
+          <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li><strong>Ctrl+1</strong> - List view with columns (name, size, date)</li>
+            <li><strong>Ctrl+2</strong> - Grid view with icons/thumbnails</li>
+            <li><strong>Ctrl+3</strong> - Column view (macOS Finder-style)</li>
+            <li><strong>Ctrl+H</strong> - Toggle hidden files</li>
+          </ul>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Split Panes</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create split layouts for side-by-side file management:
+          </p>
+          <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+            <li><strong>Ctrl+Shift+H</strong> - Split horizontally</li>
+            <li><strong>Ctrl+Shift+V</strong> - Split vertically</li>
+            <li><strong>Ctrl+Shift+Arrow</strong> - Focus adjacent pane</li>
+            <li><strong>Ctrl+Shift+W</strong> - Close focused pane</li>
+          </ul>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garfield works out of the box with sensible defaults. User configuration is primarily through bookmarks.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Bookmarks</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Bookmarks are stored as a plain text file with one path per line:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/garfield/bookmarks</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`/home/user/Projects
+/home/user/Music
+/mnt/external
+/var/log`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Managing Bookmarks</h4>
+          <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li><strong>Ctrl+D</strong> - Add current directory as bookmark</li>
+            <li><strong>Drag folder to sidebar</strong> - Add bookmark via drag-and-drop</li>
+            <li><strong>Drag bookmark on sidebar</strong> - Reorder bookmarks</li>
+          </ul>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">XDG Places</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The sidebar automatically includes standard XDG directories:
+          </p>
+          <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li>Home (~)</li>
+            <li>Desktop</li>
+            <li>Documents</li>
+            <li>Downloads</li>
+            <li>Trash</li>
+          </ul>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Trash Location</h4>
+          <p class="text-gar-text-secondary mb-4">
+            garfield uses the Freedesktop trash specification:
+          </p>
+          <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+            <li><code class="text-gar-accent-orange">~/.local/share/Trash/files/</code> - Trashed files</li>
+            <li><code class="text-gar-accent-orange">~/.local/share/Trash/info/</code> - Metadata (.trashinfo files)</li>
+          </ul>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield is a graphical file manager for the gardesk desktop suite. It provides a modern, multi-paned interface with tabbed navigation, multiple view modes, and comprehensive file operations.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The garfield workspace consists of three crates:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><strong>garfield</strong> - Main file manager application</li>
+                <li><strong>garfieldctl</strong> - Command-line control client</li>
+                <li><strong>garfield-ipc</strong> - Shared IPC protocol library</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Modules</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><code class="text-gar-accent-orange">app.rs</code> - Event loop and state management</li>
+                <li><code class="text-gar-accent-orange">core/</code> - File system operations</li>
+                <li><code class="text-gar-accent-orange">ui/</code> - GUI components (sidebar, toolbar, views)</li>
+              </ul>
+            </div>
+
+            <!-- View Modes -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">View Modes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield supports three distinct view modes, each optimized for different use cases.
+              </p>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Mode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Best For</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">List</td><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+1</td><td class="py-2 px-3">Detailed file info (size, date)</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Grid</td><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+2</td><td class="py-2 px-3">Visual browsing with icons</td></tr>
+                    <tr><td class="py-2 px-3">Column</td><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+3</td><td class="py-2 px-3">Hierarchical navigation</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- List View -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">List View</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The default view mode showing files in a detailed list with sortable columns.
+              </p>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Columns</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><strong>Name</strong> - File/folder name with icon</li>
+                <li><strong>Size</strong> - Human-readable file size</li>
+                <li><strong>Modified</strong> - Last modification date</li>
+              </ul>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Navigation</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><strong>Up/Down or k/j</strong> - Move selection</li>
+                <li><strong>Enter</strong> - Open selected item</li>
+                <li><strong>Left/h</strong> - Go to parent directory</li>
+                <li><strong>Right/l</strong> - Enter directory</li>
+              </ul>
+            </div>
+
+            <!-- Grid View -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Grid View</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Icon-based grid layout for visual file browsing with adjustable icon sizes.
+              </p>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Navigation</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li><strong>Arrow keys or hjkl</strong> - Navigate grid</li>
+                <li><strong>Enter</strong> - Open selected item</li>
+                <li><strong>Backspace</strong> - Go to parent</li>
+              </ul>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Icon Size</h4>
+              <p class="text-gar-text-secondary">
+                Use <strong>Ctrl+=</strong> or <strong>Ctrl++</strong> to cycle through icon sizes.
+              </p>
+            </div>
+
+            <!-- Column View -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Column View</h3>
+              <p class="text-gar-text-secondary mb-4">
+                macOS Finder-style column browsing for hierarchical navigation.
+              </p>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">How It Works</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Each directory opens in a new column to the right</li>
+                <li>Navigate left/right to move between columns</li>
+                <li>Navigate up/down within each column</li>
+                <li>Full path visible across columns</li>
+              </ul>
+            </div>
+
+            <!-- Navigation -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Navigation</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield provides keyboard-driven navigation with vim-style bindings.
+              </p>
+            </div>
+
+            <!-- Keyboard Nav -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Keyboard Navigation</h3>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Up/Down or k/j</td><td class="py-2 px-3">Move selection up/down</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Left/Right or h/l</td><td class="py-2 px-3">Grid nav or parent/enter</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Enter</td><td class="py-2 px-3">Open file/directory</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Backspace</td><td class="py-2 px-3">Go to parent directory</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Home or g</td><td class="py-2 px-3">Go to first entry</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">End or G</td><td class="py-2 px-3">Go to last entry</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Page Up/Down</td><td class="py-2 px-3">Page-based navigation</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">~</td><td class="py-2 px-3">Go to home directory</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">/</td><td class="py-2 px-3">Go to root directory</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">r</td><td class="py-2 px-3">Refresh current directory</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+L</td><td class="py-2 px-3">Focus address bar</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- History -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">History Navigation</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield maintains navigation history per tab (up to 100 entries).
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Alt+Left</td><td class="py-2 px-3">Go back in history</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Alt+Right</td><td class="py-2 px-3">Go forward in history</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                The toolbar also includes back/forward buttons for mouse navigation.
+              </p>
+            </div>
+
+            <!-- Tabs & Panes -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Tabs & Panes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield supports both tabbed navigation and split-pane layouts for efficient file management.
+              </p>
+            </div>
+
+            <!-- Tabs -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Tabs</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Open multiple directories in separate tabs within each pane.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+T</td><td class="py-2 px-3">New tab</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+W</td><td class="py-2 px-3">Close active tab</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Tab</td><td class="py-2 px-3">Next tab</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Alt+1 to Alt+9</td><td class="py-2 px-3">Jump to tab N</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Middle-Click (tab)</td><td class="py-2 px-3">Close clicked tab</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Panes -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Split Panes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Create split layouts for side-by-side browsing. Panes form a binary tree structure allowing arbitrary layouts.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+H</td><td class="py-2 px-3">Split horizontally</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+V</td><td class="py-2 px-3">Split vertically</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+W</td><td class="py-2 px-3">Close focused pane</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+Arrow</td><td class="py-2 px-3">Focus adjacent pane</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Double-click divider</td><td class="py-2 px-3">Equalize split sizes</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- File Operations -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">File Operations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield supports all standard file operations with full undo/redo support.
+              </p>
+            </div>
+
+            <!-- Copy/Cut/Paste -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Copy/Cut/Paste</h3>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+C</td><td class="py-2 px-3">Copy selected files</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+X</td><td class="py-2 px-3">Cut selected files</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+V</td><td class="py-2 px-3">Paste files</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Full recursive directory copy</li>
+                <li>Cross-filesystem move support (copy + delete fallback)</li>
+                <li>Conflict resolution dialog for existing files</li>
+                <li>Multi-file operations with progress tracking</li>
+              </ul>
+            </div>
+
+            <!-- Trash & Delete -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Trash & Delete</h3>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Delete</td><td class="py-2 px-3">Move to trash</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Shift+Delete</td><td class="py-2 px-3">Delete permanently (with confirmation)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Freedesktop Trash</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Trash follows the Freedesktop specification with full metadata:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Original path stored in .trashinfo metadata</li>
+                <li>Deletion timestamp recorded</li>
+                <li>Files can be restored from trash</li>
+              </ul>
+            </div>
+
+            <!-- Rename -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rename</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Press <strong>F2</strong> to start inline rename on the selected file.
+              </p>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Inline Editing</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">F2</td><td class="py-2 px-3">Start rename</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Enter</td><td class="py-2 px-3">Confirm rename</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Escape</td><td class="py-2 px-3">Cancel rename</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Left/Right</td><td class="py-2 px-3">Move cursor</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Backspace</td><td class="py-2 px-3">Delete before cursor</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Delete</td><td class="py-2 px-3">Delete after cursor</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                The filename is pre-selected without extension for files with extensions.
+              </p>
+            </div>
+
+            <!-- New Folder -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">New Folder</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Create a new directory in the current location.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Shift+N</td><td class="py-2 px-3">Create new folder</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                The new folder starts with inline rename active for immediate naming.
+              </p>
+            </div>
+
+            <!-- Selection -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Selection</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield supports multi-selection with keyboard and mouse modifiers.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Effect</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Click</td><td class="py-2 px-3">Select single item</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Click</td><td class="py-2 px-3">Toggle item in selection</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Shift+Click</td><td class="py-2 px-3">Extend selection to item</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+A</td><td class="py-2 px-3">Select all items</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Undo/Redo -->
+            <div slot="doc-17">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Undo/Redo</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garfield maintains a history of file operations (up to 100 levels).
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Z</td><td class="py-2 px-3">Undo last operation</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+Y</td><td class="py-2 px-3">Redo undone operation</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Operations</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Copy</li>
+                <li>Move/Cut</li>
+                <li>Trash</li>
+                <li>Rename</li>
+                <li>Create Directory</li>
+              </ul>
+            </div>
+
+            <!-- Bookmarks -->
+            <div slot="doc-18">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Bookmarks</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Quick-access shortcuts to frequently visited directories.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">How</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Add bookmark</td><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+D</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Add via drag</td><td class="py-2 px-3">Drag folder to sidebar</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Reorder</td><td class="py-2 px-3">Drag bookmark up/down</td></tr>
+                    <tr><td class="py-2 px-3">Navigate</td><td class="py-2 px-3">Click bookmark</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                Bookmarks are saved to <code class="text-gar-accent-orange">~/.config/garfield/bookmarks</code>.
+              </p>
+            </div>
+
+            <!-- Sidebar -->
+            <div slot="doc-19">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Sidebar</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The sidebar provides quick access to XDG places and user bookmarks.
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Key</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-green">Ctrl+B</td><td class="py-2 px-3">Toggle sidebar visibility</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">XDG Places</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li>Home</li>
+                <li>Desktop</li>
+                <li>Documents</li>
+                <li>Downloads</li>
+                <li>Trash</li>
+              </ul>
+            </div>
+
+            <!-- Conflicts -->
+            <div slot="doc-20">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Conflict Resolution</h3>
+              <p class="text-gar-text-secondary mb-4">
+                When pasting files that already exist, garfield shows a conflict dialog with options:
+              </p>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Effect</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Skip</td><td class="py-2 px-3">Don't overwrite, keep existing</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Replace</td><td class="py-2 px-3">Delete existing, paste new</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-medium">Keep Both</td><td class="py-2 px-3">Rename new file (e.g., "file (1).txt")</td></tr>
+                    <tr><td class="py-2 px-3 font-medium">Apply to All</td><td class="py-2 px-3">Use same choice for remaining conflicts</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Batch File Operations</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use split panes for efficient file organization:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li><strong>Ctrl+Shift+V</strong> - Split vertically</li>
+            <li>Navigate source directory in left pane</li>
+            <li>Navigate destination in right pane</li>
+            <li>Select files with Ctrl+Click or Shift+Click</li>
+            <li><strong>Ctrl+C</strong> to copy (or Ctrl+X to cut)</li>
+            <li>Focus destination pane with <strong>Ctrl+Shift+Right</strong></li>
+            <li><strong>Ctrl+V</strong> to paste</li>
+          </ol>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Quick Directory Switching</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use tabs for multiple working directories:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li><strong>Ctrl+T</strong> - Open new tab</li>
+            <li>Navigate to directory</li>
+            <li><strong>Alt+1</strong> through <strong>Alt+9</strong> - Switch tabs quickly</li>
+            <li><strong>Ctrl+Tab</strong> - Cycle through tabs</li>
+          </ol>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Recovering from Mistakes</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use undo/redo for safe file management:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li>Accidentally deleted wrong file? <strong>Ctrl+Z</strong> to undo</li>
+            <li>Wrong paste location? <strong>Ctrl+Z</strong>, navigate, <strong>Ctrl+V</strong></li>
+            <li>Undid too much? <strong>Ctrl+Y</strong> to redo</li>
+          </ol>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Bookmark Workflow</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Set up bookmarks for project directories:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 mb-6">
+            <li>Navigate to frequently-used directory</li>
+            <li><strong>Ctrl+D</strong> to bookmark</li>
+            <li>Or drag folder from file view to sidebar</li>
+            <li>Click bookmarks in sidebar for instant access</li>
+          </ol>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Address Bar Navigation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Jump directly to any path:
+          </p>
+          <ol class="list-decimal list-inside text-gar-text-secondary space-y-1">
+            <li><strong>Ctrl+L</strong> to focus address bar</li>
+            <li>Type or paste path</li>
+            <li><strong>Enter</strong> to navigate</li>
+          </ol>
+        </div>
+
+        <!-- IPC Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garfield exposes a JSON-based IPC protocol over Unix socket for scripting and external control.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <MultiTerminal
+            commands={[
+              { command: 'echo $XDG_RUNTIME_DIR/garfield.sock', comment: 'Default socket path' },
+              { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garfield.sock', comment: 'Check if running' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garfieldctl Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Arguments</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">open</td><td class="py-2 px-3">&lt;PATH&gt; [--new-tab]</td><td class="py-2 px-3">Open directory</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">current-dir</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Get current directory</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-green">status</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Get app status (tabs, selection)</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-gar-accent-green">quit</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Close garfield</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Examples</h4>
+          <MultiTerminal
+            commands={[
+              { command: 'garfieldctl open /home/user/Documents', comment: 'Navigate to Documents' },
+              { command: 'garfieldctl open /tmp --new-tab', comment: 'Open in new tab' },
+              { command: 'garfieldctl current-dir', comment: 'Query current directory' },
+              { command: 'garfieldctl status', comment: 'Get app status' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Request format</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{"command": "open", "path": "/home/user", "new_tab": false}
+{"command": "current_dir"}
+{"command": "status"}
+{"command": "quit"}`}</code></pre>
+          </div>
+
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">Response format</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"success": true, "data": {"current_dir": "/home/user"}}
+
+// Status response
+{"success": true, "data": {
+  "current_dir": "/home/user/Documents",
+  "tab_count": 3,
+  "selection_count": 2
+}}
+
+// Error
+{"success": false, "error": "Directory not found"}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File/Folder Picker</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The IPC protocol also supports file picker dialogs for other applications:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// File picker
+{
+  "command": "file_picker",
+  "title": "Select Files",
+  "start_dir": "/home/user",
+  "filters": ["*.rs", "*.txt"],
+  "multiple": true
+}
+
+// Folder picker
+{
+  "command": "folder_picker",
+  "title": "Select Directory",
+  "start_dir": "/home/user"
+}`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="grid gap-4">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garfield won't start</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify X11 is running and DISPLAY is set:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'echo $DISPLAY', comment: 'Should show :0 or similar' },
+                  { command: 'xdpyinfo | head -5', comment: 'Test X connection' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">garfieldctl: connection refused</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">The IPC socket may not exist:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -la ${XDG_RUNTIME_DIR:-/tmp}/garfield.sock', comment: 'Check socket exists' },
+                  { command: 'pgrep -x garfield', comment: 'Verify garfield is running' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Bookmarks not saving</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check config directory permissions:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -la ~/.config/garfield/', comment: 'Check directory exists' },
+                  { command: 'mkdir -p ~/.config/garfield', comment: 'Create if missing' },
+                  { command: 'touch ~/.config/garfield/bookmarks', comment: 'Create bookmarks file' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Trash not working</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Verify Freedesktop trash directory:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'ls -la ~/.local/share/Trash/', comment: 'Check Trash exists' },
+                  { command: 'mkdir -p ~/.local/share/Trash/{files,info}', comment: 'Create if missing' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Move operation fails across filesystems</h4>
+              <p class="text-gar-text-secondary text-sm">
+                garfield automatically falls back to copy+delete when moving across filesystems. If it still fails, check disk space and permissions on both source and destination.
+              </p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Rendering issues</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Check X11 and Cairo dependencies:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'pkg-config --modversion cairo', comment: 'Check Cairo version' },
+                  { command: 'pkg-config --modversion x11', comment: 'Check X11' },
+                ]}
+              />
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/20">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Debug logging</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Enable verbose logging:</p>
+              <MultiTerminal
+                commands={[
+                  { command: 'RUST_LOG=debug garfield', comment: 'Run with debug logging' },
+                  { command: 'RUST_LOG=garfield=trace garfield', comment: 'Trace-level for garfield only' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </TabbedCard>
+
+      <!-- Releases -->
+      <section class="mt-8">
+        <details class="group rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+          <summary class="flex items-center justify-between cursor-pointer px-6 py-4 text-lg font-semibold text-gar-text-primary hover:bg-gar-bg-secondary/50 rounded-lg transition-colors">
+            <span>Releases</span>
+            <svg class="w-5 h-5 text-gar-text-muted transition-transform group-open:rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div class="px-6 pb-6">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-gar-text-primary font-medium">v0.1.0</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-gar-accent-green/20 text-gar-accent-green">Latest</span>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <a href="https://github.com/gardesk/garfield/archive/refs/tags/v0.1.0.tar.gz" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gar-bg-primary border border-gar-text-muted/20 text-gar-text-primary hover:border-gar-accent-orange/50 transition-colors">
+                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                Source (.tar.gz)
+              </a>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Back link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
