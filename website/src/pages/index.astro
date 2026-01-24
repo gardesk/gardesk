@@ -78,6 +78,29 @@ const components = [
     ]
   },
   {
+    id: 'gartray',
+    name: 'gartray',
+    tagline: 'System Tray',
+    description: 'A system tray with quick settings panel. Supports XEMBED and StatusNotifierItem protocols, with controls for volume, brightness, network, bluetooth, and power.',
+    features: [
+      'XEMBED and StatusNotifierItem support',
+      'Quick settings panel (volume, brightness)',
+      'Network and bluetooth controls',
+      'Battery status and power options',
+      'D-Bus integration via zbus'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'gartray system tray screenshot',
+    accentColor: 'green',
+    images: [
+      { src: '/images/gartray1.png', alt: 'gartray system tray - icon view' },
+      { src: '/images/gartray2.png', alt: 'gartray quick settings panel' },
+      { src: '/images/gartray3.png', alt: 'gartray volume controls' },
+      { src: '/images/gartray4.png', alt: 'gartray network settings' }
+    ]
+  },
+  {
     id: 'garbg',
     name: 'garbg',
     tagline: 'Wallpaper Daemon',
