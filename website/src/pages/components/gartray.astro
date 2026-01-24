@@ -1,0 +1,1461 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const gartrayImages = [
+  { src: '/images/gartray1.png', alt: 'gartray system tray - icon view' },
+  { src: '/images/gartray2.png', alt: 'gartray quick settings panel' },
+  { src: '/images/gartray3.png', alt: 'gartray volume controls' },
+  { src: '/images/gartray4.png', alt: 'gartray network settings' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'workflows', label: 'Workflows' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'protocols',
+    label: 'Tray Protocols',
+    children: [
+      { id: 'xembed', label: 'XEMBED' },
+      { id: 'sni', label: 'StatusNotifierItem' },
+    ]
+  },
+  {
+    id: 'panel',
+    label: 'Quick Settings',
+    children: [
+      { id: 'panel-volume', label: 'Volume' },
+      { id: 'panel-brightness', label: 'Brightness' },
+      { id: 'panel-network', label: 'Network' },
+      { id: 'panel-bluetooth', label: 'Bluetooth' },
+      { id: 'panel-battery', label: 'Battery' },
+      { id: 'panel-power', label: 'Power' },
+      { id: 'panel-dnd', label: 'Do Not Disturb' },
+    ]
+  },
+  {
+    id: 'configuration',
+    label: 'Configuration',
+  },
+  {
+    id: 'integration',
+    label: 'Integration',
+    children: [
+      { id: 'standalone', label: 'Standalone Mode' },
+      { id: 'garbar-integration', label: 'With garbar' },
+    ]
+  },
+  {
+    id: 'rendering',
+    label: 'Rendering',
+  },
+];
+---
+
+<BaseLayout title="gartray - gardesk" description="System Tray with Quick Settings. XEMBED and StatusNotifierItem support with volume, brightness, network, bluetooth, and power controls.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-green">gartray</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">System Tray with Quick Settings</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A system tray implementation supporting both XEMBED and StatusNotifierItem (SNI) protocols.
+          Includes a quick settings panel with controls for volume, brightness, network, bluetooth, battery status, and power options.
+          Built with zbus for D-Bus integration and gartk for X11/Cairo rendering.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/gartray" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={gartrayImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'XEMBED protocol for legacy tray icons',
+            'StatusNotifierItem (SNI) protocol via D-Bus',
+            'Quick settings panel with system controls',
+            'Volume control via WirePlumber/PipeWire',
+            'Brightness control via sysfs backlight',
+            'Network management via NetworkManager',
+            'Bluetooth control via BlueZ',
+            'Battery status via UPower',
+            'Power actions via systemd-logind',
+            'Do Not Disturb toggle (dunst integration)',
+            'Configurable tray position and appearance',
+            'IPC control via gartrayctl',
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get gartray running as a standalone system tray or integrated with garbar.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install gartray using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=gartray', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/gartray && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. System Dependencies</h4>
+          <p class="text-gar-text-secondary mb-4">
+            gartray requires these system services for full functionality:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">System Services</span>
+            </div>
+            <div class="bg-gar-bg-primary p-4">
+              <ul class="space-y-2 text-sm text-gar-text-primary font-mono">
+                <li><span class="text-gar-accent-cyan">PipeWire/WirePlumber</span> - Volume control</li>
+                <li><span class="text-gar-accent-cyan">NetworkManager</span> - Network/WiFi control</li>
+                <li><span class="text-gar-accent-cyan">BlueZ</span> - Bluetooth control</li>
+                <li><span class="text-gar-accent-cyan">UPower</span> - Battery status</li>
+                <li><span class="text-gar-accent-cyan">systemd-logind</span> - Power actions</li>
+                <li><span class="text-gar-accent-cyan">dunst</span> - Do Not Disturb (optional)</li>
+              </ul>
+            </div>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Running gartray</h4>
+          <p class="text-gar-text-secondary mb-4">
+            gartray runs as a daemon with three modes:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartray daemon', comment: 'Start the tray daemon' },
+              { command: 'gartray panel', comment: 'Show quick settings panel' },
+              { command: 'gartray toggle', comment: 'Toggle panel visibility' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Configuration</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Create a configuration file at <code class="text-gar-accent-green">~/.config/gartray/config.toml</code>:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'mkdir -p ~/.config/gartray', comment: 'Create config directory' },
+              { command: '$EDITOR ~/.config/gartray/config.toml', comment: 'Edit configuration' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Control with gartrayctl</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use gartrayctl to control the running daemon:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartrayctl show 100 200', comment: 'Show panel at position (100, 200)' },
+              { command: 'gartrayctl hide', comment: 'Hide the panel' },
+              { command: 'gartrayctl toggle', comment: 'Toggle panel visibility' },
+              { command: 'gartrayctl reload', comment: 'Reload configuration' },
+              { command: 'gartrayctl status', comment: 'Get daemon status' },
+              { command: 'gartrayctl quit', comment: 'Stop the daemon' },
+            ]}
+            class="mb-6"
+          />
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            gartray uses TOML configuration at <code class="text-gar-accent-green">~/.config/gartray/config.toml</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gartray/config.toml</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Tray icon area settings
+[tray]
+enabled = true
+position = "top-right"     # top-left, top-right, bottom-left, bottom-right
+icon_size = 22             # Icon size in pixels
+spacing = 8.0              # Space between icons
+background = "#1a1a1a"     # Background color (hex)
+opacity = 0.95             # Background opacity (0.0-1.0)
+offset_x = 8               # Horizontal offset from screen edge
+offset_y = 8               # Vertical offset from screen edge
+monitor = "primary"        # "primary", "all", or monitor name
+
+# Quick settings panel
+[panel]
+enabled = true
+width = 360                # Panel width in pixels
+modules = [
+  "volume",
+  "brightness",
+  "network",
+  "bluetooth",
+  "battery",
+  "power"
+]
+
+# Volume control options
+[panel.volume]
+show_per_app = false       # Show per-application volume sliders
+show_input = false         # Show input device controls
+
+# Network options
+[panel.network]
+show_vpn = false           # Show VPN connections
+show_ethernet = false      # Show ethernet interfaces
+
+# Bluetooth options
+[panel.bluetooth]
+show_battery = false       # Show device battery percentage
+
+# Theme customization
+[theme]
+preset = "dark"            # "dark", "light", or "custom"`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tray Position Options</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Position</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">top-left</td>
+                  <td class="py-2 px-3">Top-left corner of the screen</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">top-right</td>
+                  <td class="py-2 px-3">Top-right corner (default)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">bottom-left</td>
+                  <td class="py-2 px-3">Bottom-left corner</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">bottom-right</td>
+                  <td class="py-2 px-3">Bottom-right corner</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Monitor Selection</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Value</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">"primary"</td>
+                  <td class="py-2 px-3">Show on primary monitor (default)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">"all"</td>
+                  <td class="py-2 px-3">Show on all monitors</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">"DP-1"</td>
+                  <td class="py-2 px-3">Show on specific monitor by name</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Available Panel Modules</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Module</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Backend</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">volume</td>
+                  <td class="py-2 px-3 font-mono">wpctl</td>
+                  <td class="py-2 px-3">Volume slider and mute toggle</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">brightness</td>
+                  <td class="py-2 px-3 font-mono">sysfs</td>
+                  <td class="py-2 px-3">Screen brightness slider</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">network</td>
+                  <td class="py-2 px-3 font-mono">NetworkManager</td>
+                  <td class="py-2 px-3">WiFi networks and connection status</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">bluetooth</td>
+                  <td class="py-2 px-3 font-mono">BlueZ</td>
+                  <td class="py-2 px-3">Bluetooth devices and pairing</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">battery</td>
+                  <td class="py-2 px-3 font-mono">UPower</td>
+                  <td class="py-2 px-3">Battery status and time remaining</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">power</td>
+                  <td class="py-2 px-3 font-mono">systemd-logind</td>
+                  <td class="py-2 px-3">Shutdown, reboot, suspend, hibernate</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono text-gar-accent-green">dnd</td>
+                  <td class="py-2 px-3 font-mono">dunstctl</td>
+                  <td class="py-2 px-3">Do Not Disturb toggle</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- doc-0: Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray is a system tray implementation for X11 that supports both legacy XEMBED protocol
+                and the modern StatusNotifierItem (SNI) protocol. It provides a unified tray experience
+                with an optional quick settings panel for common system controls.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gartray consists of two binaries:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">gartray</code> - Main daemon handling tray protocols and panel</li>
+                <li><code class="text-gar-accent-green">gartrayctl</code> - Control client for IPC commands</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Components</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Component</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">daemon</td>
+                      <td class="py-2 px-3">Main event loop, lifecycle management</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">tray/xembed</td>
+                      <td class="py-2 px-3">XEMBED protocol implementation</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">tray/sni</td>
+                      <td class="py-2 px-3">StatusNotifierItem D-Bus services</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">panel</td>
+                      <td class="py-2 px-3">Quick settings popup window</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">ipc</td>
+                      <td class="py-2 px-3">Unix socket IPC server/client</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">config</td>
+                      <td class="py-2 px-3">TOML configuration loading</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Dependencies</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>gartk</strong> - Shared toolkit (gartk-core, gartk-x11, gartk-render)</li>
+                <li><strong>zbus 4.0</strong> - D-Bus communication</li>
+                <li><strong>x11rb 0.13</strong> - X11 protocol</li>
+                <li><strong>cairo-rs 0.20</strong> - 2D graphics</li>
+                <li><strong>tokio 1.0</strong> - Async runtime</li>
+              </ul>
+            </div>
+
+            <!-- doc-1: Protocols (parent) -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Tray Protocols</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray implements two tray protocols to support the full range of tray icon applications.
+                Select a protocol from the sidebar to learn more about its implementation.
+              </p>
+            </div>
+
+            <!-- doc-2: XEMBED -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">XEMBED Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The XEMBED protocol is the traditional freedesktop.org system tray specification.
+                Applications create X11 windows that are reparented (embedded) into the tray container.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">How It Works</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-2">
+                <li>gartray acquires the <code class="text-gar-accent-green">_NET_SYSTEM_TRAY_S{"{screen}"}</code> X11 selection</li>
+                <li>gartray broadcasts a <code class="text-gar-accent-green">MANAGER</code> message to the root window</li>
+                <li>Tray applications send <code class="text-gar-accent-green">SYSTEM_TRAY_REQUEST_DOCK</code> messages</li>
+                <li>gartray reparents the icon window to its tray container</li>
+                <li>gartray sends <code class="text-gar-accent-green">XEMBED_EMBEDDED_NOTIFY</code> to confirm embedding</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">X11 Atoms Used</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Atom</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">_NET_SYSTEM_TRAY_S0</td>
+                      <td class="py-2 px-3">Selection ownership for screen 0</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">_NET_SYSTEM_TRAY_OPCODE</td>
+                      <td class="py-2 px-3">Tray operation messages (dock, messages)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">_NET_SYSTEM_TRAY_ORIENTATION</td>
+                      <td class="py-2 px-3">Horizontal (0) or vertical (1) layout</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">_NET_SYSTEM_TRAY_VISUAL</td>
+                      <td class="py-2 px-3">Visual ID for icon transparency</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">MANAGER</td>
+                      <td class="py-2 px-3">Selection manager announcement</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">_XEMBED</td>
+                      <td class="py-2 px-3">XEMBED protocol messages</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Tray Opcodes</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Opcode</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Value</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">SYSTEM_TRAY_REQUEST_DOCK</td>
+                      <td class="py-2 px-3 font-mono">0</td>
+                      <td class="py-2 px-3">Application requests to dock an icon</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">SYSTEM_TRAY_BEGIN_MESSAGE</td>
+                      <td class="py-2 px-3 font-mono">1</td>
+                      <td class="py-2 px-3">Start of balloon message</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono">SYSTEM_TRAY_CANCEL_MESSAGE</td>
+                      <td class="py-2 px-3 font-mono">2</td>
+                      <td class="py-2 px-3">Cancel balloon message</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Icon Layout</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Icons are positioned linearly in a horizontal layout:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`x = icon_count * (icon_size + spacing)`}</code></pre>
+              </div>
+              <p class="text-gar-text-secondary mb-4">
+                The tray window width is dynamically adjusted as icons are added or removed.
+              </p>
+            </div>
+
+            <!-- doc-3: SNI -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">StatusNotifierItem Protocol</h3>
+              <p class="text-gar-text-secondary mb-4">
+                StatusNotifierItem (SNI) is the modern D-Bus-based tray protocol originally developed by KDE.
+                Unlike XEMBED, icons are rendered by the tray host rather than embedded as X11 windows.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Services</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gartray runs two D-Bus services for SNI support:
+              </p>
+
+              <h5 class="text-md font-semibold text-gar-text-primary mb-2">StatusNotifierWatcher</h5>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Interface</td>
+                      <td class="py-2 px-3">org.kde.StatusNotifierWatcher</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Path</td>
+                      <td class="py-2 px-3">/StatusNotifierWatcher</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="text-gar-text-secondary mb-2">Methods:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">RegisterStatusNotifierItem(service)</code> - Register an SNI item</li>
+                <li><code class="text-gar-accent-green">RegisterStatusNotifierHost(service)</code> - Register an SNI host</li>
+              </ul>
+
+              <p class="text-gar-text-secondary mb-2">Properties:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">RegisteredStatusNotifierItems</code> - List of registered items</li>
+                <li><code class="text-gar-accent-green">IsStatusNotifierHostRegistered</code> - Whether a host is active</li>
+                <li><code class="text-gar-accent-green">ProtocolVersion</code> - Always 0</li>
+              </ul>
+
+              <h5 class="text-md font-semibold text-gar-text-primary mb-2 mt-6">StatusNotifierItem (per-app)</h5>
+              <p class="text-gar-text-secondary mb-2">Properties queried from each SNI application:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">Id</code> - Unique identifier</li>
+                <li><code class="text-gar-accent-green">Category</code> - ApplicationStatus, Communications, SystemServices, Hardware</li>
+                <li><code class="text-gar-accent-green">Title</code> - Human-readable name</li>
+                <li><code class="text-gar-accent-green">Status</code> - Passive, Active, NeedsAttention</li>
+                <li><code class="text-gar-accent-green">IconName</code> - Theme icon name</li>
+                <li><code class="text-gar-accent-green">IconPixmap</code> - ARGB32 icon data</li>
+                <li><code class="text-gar-accent-green">Menu</code> - D-Bus menu object path</li>
+              </ul>
+
+              <p class="text-gar-text-secondary mb-2">Methods called on SNI items:</p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">Activate(x, y)</code> - Left click</li>
+                <li><code class="text-gar-accent-green">SecondaryActivate(x, y)</code> - Middle click</li>
+                <li><code class="text-gar-accent-green">ContextMenu(x, y)</code> - Right click</li>
+                <li><code class="text-gar-accent-green">Scroll(delta, orientation)</code> - Scroll event</li>
+              </ul>
+            </div>
+
+            <!-- doc-4: Panel (parent) -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Settings Panel</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The quick settings panel provides a unified interface for common system controls.
+                It appears as a popup window that can be triggered via IPC or click events.
+              </p>
+              <p class="text-gar-text-secondary mb-4">
+                Select a module from the sidebar to learn about its specific functionality.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Panel Features</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>Transparent ARGB window with no decoration</li>
+                <li>Keyboard grab for input capture</li>
+                <li>Cairo-based rendering</li>
+                <li>Slider controls for continuous values</li>
+                <li>Toggle buttons for binary options</li>
+                <li>List views for network/bluetooth devices</li>
+                <li>Hover and drag interaction support</li>
+              </ul>
+            </div>
+
+            <!-- doc-5: Volume -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Volume Control</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Controls audio volume via WirePlumber/PipeWire using the <code class="text-gar-accent-green">wpctl</code> command.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">volume</code> - Current volume (0.0 to 1.0)</li>
+                <li><code class="text-gar-accent-green">muted</code> - Whether audio is muted</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Commands</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'wpctl get-volume @DEFAULT_AUDIO_SINK@', comment: 'Query current volume' },
+                  { command: 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.50', comment: 'Set volume to 50%' },
+                  { command: 'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle', comment: 'Toggle mute' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Output Parsing</h4>
+              <p class="text-gar-text-secondary mb-4">
+                The <code class="text-gar-accent-green">wpctl get-volume</code> output is parsed:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-cyan">Volume: 0.50</code> - Volume at 50%</li>
+                <li><code class="text-gar-accent-cyan">Volume: 0.50 [MUTED]</code> - Volume at 50%, muted</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[panel.volume]
+show_per_app = false   # Per-application volume sliders
+show_input = false     # Input device controls`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-6: Brightness -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Brightness Control</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Controls screen brightness via the sysfs backlight interface.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">brightness</code> - Current brightness (0.0 to 1.0)</li>
+                <li><code class="text-gar-accent-green">device</code> - Backlight device name</li>
+                <li><code class="text-gar-accent-green">max_brightness</code> - Maximum brightness value</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Sysfs Interface</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Brightness is read from and written to these files:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-cyan">/sys/class/backlight/{"{device}"}/brightness</code> - Current value</li>
+                <li><code class="text-gar-accent-cyan">/sys/class/backlight/{"{device}"}/max_brightness</code> - Maximum value</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Device Discovery</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gartray automatically discovers the first available backlight device in <code class="text-gar-accent-green">/sys/class/backlight/</code>.
+                Common device names include:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-cyan">intel_backlight</code> - Intel integrated graphics</li>
+                <li><code class="text-gar-accent-cyan">amdgpu_bl0</code> - AMD graphics</li>
+                <li><code class="text-gar-accent-cyan">acpi_video0</code> - ACPI backlight</li>
+              </ul>
+
+              <div class="bg-gar-bg-secondary/50 border border-gar-accent-yellow/30 rounded-lg p-4 mb-4">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-accent-yellow">Note:</strong> Writing to brightness files may require root permissions or udev rules.
+                  Consider using <code class="text-gar-accent-green">brightnessctl</code> or logind integration for unprivileged access.
+                </p>
+              </div>
+            </div>
+
+            <!-- doc-7: Network -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Network Control</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Controls WiFi and network connections via NetworkManager D-Bus interface.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">wifi_enabled</code> - Whether WiFi radio is on</li>
+                <li><code class="text-gar-accent-green">connected_ssid</code> - Currently connected network</li>
+                <li><code class="text-gar-accent-green">access_points</code> - List of available networks</li>
+                <li><code class="text-gar-accent-green">scanning</code> - Whether a scan is in progress</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Access Point Info</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">ssid</code> - Network name</li>
+                <li><code class="text-gar-accent-green">strength</code> - Signal strength (0-100%)</li>
+                <li><code class="text-gar-accent-green">connected</code> - Currently associated</li>
+                <li><code class="text-gar-accent-green">security</code> - Encryption type</li>
+                <li><code class="text-gar-accent-green">path</code> - D-Bus object path</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Interface</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Communicates with NetworkManager at <code class="text-gar-accent-cyan">org.freedesktop.NetworkManager</code>.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[panel.network]
+show_vpn = false       # Show VPN connections
+show_ethernet = false  # Show ethernet interfaces`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-8: Bluetooth -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Bluetooth Control</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Controls Bluetooth via BlueZ D-Bus interface (<code class="text-gar-accent-cyan">org.bluez</code>).
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">powered</code> - Whether Bluetooth is enabled</li>
+                <li><code class="text-gar-accent-green">available</code> - Whether adapter is present</li>
+                <li><code class="text-gar-accent-green">devices</code> - List of known devices</li>
+                <li><code class="text-gar-accent-green">discovering</code> - Whether scanning for devices</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Device Info</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">name</code> - Human-readable device name</li>
+                <li><code class="text-gar-accent-green">address</code> - MAC address</li>
+                <li><code class="text-gar-accent-green">paired</code> - Bonded with device</li>
+                <li><code class="text-gar-accent-green">connected</code> - Active connection</li>
+                <li><code class="text-gar-accent-green">trusted</code> - Auto-connect enabled</li>
+                <li><code class="text-gar-accent-green">icon</code> - Theme icon name</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Options</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[panel.bluetooth]
+show_battery = false   # Show device battery percentage`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-9: Battery -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Battery Status</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Displays battery information via UPower D-Bus interface.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Interface</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Interface</td>
+                      <td class="py-2 px-3">org.freedesktop.UPower.Device</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Path</td>
+                      <td class="py-2 px-3">/org/freedesktop/UPower/devices/DisplayDevice</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Properties</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Property</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">Percentage</td>
+                      <td class="py-2 px-3">Battery level (0-100%)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">State</td>
+                      <td class="py-2 px-3">Charging (1), Discharging (2), Charged (4)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">TimeToEmpty</td>
+                      <td class="py-2 px-3">Seconds until empty</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">TimeToFull</td>
+                      <td class="py-2 px-3">Seconds until fully charged</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">IsPresent</td>
+                      <td class="py-2 px-3">Whether battery is installed</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-10: Power -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Power Actions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Provides power management actions via systemd-logind D-Bus interface.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Interface</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Interface</td>
+                      <td class="py-2 px-3">org.freedesktop.login1.Manager</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3 font-mono text-gar-accent-cyan">Path</td>
+                      <td class="py-2 px-3">/org/freedesktop/login1</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Available Actions</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Action</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">D-Bus Method</th>
+                      <th class="text-left py-2 px-3 text-gar-text-primary">Fallback</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Shutdown</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">PowerOff()</td>
+                      <td class="py-2 px-3 font-mono">systemctl poweroff</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Reboot</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">Reboot()</td>
+                      <td class="py-2 px-3 font-mono">systemctl reboot</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Suspend</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">Suspend()</td>
+                      <td class="py-2 px-3 font-mono">systemctl suspend</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Hibernate</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">Hibernate()</td>
+                      <td class="py-2 px-3 font-mono">Suspend (fallback)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 px-3">Logout</td>
+                      <td class="py-2 px-3 font-mono text-gar-accent-green">TerminateSession()</td>
+                      <td class="py-2 px-3 font-mono">pkill -TERM -x gar</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-11: DND -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Do Not Disturb</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Toggles notification pause via dunst notification daemon.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">State</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-green">enabled</code> - Whether DND is active</li>
+                <li><code class="text-gar-accent-green">dunst_available</code> - Whether dunst is running</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Commands</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'dunstctl is-paused', comment: 'Query DND state (returns "true" or "false")' },
+                  { command: 'dunstctl set-paused true', comment: 'Enable DND' },
+                  { command: 'dunstctl set-paused false', comment: 'Disable DND' },
+                ]}
+                class="mb-4"
+              />
+
+              <div class="bg-gar-bg-secondary/50 border border-gar-accent-cyan/30 rounded-lg p-4 mb-4">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-accent-cyan">Note:</strong> If dunst is not available, gartray tracks DND state locally but cannot affect notifications.
+                </p>
+              </div>
+            </div>
+
+            <!-- doc-12: Configuration -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray is configured via TOML at <code class="text-gar-accent-green">~/.config/gartray/config.toml</code>.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">File Locations</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-cyan">~/.config/gartray/config.toml</code> - Configuration file</li>
+                <li><code class="text-gar-accent-cyan">$XDG_RUNTIME_DIR/gartray.pid</code> - PID file</li>
+                <li><code class="text-gar-accent-cyan">$XDG_RUNTIME_DIR/gartray.sock</code> - IPC socket</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Loading Behavior</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Configuration is loaded at startup. If the file is missing, built-in defaults are used.
+                Use <code class="text-gar-accent-green">gartrayctl reload</code> to reload configuration without restarting.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Custom Config Path</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'gartray daemon --config /path/to/config.toml', comment: 'Use custom config' },
+                ]}
+                class="mb-4"
+              />
+            </div>
+
+            <!-- doc-13: Integration (parent) -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray can run standalone or integrate with other gardesk components.
+                Select an integration mode from the sidebar to learn more.
+              </p>
+            </div>
+
+            <!-- doc-14: Standalone -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Standalone Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                In standalone mode, gartray runs its own tray window and panel independently.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Starting the Daemon</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'gartray daemon', comment: 'Start in foreground' },
+                  { command: 'gartray daemon &', comment: 'Start in background' },
+                ]}
+                class="mb-4"
+              />
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Autostart</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Add gartray to your X11 startup script:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.xinitrc</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Start gartray before window manager
+gartray daemon &
+
+# Start window manager
+exec gar`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Systemd User Service</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">~/.config/systemd/user/gartray.service</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[Unit]
+Description=gartray system tray
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/gartray daemon
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target`}</code></pre>
+              </div>
+            </div>
+
+            <!-- doc-15: garbar Integration -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Integration with garbar</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray works seamlessly with garbar in two ways:
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. garbar as Tray Manager</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garbar has its own built-in tray module that implements the XEMBED protocol.
+                In this mode, gartray's icons dock directly into garbar.
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">garbar config (TOML)</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Enable the tray module in garbar
+modules_right = ["tray", "datetime"]
+
+[modules.tray]
+icon_size = 18
+spacing = 8.0`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Quick Settings Panel Trigger</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garbar can trigger gartray's quick settings panel via IPC:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">quick_settings module</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# garbar sends to gartray via Unix socket:
+# /run/user/1000/gartray.sock (or /tmp/gartray.sock)
+# {"command":"toggle","x":100,"y":200}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Typical Setup</h4>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-2">
+                <li>Start gartray daemon (handles panel and SNI icons)</li>
+                <li>Start garbar with tray module (handles XEMBED icons)</li>
+                <li>Configure garbar quick_settings to trigger gartray panel on click</li>
+              </ol>
+
+              <div class="bg-gar-bg-secondary/50 border border-gar-accent-cyan/30 rounded-lg p-4 mb-4">
+                <p class="text-gar-text-secondary text-sm">
+                  <strong class="text-gar-accent-cyan">Tip:</strong> garbar's tray module and gartray are complementary.
+                  garbar handles the XEMBED icons in the bar, while gartray provides the quick settings panel.
+                </p>
+              </div>
+            </div>
+
+            <!-- doc-16: Rendering -->
+            <div slot="doc-16">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rendering</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gartray uses Cairo for 2D graphics rendering with ARGB32 transparency support.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Icon Sources</h4>
+              <p class="text-gar-text-secondary mb-2">Icons are loaded in priority order:</p>
+              <ol class="list-decimal list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>Theme icons</strong> - Searched in icon theme directories</li>
+                <li><strong>Pixmaps</strong> - ARGB32 data from SNI D-Bus properties</li>
+                <li><strong>Placeholder</strong> - Fallback if no icon available</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Icon Theme Search Paths</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-cyan">~/.local/share/icons</code></li>
+                <li><code class="text-gar-accent-cyan">/usr/share/icons</code></li>
+                <li><code class="text-gar-accent-cyan">/usr/share/pixmaps</code></li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Themes Searched</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>hicolor</li>
+                <li>Adwaita</li>
+                <li>breeze</li>
+                <li>Papirus</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Color Format Conversion</h4>
+              <p class="text-gar-text-secondary mb-4">
+                SNI icons use network byte order (big-endian ARGB), while Cairo uses native byte order (BGRA on little-endian systems):
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`D-Bus ARGB (big-endian):  A R G B
+Cairo BGRA (native):      B G R A`}</code></pre>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Workflows Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Workflows</h3>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Basic Usage</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartray daemon &', comment: 'Start daemon in background' },
+              { command: 'gartrayctl toggle', comment: 'Show/hide quick settings' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Position Panel at Cursor</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Show the panel at a specific position (useful for keybinds):
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartrayctl show $(xdotool getmouselocation --shell | grep -E "^[XY]=" | cut -d= -f2 | tr "\\n" " ")', comment: 'Show at cursor position' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keybind in gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Add a keybind in your gar config to toggle the panel:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Toggle gartray quick settings panel
+gar.bind("Super+Shift+s", function()
+    os.execute("gartrayctl toggle")
+end)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Volume Control Keybinds</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Direct volume control without opening the panel:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+', comment: 'Volume up' },
+              { command: 'wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-', comment: 'Volume down' },
+              { command: 'wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle', comment: 'Toggle mute' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Brightness Control Keybinds</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Direct brightness control:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'brightnessctl set +5%', comment: 'Brightness up' },
+              { command: 'brightnessctl set 5%-', comment: 'Brightness down' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Reload Configuration</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartrayctl reload', comment: 'Reload config without restart' },
+              { command: 'pkill -HUP gartray', comment: 'Alternative: send SIGHUP' },
+            ]}
+            class="mb-6"
+          />
+        </div>
+
+        <!-- IPC/API Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            gartray uses a Unix domain socket for IPC communication with gartrayctl.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <p class="text-gar-text-secondary mb-4">
+            The socket is created at <code class="text-gar-accent-green">$XDG_RUNTIME_DIR/gartray.sock</code> or <code class="text-gar-accent-green">/tmp/gartray.sock</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Protocol Format</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Messages are JSON objects, one per line (JSON Lines format).
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Commands</h4>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Command</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">JSON</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">show</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"show","x":100,"y":200}`}</td>
+                  <td class="py-2 px-3">Show panel at position</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">hide</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"hide"}`}</td>
+                  <td class="py-2 px-3">Hide panel</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">toggle</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"toggle","x":100,"y":200}`}</td>
+                  <td class="py-2 px-3">Toggle panel visibility</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">reload</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"reload"}`}</td>
+                  <td class="py-2 px-3">Reload configuration</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">status</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"status"}`}</td>
+                  <td class="py-2 px-3">Get daemon status</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 px-3 font-mono">quit</td>
+                  <td class="py-2 px-3 font-mono text-xs">{`{"command":"quit"}`}</td>
+                  <td class="py-2 px-3">Stop daemon</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Format</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`// Success
+{"success": true, "message": null, "data": null}
+
+// Error
+{"success": false, "message": "error description", "data": null}`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gartrayctl Commands</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'gartrayctl show [x] [y]', comment: 'Show panel at position' },
+              { command: 'gartrayctl hide', comment: 'Hide panel' },
+              { command: 'gartrayctl toggle [x] [y]', comment: 'Toggle panel' },
+              { command: 'gartrayctl reload', comment: 'Reload config' },
+              { command: 'gartrayctl status', comment: 'Get daemon status' },
+              { command: 'gartrayctl quit', comment: 'Stop daemon' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Direct Socket Communication</h4>
+          <p class="text-gar-text-secondary mb-4">
+            You can communicate directly with the socket using standard tools:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'echo \'{"command":"toggle"}\' | socat - UNIX-CONNECT:$XDG_RUNTIME_DIR/gartray.sock', comment: 'Using socat' },
+              { command: 'echo \'{"command":"status"}\' | nc -U $XDG_RUNTIME_DIR/gartray.sock', comment: 'Using netcat' },
+            ]}
+            class="mb-6"
+          />
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <div class="space-y-6">
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Tray icons not appearing</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check if gartray has acquired the system tray selection:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'xprop -root | grep _NET_SYSTEM_TRAY', comment: 'Check tray selection' },
+                  { command: 'gartrayctl status', comment: 'Check daemon status' },
+                ]}
+                class="mb-2"
+              />
+              <p class="text-gar-text-secondary text-sm">
+                If another tray manager (like trayer or stalonetray) is running, stop it first.
+              </p>
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Volume control not working</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Verify WirePlumber/PipeWire is running:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'wpctl status', comment: 'Check WirePlumber status' },
+                  { command: 'systemctl --user status pipewire wireplumber', comment: 'Check services' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Brightness control not working</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check backlight device and permissions:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'ls /sys/class/backlight/', comment: 'List backlight devices' },
+                  { command: 'cat /sys/class/backlight/*/brightness', comment: 'Check current brightness' },
+                ]}
+                class="mb-2"
+              />
+              <p class="text-gar-text-secondary text-sm">
+                You may need to add your user to the <code class="text-gar-accent-green">video</code> group or create udev rules for write access.
+              </p>
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Network/Bluetooth not showing</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Verify D-Bus services are running:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'systemctl status NetworkManager', comment: 'Check NetworkManager' },
+                  { command: 'systemctl status bluetooth', comment: 'Check BlueZ' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Power actions require password</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Ensure polkit is configured for passwordless power actions:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-2">
+                <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+                  <span class="text-sm text-gar-text-secondary font-mono">/etc/polkit-1/rules.d/85-power.rules</span>
+                </div>
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`polkit.addRule(function(action, subject) {
+    if ((action.id == "org.freedesktop.login1.power-off" ||
+         action.id == "org.freedesktop.login1.reboot" ||
+         action.id == "org.freedesktop.login1.suspend" ||
+         action.id == "org.freedesktop.login1.hibernate") &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+    }
+});`}</code></pre>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Daemon already running</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Check for existing daemon and stop it:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'cat $XDG_RUNTIME_DIR/gartray.pid', comment: 'Check PID file' },
+                  { command: 'gartrayctl quit', comment: 'Stop existing daemon' },
+                  { command: 'pkill gartray', comment: 'Force stop if needed' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+
+            <div class="rounded-lg border border-gar-text-muted/20 p-4">
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-2">Debug logging</h4>
+              <p class="text-gar-text-secondary mb-3">
+                Enable debug output to diagnose issues:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'RUST_LOG=debug gartray daemon', comment: 'Run with debug logging' },
+                  { command: 'RUST_LOG=gartray=trace gartray daemon', comment: 'Trace-level logging' },
+                ]}
+                class="mb-2"
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+
+      <!-- Back Link -->
+      <div class="mt-12 pt-8 border-t border-gar-text-muted/10">
+        <Button href="/" variant="ghost">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to home
+        </Button>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
