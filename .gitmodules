@@ -42,3 +42,7 @@
 	path = garfield
 	url = https://github.com/gardesk/garfield.git
 	branch = trunk
+[submodule "garterm"]
+	path = garterm
+	url = https://github.com/gardesk/garterm.git
+	branch = trunk
