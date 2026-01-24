@@ -9,8 +9,8 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
 <div class:list={['relative group', className]} data-carousel={carouselId}>
-  <!-- Images container -->
-  <div class="relative overflow-hidden rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary">
+  <!-- Images container with dynamic height -->
+  <div class="carousel-container relative overflow-hidden rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary transition-[height] duration-500 ease-out">
     <div class="carousel-track flex transition-transform duration-500 ease-out">
       {images.map(function(image, index) {
         return (
@@ -18,7 +18,7 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
             <img
               src={image.src}
               alt={image.alt}
-              class="w-full h-auto"
+              class="w-full h-auto block"
               loading={index === 0 ? 'eager' : 'lazy'}
             />
           </div>
@@ -72,49 +72,104 @@ const carouselId = `carousel-${Math.random().toString(36).slice(2, 9)}`;
 </div>
 
 <script>
-  document.querySelectorAll('[data-carousel]').forEach((carousel) => {
-    const track = carousel.querySelector('.carousel-track') as HTMLElement;
-    const slides = carousel.querySelectorAll('.carousel-slide');
-    const prevBtn = carousel.querySelector('.carousel-prev');
-    const nextBtn = carousel.querySelector('.carousel-next');
-    const dots = carousel.querySelectorAll('.carousel-dot');
+  function initCarousels() {
+    document.querySelectorAll('[data-carousel]').forEach((carousel) => {
+      // Skip if already initialized
+      if ((carousel as HTMLElement).dataset.initialized) return;
+      (carousel as HTMLElement).dataset.initialized = 'true';
 
-    let currentIndex = 0;
-    const totalSlides = slides.length;
+      const container = carousel.querySelector('.carousel-container') as HTMLElement;
+      const track = carousel.querySelector('.carousel-track') as HTMLElement;
+      const slides = carousel.querySelectorAll('.carousel-slide');
+      const images = carousel.querySelectorAll('.carousel-slide img') as NodeListOf<HTMLImageElement>;
+      const prevBtn = carousel.querySelector('.carousel-prev');
+      const nextBtn = carousel.querySelector('.carousel-next');
+      const dots = carousel.querySelectorAll('.carousel-dot');
 
-    function goToSlide(index: number) {
-      if (index < 0) index = totalSlides - 1;
-      if (index >= totalSlides) index = 0;
+      let currentIndex = 0;
+      const totalSlides = slides.length;
+      const aspectRatios: number[] = [];
 
-      currentIndex = index;
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      // Calculate and store aspect ratios for each image
+      function calculateAspectRatio(img: HTMLImageElement, index: number) {
+        if (img.naturalWidth && img.naturalHeight) {
+          aspectRatios[index] = img.naturalWidth / img.naturalHeight;
+          // If this is the first image, set initial height
+          if (index === 0 && currentIndex === 0) {
+            updateContainerHeight();
+          }
+        }
+      }
 
-      dots.forEach((dot, i) => {
-        if (i === currentIndex) {
-          dot.classList.add('bg-gar-accent-blue', 'w-6');
-          dot.classList.remove('bg-gar-text-muted/40');
+      // Update container height based on current slide's aspect ratio
+      function updateContainerHeight() {
+        const containerWidth = container.clientWidth;
+        const aspectRatio = aspectRatios[currentIndex];
+        if (aspectRatio && containerWidth) {
+          const newHeight = containerWidth / aspectRatio;
+          container.style.height = `${newHeight}px`;
+        }
+      }
+
+      // Initialize aspect ratios from already-loaded images
+      images.forEach((img, index) => {
+        if (img.complete && img.naturalWidth) {
+          calculateAspectRatio(img, index);
         } else {
-          dot.classList.remove('bg-gar-accent-blue', 'w-6');
-          dot.classList.add('bg-gar-text-muted/40');
+          img.addEventListener('load', () => calculateAspectRatio(img, index));
         }
       });
-    }
 
-    prevBtn?.addEventListener('click', () => goToSlide(currentIndex - 1));
-    nextBtn?.addEventListener('click', () => goToSlide(currentIndex + 1));
+      function goToSlide(index: number) {
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
 
-    dots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        const index = parseInt((dot as HTMLElement).dataset.index || '0', 10);
-        goToSlide(index);
+        currentIndex = index;
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+
+        // Update container height for new slide
+        updateContainerHeight();
+
+        dots.forEach((dot, i) => {
+          if (i === currentIndex) {
+            dot.classList.add('bg-gar-accent-blue', 'w-6');
+            dot.classList.remove('bg-gar-text-muted/40');
+          } else {
+            dot.classList.remove('bg-gar-accent-blue', 'w-6');
+            dot.classList.add('bg-gar-text-muted/40');
+          }
+        });
+      }
+
+      prevBtn?.addEventListener('click', () => goToSlide(currentIndex - 1));
+      nextBtn?.addEventListener('click', () => goToSlide(currentIndex + 1));
+
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const index = parseInt((dot as HTMLElement).dataset.index || '0', 10);
+          goToSlide(index);
+        });
+      });
+
+      // Keyboard navigation
+      carousel.addEventListener('keydown', (e: Event) => {
+        const event = e as KeyboardEvent;
+        if (event.key === 'ArrowLeft') goToSlide(currentIndex - 1);
+        if (event.key === 'ArrowRight') goToSlide(currentIndex + 1);
+      });
+
+      // Recalculate height on window resize
+      let resizeTimeout: number;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = window.setTimeout(updateContainerHeight, 100);
       });
     });
+  }
 
-    // Keyboard navigation
-    carousel.addEventListener('keydown', (e: Event) => {
-      const event = e as KeyboardEvent;
-      if (event.key === 'ArrowLeft') goToSlide(currentIndex - 1);
-      if (event.key === 'ArrowRight') goToSlide(currentIndex + 1);
-    });
-  });
+  // Initialize on page load
+  initCarousels();
+
+  // Re-initialize on Astro page transitions
+  document.addEventListener('astro:page-load', initCarousels);
 </script>
