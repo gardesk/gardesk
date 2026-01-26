@@ -5,7 +5,10 @@
 #
 # A modular X11 desktop environment featuring:
 #   - gar: Tiling window manager with Lua config
+#   - garfield: File manager with dual-pane interface
+#   - garterm: GPU-accelerated terminal emulator
 #   - garbar: Status bar with Cairo/Pango rendering
+#   - gartray: System tray with SNI/XEMBED support
 #   - garbg: Wallpaper daemon with animation support
 #   - garshot: Screenshot utility with blur selection overlay
 #   - garlock: Screen locker with PAM authentication
@@ -42,7 +45,10 @@ BUILD_DIR="${GAR_BUILD_DIR:-$HOME/.local/src/gardesk}"
 
 # Component flags (set by prompt_components or CLI args)
 INSTALL_GAR=false
+INSTALL_GARFIELD=false
+INSTALL_GARTERM=false
 INSTALL_GARBAR=false
+INSTALL_GARTRAY=false
 INSTALL_GARBG=false
 INSTALL_GARSHOT=false
 INSTALL_GARLOCK=false
@@ -326,18 +332,21 @@ show_component_menu() {
     echo ""
     echo -e "${BOLD}Select components to install:${NC}"
     echo ""
-    echo -e "  ${CYAN}1)${NC} gar        ${DIM}-${NC} Tiling window manager with Lua config ${GREEN}[recommended]${NC}"
-    echo -e "  ${CYAN}2)${NC} garbar     ${DIM}-${NC} Status bar with async modules"
-    echo -e "  ${CYAN}3)${NC} garbg      ${DIM}-${NC} Wallpaper daemon with animations"
-    echo -e "  ${CYAN}4)${NC} garshot    ${DIM}-${NC} Screenshot utility with blur selection"
-    echo -e "  ${CYAN}5)${NC} garlock    ${DIM}-${NC} Screen locker with PAM auth"
-    echo -e "  ${CYAN}6)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
-    echo -e "  ${CYAN}7)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
-    echo -e "  ${CYAN}8)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
-    echo -e "  ${CYAN}9)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency for garlaunch, garclip-picker)${NC}"
+    echo -e "  ${CYAN}1)${NC}  gar        ${DIM}-${NC} Tiling window manager with Lua config ${GREEN}[recommended]${NC}"
+    echo -e "  ${CYAN}2)${NC}  garfield   ${DIM}-${NC} File manager with dual-pane interface"
+    echo -e "  ${CYAN}3)${NC}  garterm    ${DIM}-${NC} GPU-accelerated terminal emulator"
+    echo -e "  ${CYAN}4)${NC}  garbar     ${DIM}-${NC} Status bar with async modules"
+    echo -e "  ${CYAN}5)${NC}  gartray    ${DIM}-${NC} System tray with SNI/XEMBED support"
+    echo -e "  ${CYAN}6)${NC}  garbg      ${DIM}-${NC} Wallpaper daemon with animations"
+    echo -e "  ${CYAN}7)${NC}  garshot    ${DIM}-${NC} Screenshot utility with blur selection"
+    echo -e "  ${CYAN}8)${NC}  garlock    ${DIM}-${NC} Screen locker with PAM auth"
+    echo -e "  ${CYAN}9)${NC}  gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
+    echo -e "  ${CYAN}10)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
+    echo -e "  ${CYAN}11)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
+    echo -e "  ${CYAN}12)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency)${NC}"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
-    echo -e "  ${MAGENTA}D)${NC} Desktop only (1-5,7-8, recommended for most users)"
+    echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
     echo -e "  ${MAGENTA}Q)${NC} Quit"
     echo ""
 }
@@ -346,7 +355,10 @@ prompt_components() {
     if [ "$NON_INTERACTIVE" = true ]; then
         # Default to desktop components in non-interactive mode
         INSTALL_GAR=true
+        INSTALL_GARFIELD=true
+        INSTALL_GARTERM=true
         INSTALL_GARBAR=true
+        INSTALL_GARTRAY=true
         INSTALL_GARBG=true
         INSTALL_GARSHOT=true
         INSTALL_GARLOCK=true
@@ -363,7 +375,10 @@ prompt_components() {
 
     # Reset flags
     INSTALL_GAR=false
+    INSTALL_GARFIELD=false
+    INSTALL_GARTERM=false
     INSTALL_GARBAR=false
+    INSTALL_GARTRAY=false
     INSTALL_GARBG=false
     INSTALL_GARSHOT=false
     INSTALL_GARLOCK=false
@@ -374,17 +389,23 @@ prompt_components() {
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
-        2) INSTALL_GARBAR=true ;;
-        3) INSTALL_GARBG=true ;;
-        4) INSTALL_GARSHOT=true ;;
-        5) INSTALL_GARLOCK=true ;;
-        6) INSTALL_GARDM=true ;;
-        7) INSTALL_GARLAUNCH=true ;;
-        8) INSTALL_GARCLIP=true ;;
-        9) INSTALL_GARTK=true ;;
+        2) INSTALL_GARFIELD=true ;;
+        3) INSTALL_GARTERM=true ;;
+        4) INSTALL_GARBAR=true ;;
+        5) INSTALL_GARTRAY=true ;;
+        6) INSTALL_GARBG=true ;;
+        7) INSTALL_GARSHOT=true ;;
+        8) INSTALL_GARLOCK=true ;;
+        9) INSTALL_GARDM=true ;;
+        10) INSTALL_GARLAUNCH=true ;;
+        11) INSTALL_GARCLIP=true ;;
+        12) INSTALL_GARTK=true ;;
         A|ALL)
             INSTALL_GAR=true
+            INSTALL_GARFIELD=true
+            INSTALL_GARTERM=true
             INSTALL_GARBAR=true
+            INSTALL_GARTRAY=true
             INSTALL_GARBG=true
             INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
@@ -395,7 +416,10 @@ prompt_components() {
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
+            INSTALL_GARFIELD=true
+            INSTALL_GARTERM=true
             INSTALL_GARBAR=true
+            INSTALL_GARTRAY=true
             INSTALL_GARBG=true
             INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
@@ -411,36 +435,54 @@ prompt_components() {
             for num in ${selection//,/ }; do
                 case "$num" in
                     1) INSTALL_GAR=true ;;
-                    2) INSTALL_GARBAR=true ;;
-                    3) INSTALL_GARBG=true ;;
-                    4) INSTALL_GARSHOT=true ;;
-                    5) INSTALL_GARLOCK=true ;;
-                    6) INSTALL_GARDM=true ;;
-                    7) INSTALL_GARLAUNCH=true ;;
-                    8) INSTALL_GARCLIP=true ;;
-                    9) INSTALL_GARTK=true ;;
+                    2) INSTALL_GARFIELD=true ;;
+                    3) INSTALL_GARTERM=true ;;
+                    4) INSTALL_GARBAR=true ;;
+                    5) INSTALL_GARTRAY=true ;;
+                    6) INSTALL_GARBG=true ;;
+                    7) INSTALL_GARSHOT=true ;;
+                    8) INSTALL_GARLOCK=true ;;
+                    9) INSTALL_GARDM=true ;;
+                    10) INSTALL_GARLAUNCH=true ;;
+                    11) INSTALL_GARCLIP=true ;;
+                    12) INSTALL_GARTK=true ;;
                 esac
             done
             ;;
     esac
 
     # Ensure at least one component is selected
-    if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
-       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
-       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+    if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARFIELD" = false ] && \
+       [ "$INSTALL_GARTERM" = false ] && [ "$INSTALL_GARBAR" = false ] && \
+       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARBG" = false ] && \
+       [ "$INSTALL_GARSHOT" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
+       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
+       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
         log_error "No components selected"
         return 1
     fi
 
-    # garlaunch requires gartk - auto-select if needed
+    # Auto-select gartk for components that depend on it
+    if [ "$INSTALL_GARFIELD" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garfield requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
+
+    if [ "$INSTALL_GARTERM" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garterm requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
+
+    if [ "$INSTALL_GARTRAY" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "gartray requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
+
     if [ "$INSTALL_GARLAUNCH" = true ] && [ "$INSTALL_GARTK" = false ]; then
         log_info "garlaunch requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
 
-    # garclip-picker requires gartk - auto-select if needed
     if [ "$INSTALL_GARCLIP" = true ] && [ "$INSTALL_GARTK" = false ]; then
         log_info "garclip-picker requires gartk, adding to installation"
         INSTALL_GARTK=true
@@ -452,7 +494,10 @@ show_selection_summary() {
     log_info "Components to install:"
 
     [ "$INSTALL_GAR" = true ] && echo -e "  ${GREEN}•${NC} gar (window manager)"
+    [ "$INSTALL_GARFIELD" = true ] && echo -e "  ${GREEN}•${NC} garfield (file manager)"
+    [ "$INSTALL_GARTERM" = true ] && echo -e "  ${GREEN}•${NC} garterm (terminal emulator)"
     [ "$INSTALL_GARBAR" = true ] && echo -e "  ${GREEN}•${NC} garbar (status bar)"
+    [ "$INSTALL_GARTRAY" = true ] && echo -e "  ${GREEN}•${NC} gartray (system tray)"
     [ "$INSTALL_GARBG" = true ] && echo -e "  ${GREEN}•${NC} garbg (wallpaper daemon)"
     [ "$INSTALL_GARSHOT" = true ] && echo -e "  ${GREEN}•${NC} garshot (screenshot utility)"
     [ "$INSTALL_GARLOCK" = true ] && echo -e "  ${GREEN}•${NC} garlock (screen locker)"
@@ -548,6 +593,82 @@ EOF
     echo -e "${GREEN}  ✓ gar installed successfully${NC}"
 }
 
+install_garfield() {
+    log_step "Building garfield (file manager)..."
+
+    cd "$BUILD_DIR/garfield"
+    cargo build --release
+
+    log_info "Installing garfield binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garfield "$BIN_DIR/garfield"
+    sudo install -Dm755 target/release/garfieldctl "$BIN_DIR/garfieldctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garfield"
+
+    echo -e "${GREEN}  ✓ garfield installed successfully${NC}"
+    log_info "  Bind to a key: gar.key({ gar.mod, \"e\", gar.spawn(\"garfield\") })"
+}
+
+install_garterm() {
+    log_step "Building garterm (terminal emulator)..."
+
+    cd "$BUILD_DIR/garterm"
+    cargo build --release
+
+    log_info "Installing garterm binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garterm "$BIN_DIR/garterm"
+    sudo install -Dm755 target/release/gartermctl "$BIN_DIR/gartermctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garterm"
+
+    # Install default config if not present
+    if [ ! -f "$HOME/.config/garterm/config.toml" ]; then
+        if [ -f "$BUILD_DIR/garterm/garterm/config/default.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/garterm/garterm/config/default.toml" "$HOME/.config/garterm/config.toml"
+        else
+            log_info "Creating default garterm config..."
+            cat << 'EOF' > "$HOME/.config/garterm/config.toml"
+# garterm configuration
+# See https://gar.musicsian.com/components/garterm for options
+
+[general]
+# Rendering mode (false = continuous 60fps, true = VSync)
+vsync = false
+
+[font]
+family = "monospace"
+size = 14.0
+
+[window]
+title = "garterm"
+class = "garterm"
+padding = [0, 0]
+columns = 80
+rows = 24
+opacity = 1.0
+
+[terminal]
+scrollback_lines = 10000
+scroll_lines = 3
+
+[colors]
+# Theme preset: tokyo_night, catppuccin, gruvbox, dracula, nord,
+#               solarized, one_dark, one_light
+preset = "tokyo_night"
+EOF
+        fi
+    else
+        log_warn "Config exists at ~/.config/garterm/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ garterm installed successfully${NC}"
+    log_info "  Default terminal: set gar.terminal in ~/.config/gar/init.lua"
+    log_info "  Bind to a key: gar.key({ gar.mod, \"Return\", gar.spawn(\"garterm\") })"
+}
+
 install_garbar() {
     log_step "Building garbar (status bar)..."
 
@@ -559,6 +680,60 @@ install_garbar() {
     sudo install -Dm755 target/release/garbarctl "$BIN_DIR/garbarctl"
 
     echo -e "${GREEN}  ✓ garbar installed successfully${NC}"
+}
+
+install_gartray() {
+    log_step "Building gartray (system tray)..."
+
+    cd "$BUILD_DIR/gartray"
+    cargo build --release
+
+    log_info "Installing gartray binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/gartray "$BIN_DIR/gartray"
+    sudo install -Dm755 target/release/gartrayctl "$BIN_DIR/gartrayctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/gartray"
+
+    # Install default config if not present
+    if [ ! -f "$HOME/.config/gartray/config.toml" ]; then
+        log_info "Creating default gartray config..."
+        cat << 'EOF' > "$HOME/.config/gartray/config.toml"
+# gartray configuration
+# See https://gar.musicsian.com/components/gartray for options
+
+[panel]
+# Enable quick settings panel
+enabled = true
+
+# Panel width in pixels
+width = 360
+
+# Enabled modules (order matters)
+modules = ["volume", "brightness", "network", "bluetooth", "battery", "power"]
+
+[panel.volume]
+show_per_app = false
+show_input = false
+
+[panel.network]
+show_vpn = false
+show_ethernet = false
+
+[panel.bluetooth]
+show_battery = false
+
+[theme]
+# Theme preset: dark, light
+preset = "dark"
+EOF
+    else
+        log_warn "Config exists at ~/.config/gartray/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ gartray installed successfully${NC}"
+    log_info "  Integrates with garbar tray module"
+    log_info "  Use gartrayctl to control from scripts"
 }
 
 install_garbg() {
@@ -944,7 +1119,10 @@ parse_args() {
                 for comp in ${components//,/ }; do
                     case "$comp" in
                         gar) INSTALL_GAR=true ;;
+                        garfield) INSTALL_GARFIELD=true ;;
+                        garterm) INSTALL_GARTERM=true ;;
                         garbar) INSTALL_GARBAR=true ;;
+                        gartray) INSTALL_GARTRAY=true ;;
                         garbg) INSTALL_GARBG=true ;;
                         garshot) INSTALL_GARSHOT=true ;;
                         garlock) INSTALL_GARLOCK=true ;;
@@ -954,7 +1132,10 @@ parse_args() {
                         gartk) INSTALL_GARTK=true ;;
                         all)
                             INSTALL_GAR=true
+                            INSTALL_GARFIELD=true
+                            INSTALL_GARTERM=true
                             INSTALL_GARBAR=true
+                            INSTALL_GARTRAY=true
                             INSTALL_GARBG=true
                             INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
@@ -965,7 +1146,10 @@ parse_args() {
                             ;;
                         desktop)
                             INSTALL_GAR=true
+                            INSTALL_GARFIELD=true
+                            INSTALL_GARTERM=true
                             INSTALL_GARBAR=true
+                            INSTALL_GARTRAY=true
                             INSTALL_GARBG=true
                             INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
@@ -974,11 +1158,19 @@ parse_args() {
                             ;;
                     esac
                 done
-                # Auto-add gartk if garlaunch is selected
+                # Auto-add gartk for components that depend on it
+                if [ "$INSTALL_GARFIELD" = true ]; then
+                    INSTALL_GARTK=true
+                fi
+                if [ "$INSTALL_GARTERM" = true ]; then
+                    INSTALL_GARTK=true
+                fi
+                if [ "$INSTALL_GARTRAY" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 if [ "$INSTALL_GARLAUNCH" = true ]; then
                     INSTALL_GARTK=true
                 fi
-                # Auto-add gartk if garclip is selected (for garclip-picker)
                 if [ "$INSTALL_GARCLIP" = true ]; then
                     INSTALL_GARTK=true
                 fi
@@ -994,7 +1186,9 @@ parse_args() {
                 echo "  --no-deps           Skip dependency installation"
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
-                echo "                      (gar,garbar,garbg,garshot,garlock,gardm,garlaunch,garclip,gartk,all,desktop)"
+                echo "                      Components: gar,garfield,garterm,garbar,gartray,garbg,"
+                echo "                                  garshot,garlock,gardm,garlaunch,garclip,gartk"
+                echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
                 echo "Environment variables:"
@@ -1004,7 +1198,7 @@ parse_args() {
                 echo "Examples:"
                 echo "  $0                              # Interactive install"
                 echo "  $0 --component=desktop          # Install desktop components"
-                echo "  $0 --component=gar,garlock -y   # Non-interactive, specific components"
+                echo "  $0 --component=gar,garterm -y   # Non-interactive, specific components"
                 echo ""
                 exit 0
                 ;;
@@ -1041,11 +1235,12 @@ main() {
     fi
 
     # Component selection (if not specified via CLI)
-    if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
-       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
-       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+    if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARFIELD" = false ] && \
+       [ "$INSTALL_GARTERM" = false ] && [ "$INSTALL_GARBAR" = false ] && \
+       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARBG" = false ] && \
+       [ "$INSTALL_GARSHOT" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
+       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
+       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
         prompt_components
     fi
 
@@ -1076,13 +1271,19 @@ main() {
     log_step "Installing components..."
     echo ""
 
+    # Build gartk first if needed (it's a dependency for other components)
+    [ "$INSTALL_GARTK" = true ] && install_gartk
+
+    # Core components
     [ "$INSTALL_GAR" = true ] && install_gar
+    [ "$INSTALL_GARFIELD" = true ] && install_garfield
+    [ "$INSTALL_GARTERM" = true ] && install_garterm
     [ "$INSTALL_GARBAR" = true ] && install_garbar
+    [ "$INSTALL_GARTRAY" = true ] && install_gartray
     [ "$INSTALL_GARBG" = true ] && install_garbg
     [ "$INSTALL_GARSHOT" = true ] && install_garshot
     [ "$INSTALL_GARLOCK" = true ] && install_garlock
     [ "$INSTALL_GARDM" = true ] && install_gardm
-    [ "$INSTALL_GARTK" = true ] && install_gartk
     [ "$INSTALL_GARLAUNCH" = true ] && install_garlaunch
     [ "$INSTALL_GARCLIP" = true ] && install_garclip
 
@@ -1112,8 +1313,21 @@ main() {
     echo "     ~/.config/gar/init.lua"
     echo ""
 
+    if [ "$INSTALL_GARTERM" = true ]; then
+        echo "  Set garterm as default terminal in ~/.config/gar/init.lua:"
+        echo "     gar.terminal = { cmd = \"garterm\" }"
+        echo "  Bind: gar.key({ gar.mod, \"Return\", gar.spawn(\"garterm\") })"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARFIELD" = true ]; then
+        echo "  Bind garfield file manager in ~/.config/gar/init.lua:"
+        echo "     gar.key({ gar.mod, \"e\", gar.spawn(\"garfield\") })"
+        echo ""
+    fi
+
     if [ "$INSTALL_GARBG" = true ]; then
-        echo "  3. Enable wallpaper daemon:"
+        echo "  Enable wallpaper daemon:"
         echo "     systemctl --user enable --now garbg"
         echo ""
     fi
@@ -1138,6 +1352,12 @@ main() {
         echo ""
         echo "  Bind garclip-picker to a key in ~/.config/gar/init.lua:"
         echo "     gar.key({ gar.mod, \"v\", gar.spawn(\"garclip-picker\") })"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARTRAY" = true ]; then
+        echo "  gartray integrates with garbar's tray module"
+        echo "  Control via: gartrayctl toggle-panel"
         echo ""
     fi
 
