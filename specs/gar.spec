@@ -1,5 +1,5 @@
 Name:           gar
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Tiling window manager with smart splits
 
@@ -43,6 +43,10 @@ install -Dm755 %{_sourcedir}/gar-session.sh %{buildroot}%{_bindir}/gar-session
 %{_datadir}/xsessions/gar.desktop
 
 %changelog
+* Mon Jan 27 2026 mfw <espadonne@outlook.com> - 0.3.1-1
+- Version bump to 0.3.1
+- Bug fixes and improvements
+
 * Fri Jan 17 2025 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of gar
 - Tiling window manager with smart splits
