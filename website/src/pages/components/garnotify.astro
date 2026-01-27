@@ -4,8 +4,15 @@ import Header from '../../components/layout/Header.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Badge from '../../components/ui/Badge.astro';
 import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
 import TabbedCard from '../../components/ui/TabbedCard.astro';
 import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garnotifyImages = [
+  { src: '/images/garnotify1.png', alt: 'garnotify notification popup', thumb: '/images/thumbs/garnotify1.png' },
+  { src: '/images/garnotify2.png', alt: 'garnotify urgency levels', thumb: '/images/thumbs/garnotify2.png' },
+  { src: '/images/garnotify3.png', alt: 'garnotify action buttons', thumb: '/images/thumbs/garnotify3.png' },
+];
 
 const tabs = [
   { id: 'getting-started', label: 'Getting Started' },
@@ -92,6 +99,11 @@ const docsItems = [
             Install
           </Button>
         </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garnotifyImages} />
       </div>
 
       <!-- Features Grid -->
