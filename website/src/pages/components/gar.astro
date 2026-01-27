@@ -88,6 +88,10 @@ const docsItems = [
     label: 'Terminal Integration',
   },
   {
+    id: 'notifications',
+    label: 'Notification Integration',
+  },
+  {
     id: 'session',
     label: 'Session Management',
   },
@@ -1087,8 +1091,85 @@ end)`}</code></pre>
               </p>
             </div>
 
-            <!-- Session Management -->
+            <!-- Notification Integration -->
             <div slot="doc-19">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Notification Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gar integrates with <a href="/components/garnotify" class="text-gar-accent-blue hover:underline">garnotify</a> for desktop notifications with automatic spawning and shared Lua configuration.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Automatic garnotify</h4>
+              <p class="text-gar-text-secondary mb-4">
+                If <code class="text-gar-accent-blue">gar.notification</code> table exists in your config, garnotify is spawned automatically:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Enable garnotify with defaults
+gar.notification = {}
+
+-- Or customize
+gar.notification = {
+    position = "top-right",
+    width = 350,
+    offset_x = 20,
+    offset_y = 40,
+
+    timeouts = {
+        low = 10000,
+        normal = 5000,
+        critical = 0,  -- never expire
+    },
+
+    colors = {
+        background = "#1e1e2e",
+        foreground = "#cdd6f4",
+        border = "#45475a",
+        critical_background = "#f38ba8",
+    },
+
+    animation = {
+        enabled = true,
+        fade_in = 150,
+        fade_out = 150,
+        slide = "down",
+    },
+}`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Lifecycle Management</h4>
+              <p class="text-gar-text-secondary mb-4">
+                gar handles the notification daemon lifecycle:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>Spawns garnotify at startup when <code class="text-gar-accent-blue">gar.notification</code> is configured</li>
+                <li>Waits for socket to be ready before proceeding</li>
+                <li>Stops garnotify cleanly when gar exits</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keybind Control</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Close all notifications
+gar.bind("Mod + Escape", function()
+    os.execute("garnotifyctl close-all")
+end)
+
+-- Toggle Do Not Disturb
+gar.bind("Mod + Shift + n", function()
+    os.execute("garnotifyctl set-paused toggle")
+end)
+
+-- Pop from history
+gar.bind("Mod + n", function()
+    os.execute("garnotifyctl history-pop")
+end)`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                See the <a href="/components/garnotify" class="text-gar-accent-blue hover:underline">garnotify documentation</a> for full configuration options, rules, and IPC commands.
+              </p>
+            </div>
+
+            <!-- Session Management -->
+            <div slot="doc-20">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Session Management</h3>
               <p class="text-gar-text-secondary mb-4">
                 The <code class="text-gar-accent-blue">gar-session.sh</code> script handles session setup.
@@ -1114,7 +1195,7 @@ end)`}</code></pre>
             </div>
 
             <!-- Mouse Bindings -->
-            <div slot="doc-20">
+            <div slot="doc-21">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">Mouse Bindings</h3>
               <p class="text-gar-text-secondary mb-4">
                 gar has built-in mouse bindings for window interaction. These are not configurable via Lua.
