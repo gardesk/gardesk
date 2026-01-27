@@ -144,7 +144,7 @@ const docsItems = [
       <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
 
         <!-- Getting Started Tab -->
-        <div slot="getting-started" class="space-y-8">
+        <div slot="tab-0" class="space-y-8">
           <section>
             <h3 class="text-xl font-bold text-gar-text-primary mb-4">Installation</h3>
             <p class="text-gar-text-secondary mb-4">
@@ -226,7 +226,7 @@ garnotifyctl set-paused true`}</code></pre>
         </div>
 
         <!-- Config Tab -->
-        <div slot="config" class="space-y-8">
+        <div slot="tab-1" class="space-y-8">
           <section>
             <h3 class="text-xl font-bold text-gar-text-primary mb-4">TOML Configuration</h3>
             <p class="text-gar-text-secondary mb-4">
@@ -381,7 +381,7 @@ persist = true               # Save/load from disk`}</code></pre>
         </div>
 
         <!-- Docs Tab -->
-        <div slot="docs">
+        <div slot="tab-2">
           <DocsSidebar items={docsItems} defaultItem="overview">
             <!-- Overview -->
             <div slot="doc-0">
@@ -843,7 +843,7 @@ end)`}</code></pre>
         </div>
 
         <!-- Rules Tab -->
-        <div slot="rules" class="space-y-8">
+        <div slot="tab-3" class="space-y-8">
           <section>
             <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rule Engine</h3>
             <p class="text-gar-text-secondary mb-4">
@@ -978,7 +978,7 @@ garnotifyctl rule-enable silence_firefox_low`}</code></pre>
         </div>
 
         <!-- IPC/API Tab -->
-        <div slot="ipc" class="space-y-8">
+        <div slot="tab-4" class="space-y-8">
           <section>
             <h3 class="text-xl font-bold text-gar-text-primary mb-4">garnotifyctl Commands</h3>
             <p class="text-gar-text-secondary mb-4">
@@ -1054,7 +1054,7 @@ garnotifyctl rule-enable silence_firefox_low`}</code></pre>
         </div>
 
         <!-- Troubleshooting Tab -->
-        <div slot="troubleshooting" class="space-y-8">
+        <div slot="tab-5" class="space-y-8">
           <section>
             <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Issues</h3>
 
