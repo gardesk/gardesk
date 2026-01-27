@@ -46,3 +46,6 @@
 	path = garterm
 	url = https://github.com/gardesk/garterm.git
 	branch = trunk
+[submodule "garnotify"]
+	path = garnotify
+	url = git@github.com:gardesk/garnotify.git
