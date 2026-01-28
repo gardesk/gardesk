@@ -111,10 +111,10 @@ prompt_yes_no() {
 
     local yn
     if [ "$default" = "y" ]; then
-        read -p "$prompt [Y/n]: " yn
+        read -p "$prompt [Y/n]: " yn < /dev/tty
         yn="${yn:-y}"
     else
-        read -p "$prompt [y/N]: " yn
+        read -p "$prompt [y/N]: " yn < /dev/tty
         yn="${yn:-n}"
     fi
 
@@ -380,7 +380,7 @@ prompt_components() {
     local selection
 
     show_component_menu
-    read -p "Enter selection [D]: " selection
+    read -p "Enter selection [D]: " selection < /dev/tty
     selection="${selection:-D}"
 
     # Reset flags

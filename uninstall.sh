@@ -158,7 +158,7 @@ for dir in "${CONFIG_DIRS[@]}"; do
     fi
 done
 echo ""
-read -p "Remove user config directories? [y/N]: " remove_configs
+read -p "Remove user config directories? [y/N]: " remove_configs < /dev/tty
 if [[ "${remove_configs,,}" == "y" ]]; then
     log_step "Removing user config directories..."
     for dir in "${CONFIG_DIRS[@]}"; do
@@ -174,7 +174,7 @@ fi
 BUILD_DIR="${GAR_BUILD_DIR:-$HOME/.local/src/gardesk}"
 if [ -d "$BUILD_DIR" ]; then
     echo ""
-    read -p "Remove build directory ($BUILD_DIR)? [y/N]: " remove_build
+    read -p "Remove build directory ($BUILD_DIR)? [y/N]: " remove_build < /dev/tty
     if [[ "${remove_build,,}" == "y" ]]; then
         log_step "Removing build directory..."
         rm -rf "$BUILD_DIR"
