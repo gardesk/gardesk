@@ -49,3 +49,6 @@
 [submodule "garnotify"]
 	path = garnotify
 	url = git@github.com:gardesk/garnotify.git
+[submodule "garchomp"]
+	path = garchomp
+	url = https://github.com/gardesk/garchomp
