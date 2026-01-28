@@ -587,7 +587,7 @@ install_gar() {
     log_step "Building gar (window manager)..."
 
     cd "$BUILD_DIR/gar"
-    cargo build --release
+    cargo build --release --workspace
 
     log_info "Installing gar binaries to $BIN_DIR..."
     sudo install -Dm755 target/release/gar "$BIN_DIR/gar"
@@ -700,7 +700,7 @@ install_gartray() {
     log_step "Building gartray (system tray)..."
 
     cd "$BUILD_DIR/gartray"
-    cargo build --release
+    cargo build --release --workspace
 
     log_info "Installing gartray binaries to $BIN_DIR..."
     sudo install -Dm755 target/release/gartray "$BIN_DIR/gartray"
@@ -728,7 +728,7 @@ install_garnotify() {
     log_step "Building garnotify (notification daemon)..."
 
     cd "$BUILD_DIR/garnotify"
-    cargo build --release
+    cargo build --release --workspace
 
     log_info "Installing garnotify binaries to $BIN_DIR..."
     sudo install -Dm755 target/release/garnotify "$BIN_DIR/garnotify"
