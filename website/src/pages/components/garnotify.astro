@@ -1,0 +1,1138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garnotifyImages = [
+  { src: '/images/garnotify1.png', alt: 'garnotify notification popup', thumb: '/images/thumbs/garnotify1.png' },
+  { src: '/images/garnotify2.png', alt: 'garnotify urgency levels', thumb: '/images/thumbs/garnotify2.png' },
+  { src: '/images/garnotify3.png', alt: 'garnotify action buttons', thumb: '/images/thumbs/garnotify3.png' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'rules', label: 'Rules' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'daemon', label: 'Daemon' },
+      { id: 'dbus', label: 'D-Bus Interface' },
+    ]
+  },
+  {
+    id: 'rendering',
+    label: 'Rendering',
+    children: [
+      { id: 'cairo-pango', label: 'Cairo/Pango' },
+      { id: 'icons', label: 'Icon Loading' },
+      { id: 'markup', label: 'Markup Support' },
+    ]
+  },
+  {
+    id: 'features',
+    label: 'Features',
+    children: [
+      { id: 'urgency', label: 'Urgency Levels' },
+      { id: 'actions', label: 'Actions' },
+      { id: 'history', label: 'History' },
+    ]
+  },
+  {
+    id: 'animation',
+    label: 'Animations',
+  },
+  {
+    id: 'dnd',
+    label: 'Do Not Disturb',
+  },
+  {
+    id: 'gar-integration',
+    label: 'gar Integration',
+  },
+];
+---
+
+<BaseLayout title="garnotify - gardesk" description="Desktop notification daemon with D-Bus support, smooth animations, rule-based filtering, and deep gar integration.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-yellow">garnotify</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Desktop Notification Daemon</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A notification daemon implementing the FreeDesktop Desktop Notifications Specification.
+          Features smooth fade/slide animations, urgency-based styling, action buttons, notification history,
+          and a powerful rule engine for filtering and modifying notifications. Integrates with gar
+          via shared Lua configuration and automatic spawning.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garnotify" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garnotifyImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'FreeDesktop Notifications Spec 1.2 compliant',
+            'D-Bus integration (org.freedesktop.Notifications)',
+            'Smooth fade and slide animations',
+            'Urgency-based styling (low, normal, critical)',
+            'Action buttons with hover effects',
+            'Notification history with persistence',
+            'Rule engine for filtering and modification',
+            'Do Not Disturb mode with pause levels',
+            'Pango markup support in body text',
+            'Icon loading (PNG, JPEG, SVG, theme icons)',
+            'Multi-monitor support (primary, mouse, named)',
+            'IPC control via garnotifyctl',
+            'Lua + TOML configuration',
+            'gar integration with auto-spawn',
+            'Replacement notifications (progress bars)',
+            '6 position options (corners + center)',
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-yellow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0" class="space-y-8">
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Installation</h3>
+            <p class="text-gar-text-secondary mb-4">
+              garnotify is included in the desktop install preset. Build from source:
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <div class="bg-gar-bg-secondary/50 px-4 py-2 border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">Build</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`cd garnotify
+cargo build --release
+
+# Binaries produced:
+# target/release/garnotify      - Notification daemon
+# target/release/garnotifyctl   - Control client`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start</h3>
+            <p class="text-gar-text-secondary mb-4">
+              With gar, simply add a <code class="text-gar-accent-yellow">gar.notification</code> table to your config.
+              garnotify will be spawned automatically:
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <div class="bg-gar-bg-secondary/50 px-4 py-2 border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Enable garnotify with default settings
+gar.notification = {}
+
+-- Or customize
+gar.notification = {
+    position = "top-right",
+    width = 350,
+    timeout = 5000,
+
+    colors = {
+        background = "#1e1e2e",
+        foreground = "#cdd6f4",
+    },
+
+    animation = {
+        enabled = true,
+        fade_in = 150,
+        slide = "down",
+    },
+}`}</code></pre>
+            </div>
+
+            <p class="text-gar-text-secondary mb-4">
+              Or run standalone:
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Start the daemon
+garnotify
+
+# Test with notify-send
+notify-send "Hello" "This is a test notification"
+
+# Control via garnotifyctl
+garnotifyctl close-all
+garnotifyctl set-paused true`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Priority</h3>
+            <p class="text-gar-text-secondary mb-4">
+              garnotify loads configuration in this order (first found wins):
+            </p>
+            <ol class="list-decimal list-inside text-gar-text-secondary space-y-2">
+              <li><code class="text-gar-accent-yellow">--config</code> CLI flag</li>
+              <li><code class="text-gar-accent-yellow">~/.config/gar/init.lua</code> (gar ecosystem)</li>
+              <li><code class="text-gar-accent-yellow">~/.config/garnotify/config.toml</code></li>
+              <li>Built-in defaults</li>
+            </ol>
+          </section>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1" class="space-y-8">
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">TOML Configuration</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Full configuration reference for <code class="text-gar-accent-yellow">~/.config/garnotify/config.toml</code>:
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto text-sm"><code class="text-gar-text-primary font-mono">{`[general]
+monitor = "primary"          # "primary", "mouse", or monitor name
+follow_mouse = false         # Track monitor at pointer
+
+[geometry]
+position = "top-right"       # top-left, top-right, bottom-left, bottom-right,
+                             # top-center, bottom-center
+width = 350                  # Notification width in pixels
+max_height = 150             # Per-notification max height (0 = unlimited)
+offset_x = 20                # Horizontal margin from edge
+offset_y = 40                # Vertical margin from edge
+gap = 10                     # Gap between stacked notifications
+max_visible = 5              # Maximum visible at once (0 = unlimited)
+
+[timeouts]
+low = 10000                  # Low urgency timeout (ms)
+normal = 5000                # Normal urgency timeout (ms)
+critical = 0                 # Critical timeout (0 = never expire)
+
+[appearance]
+font = "Sans 11"             # Pango font description (body text)
+title_font = "Sans Bold 12"  # Pango font description (summary)
+icon_size = 48               # Icon size in pixels
+padding = 12                 # Internal padding
+corner_radius = 8            # Corner radius in pixels
+border_width = 2             # Border width
+markup_enabled = true        # Enable Pango markup parsing
+
+[appearance.colors]
+background = "#1e1e2e"       # Normal background
+foreground = "#cdd6f4"       # Normal foreground
+border = "#45475a"           # Normal border
+low_background = "#1e1e2e"   # Low urgency background
+low_foreground = "#6c7086"   # Low urgency text (dimmer)
+low_border = "#45475a"       # Low urgency border
+critical_background = "#f38ba8"  # Critical background (red)
+critical_foreground = "#1e1e2e"  # Critical text (inverted)
+critical_border = "#f38ba8"      # Critical border
+
+[animation]
+enabled = true               # Enable animations
+fade_in = 150                # Fade-in duration (ms)
+fade_out = 150               # Fade-out duration (ms)
+slide = "down"               # Slide direction: up, down, left, right, none
+slide_distance = 20          # Slide distance in pixels
+
+[history]
+max_length = 100             # Max notifications in history
+persist = true               # Save/load from disk`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Lua Configuration (gar integration)</h3>
+            <p class="text-gar-text-secondary mb-4">
+              When using gar, configure via <code class="text-gar-accent-yellow">gar.notification</code> table:
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <div class="bg-gar-bg-secondary/50 px-4 py-2 border-b border-gar-text-muted/20">
+                <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+              </div>
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto text-sm"><code class="text-gar-text-primary font-mono">{`gar.notification = {
+    -- Geometry
+    position = "top-right",
+    width = 350,
+    max_height = 150,
+    offset_x = 20,
+    offset_y = 40,
+    gap = 10,
+    max_visible = 5,
+
+    -- Monitor
+    monitor = "primary",
+    follow_mouse = false,
+
+    -- Timeouts (flat or nested)
+    timeout = 5000,  -- applies to normal
+    timeouts = {
+        low = 10000,
+        normal = 5000,
+        critical = 0,
+    },
+
+    -- Appearance
+    font = "Sans 11",
+    title_font = "Sans Bold 12",
+    icon_size = 48,
+    padding = 12,
+    corner_radius = 8,
+
+    -- Colors (flat or nested)
+    background = "#1e1e2e",
+    foreground = "#cdd6f4",
+    border = "#45475a",
+
+    colors = {
+        background = "#1e1e2e",
+        foreground = "#cdd6f4",
+        border = "#45475a",
+        low_background = "#1e1e2e",
+        low_foreground = "#6c7086",
+        critical_background = "#f38ba8",
+        critical_foreground = "#1e1e2e",
+    },
+
+    -- Animation
+    animation = {
+        enabled = true,
+        fade_in = 150,
+        fade_out = 150,
+        slide = "down",
+        slide_distance = 20,
+    },
+
+    -- History
+    history = {
+        max_length = 100,
+        persist = true,
+    },
+}`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Color Format</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Colors can be specified in multiple formats:
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                  <tr>
+                    <th class="py-2 px-3 text-left">Format</th>
+                    <th class="py-2 px-3 text-left">Example</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gar-text-secondary">
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Hex (6 digit)</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">#1e1e2e</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Hex (8 digit, with alpha)</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">#1e1e2ecc</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">RGB</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">rgb(30, 30, 46)</td></tr>
+                  <tr><td class="py-2 px-3">RGBA</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">rgba(30, 30, 46, 0.8)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify is a notification daemon that implements the
+                <a href="https://specifications.freedesktop.org/notification-spec/latest/" class="text-gar-accent-yellow hover:underline" target="_blank" rel="noopener">FreeDesktop Desktop Notifications Specification</a>
+                version 1.2. Applications send notifications via D-Bus, and garnotify renders them as popup windows.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Key Components</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>Daemon</strong> - Main process managing notification lifecycle</li>
+                <li><strong>D-Bus Service</strong> - Receives notifications from applications</li>
+                <li><strong>UI Thread</strong> - Renders popups with Cairo/Pango</li>
+                <li><strong>IPC Server</strong> - Unix socket for garnotifyctl</li>
+                <li><strong>Rule Engine</strong> - Filters and modifies notifications</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Capabilities</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify advertises these capabilities to applications:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><code class="text-gar-accent-yellow">actions</code> - Clickable action buttons</li>
+                <li><code class="text-gar-accent-yellow">body</code> - Multi-line body text</li>
+                <li><code class="text-gar-accent-yellow">body-markup</code> - Pango markup in body</li>
+                <li><code class="text-gar-accent-yellow">body-hyperlinks</code> - Underlined links</li>
+                <li><code class="text-gar-accent-yellow">icon-static</code> - Static icon display</li>
+                <li><code class="text-gar-accent-yellow">persistence</code> - History support</li>
+              </ul>
+            </div>
+
+            <!-- Architecture - Daemon -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Daemon Architecture</h3>
+              <p class="text-gar-text-secondary mb-4">
+                The daemon runs a tokio async runtime with a separate std::thread for UI rendering.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Components</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto text-sm"><code class="text-gar-text-primary font-mono">{`┌─────────────────────────────────────────────────────────┐
+│                    Tokio Runtime                         │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │ D-Bus       │  │ IPC Server  │  │ Timeout     │      │
+│  │ Service     │  │ (Unix sock) │  │ Scheduler   │      │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘      │
+│         │                │                │              │
+│         └────────────────┼────────────────┘              │
+│                          ▼                               │
+│               ┌─────────────────────┐                    │
+│               │   Event Dispatcher  │                    │
+│               │   (Rule Engine)     │                    │
+│               └──────────┬──────────┘                    │
+│                          │ PopupCommand                  │
+└──────────────────────────┼───────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│                    UI Thread (std)                       │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │
+│  │ X11 Window  │  │ Cairo       │  │ Animation   │      │
+│  │ Manager     │  │ Renderer    │  │ Controller  │      │
+│  └─────────────┘  └─────────────┘  └─────────────┘      │
+└─────────────────────────────────────────────────────────┘`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Notification Store</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Active notifications are stored in a HashMap with automatic timeout scheduling.
+                When a timeout fires, the notification is closed and moved to history.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">PID File</h4>
+              <p class="text-gar-text-secondary">
+                garnotify writes a PID file to prevent duplicate instances.
+                Location: <code class="text-gar-accent-yellow">/tmp/garnotify.pid</code>
+              </p>
+            </div>
+
+            <!-- Architecture - D-Bus -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">D-Bus Interface</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify registers as <code class="text-gar-accent-yellow">org.freedesktop.Notifications</code> on the session bus.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Methods</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto text-sm"><code class="text-gar-text-primary font-mono">{`Notify(
+    app_name: String,      # Application name
+    replaces_id: u32,      # ID to replace (0 = new)
+    app_icon: String,      # Icon name or path
+    summary: String,       # Title/summary
+    body: String,          # Body text (supports markup)
+    actions: [String],     # Action pairs [key, label, ...]
+    hints: {String: Variant}, # Hints dictionary
+    expire_timeout: i32    # Timeout in ms (-1 = default, 0 = never)
+) → u32                    # Returns notification ID
+
+CloseNotification(id: u32) → void
+
+GetCapabilities() → [String]
+
+GetServerInformation() → (name, vendor, version, spec_version)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Hints</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                    <tr>
+                      <th class="py-2 px-3 text-left">Hint</th>
+                      <th class="py-2 px-3 text-left">Type</th>
+                      <th class="py-2 px-3 text-left">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">urgency</td><td class="py-2 px-3">byte</td><td class="py-2 px-3">0=low, 1=normal, 2=critical</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">category</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Notification category</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">desktop-entry</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Desktop file name</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">image-path</td><td class="py-2 px-3">string</td><td class="py-2 px-3">Path to image file</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">image-data</td><td class="py-2 px-3">bytes</td><td class="py-2 px-3">Raw RGBA pixel data</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">transient</td><td class="py-2 px-3">boolean</td><td class="py-2 px-3">Skip history persistence</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">resident</td><td class="py-2 px-3">boolean</td><td class="py-2 px-3">Keep after action invoked</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mt-6 mb-3">Signals</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><code class="text-gar-accent-yellow">NotificationClosed(id, reason)</code> - Notification was closed</li>
+                <li><code class="text-gar-accent-yellow">ActionInvoked(id, action_key)</code> - Action button clicked</li>
+              </ul>
+            </div>
+
+            <!-- Rendering - Cairo/Pango -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Cairo/Pango Rendering</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Notifications are rendered using Cairo for graphics and Pango for text layout.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Popup Layout</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto text-sm"><code class="text-gar-text-primary font-mono">{`┌─────────────────────────────────────┐
+│ [Icon]  Summary (title_font, bold)  │
+│ [Icon]  Body text wraps here and    │
+│         continues on multiple       │
+│         lines with word wrapping    │
+│                                     │
+│   [Action 1]    [Action 2]          │
+└─────────────────────────────────────┘`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Properties</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 mb-4">
+                <li>ARGB32 transparent surface</li>
+                <li><code class="text-gar-accent-yellow">override_redirect=true</code> - Bypasses window manager</li>
+                <li>Rounded corners via clipping path</li>
+                <li>Urgency-dependent border colors</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Height Calculation</h4>
+              <p class="text-gar-text-secondary">
+                Height is calculated dynamically: <code class="text-gar-accent-yellow">padding*2 + summary + body + actions</code>.
+                Minimum 80px, maximum capped by <code class="text-gar-accent-yellow">max_height</code> config.
+              </p>
+            </div>
+
+            <!-- Rendering - Icons -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Icon Loading</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify loads icons from multiple sources in priority order:
+              </p>
+
+              <ol class="list-decimal list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><code class="text-gar-accent-yellow">image-data</code> hint - Raw RGBA pixels from D-Bus</li>
+                <li><code class="text-gar-accent-yellow">image-path</code> hint - Direct file path</li>
+                <li><code class="text-gar-accent-yellow">app_icon</code> parameter - Theme name or file path</li>
+                <li><code class="text-gar-accent-yellow">desktop-entry</code> hint - Look up from .desktop file</li>
+                <li>App name as fallback theme lookup</li>
+              </ol>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Formats</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+                <li><strong>PNG</strong> - Full alpha support</li>
+                <li><strong>JPEG</strong> - Converted to RGBA</li>
+                <li><strong>SVG</strong> - Rendered via resvg at target size</li>
+              </ul>
+
+              <p class="text-gar-text-secondary mt-4">
+                Icons are scaled to <code class="text-gar-accent-yellow">icon_size</code> (default 48px) maintaining aspect ratio.
+              </p>
+            </div>
+
+            <!-- Rendering - Markup -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Markup Support</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Body text supports Pango XML markup when <code class="text-gar-accent-yellow">markup_enabled = true</code>.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Tags</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                    <tr>
+                      <th class="py-2 px-3 text-left">Tag</th>
+                      <th class="py-2 px-3 text-left">Effect</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;b&gt;</td><td class="py-2 px-3">Bold text</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;i&gt;</td><td class="py-2 px-3">Italic text</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;u&gt;</td><td class="py-2 px-3">Underlined text</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;s&gt;</td><td class="py-2 px-3">Strikethrough</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;tt&gt;</td><td class="py-2 px-3">Monospace font</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;big&gt;, &lt;small&gt;</td><td class="py-2 px-3">Size adjustments</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono">&lt;sub&gt;, &lt;sup&gt;</td><td class="py-2 px-3">Subscript, superscript</td></tr>
+                    <tr><td class="py-2 px-3 font-mono">&lt;span&gt;</td><td class="py-2 px-3">Custom attributes (color, font, etc.)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Link Handling</h4>
+              <p class="text-gar-text-secondary mb-4">
+                <code class="text-gar-accent-yellow">&lt;a href="..."&gt;</code> tags are converted to underlined text
+                (Pango doesn't support clickable links). <code class="text-gar-accent-yellow">&lt;br&gt;</code> becomes newlines.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">HTML Entities</h4>
+              <p class="text-gar-text-secondary">
+                Standard entities are decoded: <code class="text-gar-accent-yellow">&amp;lt;</code>, <code class="text-gar-accent-yellow">&amp;gt;</code>,
+                <code class="text-gar-accent-yellow">&amp;amp;</code>, <code class="text-gar-accent-yellow">&amp;quot;</code>, <code class="text-gar-accent-yellow">&amp;apos;</code>
+              </p>
+            </div>
+
+            <!-- Features - Urgency -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Urgency Levels</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Notifications have three urgency levels that affect appearance and behavior:
+              </p>
+
+              <div class="space-y-4">
+                <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Low (0)</h4>
+                  <ul class="list-disc list-inside text-gar-text-secondary text-sm space-y-1">
+                    <li>Dimmer text color (<code class="text-gar-accent-yellow">low_foreground</code>)</li>
+                    <li>Default timeout: 10 seconds</li>
+                    <li>Hidden in DND level 1+</li>
+                  </ul>
+                </div>
+
+                <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Normal (1)</h4>
+                  <ul class="list-disc list-inside text-gar-text-secondary text-sm space-y-1">
+                    <li>Standard colors</li>
+                    <li>Default timeout: 5 seconds</li>
+                    <li>Hidden in DND level 2</li>
+                  </ul>
+                </div>
+
+                <div class="p-4 rounded-lg border border-gar-accent-red/50 bg-gar-accent-red/10">
+                  <h4 class="font-semibold text-gar-text-primary mb-2">Critical (2)</h4>
+                  <ul class="list-disc list-inside text-gar-text-secondary text-sm space-y-1">
+                    <li>Inverted colors (red background by default)</li>
+                    <li>Never expires by default (timeout = 0)</li>
+                    <li>Always shown, even in DND mode</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Features - Actions -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Actions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Notifications can include clickable action buttons.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">D-Bus Format</h4>
+              <p class="text-gar-text-secondary mb-4">
+                Actions are sent as an array of key-label pairs:
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Actions array: [key1, label1, key2, label2, ...]
+notify-send "Title" "Body" \\
+    --action="open=Open File" \\
+    --action="dismiss=Dismiss"`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Behavior</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2">
+                <li>Buttons rendered in a grid at bottom of notification</li>
+                <li>Hover effect: brightened border, increased opacity</li>
+                <li>Click emits <code class="text-gar-accent-yellow">ActionInvoked</code> D-Bus signal</li>
+                <li>Notification closes after action (unless <code class="text-gar-accent-yellow">resident</code> hint set)</li>
+              </ul>
+            </div>
+
+            <!-- Features - History -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">History</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify maintains a history of dismissed notifications.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[history]
+max_length = 100    # Max notifications stored
+persist = true      # Save to disk on exit`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Storage Location</h4>
+              <p class="text-gar-text-secondary mb-4">
+                <code class="text-gar-accent-yellow">~/.local/share/garnotify/history.json</code>
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Commands</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Restore most recent notification
+garnotifyctl history-pop
+
+# Clear all history
+garnotifyctl history-clear`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary mt-4">
+                Note: Notifications with the <code class="text-gar-accent-yellow">transient</code> hint are not saved to history.
+              </p>
+            </div>
+
+            <!-- Animations -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify supports smooth animations for appearing and disappearing notifications.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Animation States</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`Hidden → Appearing → Visible → Disappearing → Hidden
+                         ↓
+                     Reflowing (when stack changes)`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[animation]
+enabled = true           # Master switch
+fade_in = 150            # Appear duration (ms)
+fade_out = 150           # Disappear duration (ms)
+slide = "down"           # Direction: up, down, left, right, none
+slide_distance = 20      # Pixels to slide`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Easing</h4>
+              <p class="text-gar-text-secondary">
+                All animations use <code class="text-gar-accent-yellow">ease_out_cubic</code> easing:
+                <code class="text-gar-accent-yellow">1.0 - (1.0 - t)³</code> for smooth deceleration.
+              </p>
+            </div>
+
+            <!-- DND -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Do Not Disturb</h3>
+              <p class="text-gar-text-secondary mb-4">
+                DND mode suppresses notifications with configurable levels.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Pause Levels</h4>
+              <div class="overflow-x-auto mb-4">
+                <table class="w-full text-sm">
+                  <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                    <tr>
+                      <th class="py-2 px-3 text-left">Level</th>
+                      <th class="py-2 px-3 text-left">Behavior</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">0</td><td class="py-2 px-3">ShowAll - Normal operation</td></tr>
+                    <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">1</td><td class="py-2 px-3">CriticalOnly - Only show critical notifications</td></tr>
+                    <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">2</td><td class="py-2 px-3">ShowNone - Suppress all (critical still goes to history)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Control</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Enable DND (level 2 - suppress all)
+garnotifyctl set-paused true
+
+# Enable DND with critical-only
+garnotifyctl set-paused true --level 1
+
+# Disable DND
+garnotifyctl set-paused false
+
+# Check status
+garnotifyctl is-paused`}</code></pre>
+              </div>
+            </div>
+
+            <!-- gar Integration -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gar Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify integrates with gar for automatic spawning and shared configuration.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Automatic Spawning</h4>
+              <p class="text-gar-text-secondary mb-4">
+                When you add a <code class="text-gar-accent-yellow">gar.notification</code> table to your gar config,
+                gar automatically spawns garnotify at startup and stops it on exit.
+              </p>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Enable garnotify with defaults
+gar.notification = {}
+
+-- gar will:
+-- 1. Find garnotify in PATH or common locations
+-- 2. Spawn it with DISPLAY set correctly
+-- 3. Wait for socket to be ready
+-- 4. Stop it cleanly when gar exits`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Shared Configuration</h4>
+              <p class="text-gar-text-secondary mb-4">
+                garnotify reads the <code class="text-gar-accent-yellow">gar.notification</code> table from
+                <code class="text-gar-accent-yellow">~/.config/gar/init.lua</code>. This means you can configure
+                notifications alongside your window manager settings.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Keybind Control</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Close all notifications
+gar.bind("Mod + Escape", function()
+    os.execute("garnotifyctl close-all")
+end)
+
+-- Toggle DND
+gar.bind("Mod + Shift + n", function()
+    os.execute("garnotifyctl set-paused toggle")
+end)
+
+-- Pop from history
+gar.bind("Mod + n", function()
+    os.execute("garnotifyctl history-pop")
+end)`}</code></pre>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Rules Tab -->
+        <div slot="tab-3" class="space-y-8">
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rule Engine</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Rules let you filter, modify, or suppress notifications based on patterns.
+            </p>
+
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rule Structure</h4>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[[rules]]
+name = "rule_name"           # Unique name (for enable/disable)
+enabled = true               # Can toggle via IPC
+
+# Match conditions (all must match - AND logic)
+match_app_name = "Firefox"   # Pattern for app name
+match_summary = "*error*"    # Pattern for summary
+match_body = "~.*failed.*"   # Pattern for body (regex)
+match_urgency = "low"        # low, normal, critical
+
+# Actions to apply
+actions = [
+    { type = "suppress" },
+    { type = "set_urgency", urgency = "critical" },
+    { type = "set_timeout", timeout = 10000 },
+    { type = "exec", command = "play-sound alert.wav" },
+]`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Pattern Types</h4>
+            <div class="overflow-x-auto mb-6">
+              <table class="w-full text-sm">
+                <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                  <tr>
+                    <th class="py-2 px-3 text-left">Type</th>
+                    <th class="py-2 px-3 text-left">Syntax</th>
+                    <th class="py-2 px-3 text-left">Example</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gar-text-secondary">
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Simple</td><td class="py-2 px-3">Substring (case-insensitive)</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">"firefox"</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3">Glob</td><td class="py-2 px-3">* = any chars, ? = single char</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">"*error*"</td></tr>
+                  <tr><td class="py-2 px-3">Regex</td><td class="py-2 px-3">Prefix with ~</td><td class="py-2 px-3 font-mono text-gar-accent-yellow">"~.*failed.*"</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Available Actions</h4>
+            <div class="overflow-x-auto mb-6">
+              <table class="w-full text-sm">
+                <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                  <tr>
+                    <th class="py-2 px-3 text-left">Action</th>
+                    <th class="py-2 px-3 text-left">Parameters</th>
+                    <th class="py-2 px-3 text-left">Description</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gar-text-secondary">
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">suppress</td><td class="py-2 px-3">-</td><td class="py-2 px-3">Don't show notification</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set_urgency</td><td class="py-2 px-3">urgency</td><td class="py-2 px-3">Change urgency level</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set_timeout</td><td class="py-2 px-3">timeout (ms)</td><td class="py-2 px-3">Change timeout (0 = default, -1 = never)</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set_summary</td><td class="py-2 px-3">summary</td><td class="py-2 px-3">Replace title</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set_body</td><td class="py-2 px-3">body</td><td class="py-2 px-3">Replace body</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">append_body</td><td class="py-2 px-3">text</td><td class="py-2 px-3">Append to body</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">prepend_summary</td><td class="py-2 px-3">text</td><td class="py-2 px-3">Prepend to title</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set_transient</td><td class="py-2 px-3">transient</td><td class="py-2 px-3">Set transient flag (skip history)</td></tr>
+                  <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">exec</td><td class="py-2 px-3">command</td><td class="py-2 px-3">Execute shell command</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Example Rules</h4>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Suppress low-urgency notifications from Firefox
+[[rules]]
+name = "silence_firefox_low"
+match_app_name = "Firefox"
+match_urgency = "low"
+actions = [{ type = "suppress" }]
+
+# Make all critical notifications play a sound
+[[rules]]
+name = "critical_sound"
+match_urgency = "critical"
+actions = [
+    { type = "exec", command = "paplay /usr/share/sounds/alert.ogg" }
+]
+
+# Add prefix to Slack messages
+[[rules]]
+name = "slack_prefix"
+match_app_name = "Slack"
+actions = [
+    { type = "prepend_summary", text = "[Slack] " }
+]
+
+# Suppress notifications matching regex
+[[rules]]
+name = "suppress_spam"
+match_body = "~.*(subscribe|newsletter|promo).*"
+actions = [{ type = "suppress" }]`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Exec Environment Variables</h4>
+            <p class="text-gar-text-secondary mb-4">
+              The <code class="text-gar-accent-yellow">exec</code> action sets these environment variables:
+            </p>
+            <ul class="list-disc list-inside text-gar-text-secondary space-y-1">
+              <li><code class="text-gar-accent-yellow">NOTIFICATION_ID</code></li>
+              <li><code class="text-gar-accent-yellow">NOTIFICATION_APP</code></li>
+              <li><code class="text-gar-accent-yellow">NOTIFICATION_SUMMARY</code></li>
+              <li><code class="text-gar-accent-yellow">NOTIFICATION_BODY</code></li>
+            </ul>
+          </section>
+
+          <section>
+            <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Runtime Control</h4>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Disable a rule at runtime
+garnotifyctl rule-disable silence_firefox_low
+
+# Re-enable
+garnotifyctl rule-enable silence_firefox_low`}</code></pre>
+            </div>
+          </section>
+        </div>
+
+        <!-- IPC/API Tab -->
+        <div slot="tab-4" class="space-y-8">
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">garnotifyctl Commands</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Control the running daemon via the <code class="text-gar-accent-yellow">garnotifyctl</code> CLI:
+            </p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-gar-text-secondary border-b border-gar-text-muted/20">
+                  <tr>
+                    <th class="py-2 px-3 text-left">Command</th>
+                    <th class="py-2 px-3 text-left">Description</th>
+                  </tr>
+                </thead>
+                <tbody class="text-gar-text-secondary">
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">close [ID]</td><td class="py-2 px-3">Close notification (or most recent)</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">close-all</td><td class="py-2 px-3">Close all notifications</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">history-pop</td><td class="py-2 px-3">Restore from history</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">history-clear</td><td class="py-2 px-3">Clear history</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set-paused true|false</td><td class="py-2 px-3">Enable/disable DND</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">set-paused true --level N</td><td class="py-2 px-3">DND with level (0-2)</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">is-paused</td><td class="py-2 px-3">Check DND state</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">count</td><td class="py-2 px-3">Active notification count</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">list [--json]</td><td class="py-2 px-3">List active notifications</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">rule-enable NAME</td><td class="py-2 px-3">Enable a rule</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">rule-disable NAME</td><td class="py-2 px-3">Disable a rule</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">reload</td><td class="py-2 px-3">Reload configuration</td></tr>
+                  <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-gar-accent-yellow">status</td><td class="py-2 px-3">Daemon status info</td></tr>
+                  <tr><td class="py-2 px-3 font-mono text-gar-accent-yellow">quit</td><td class="py-2 px-3">Shutdown daemon</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC Protocol</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Socket: <code class="text-gar-accent-yellow">/tmp/garnotify.sock</code> (or <code class="text-gar-accent-yellow">$XDG_RUNTIME_DIR/garnotify.sock</code>)
+            </p>
+            <p class="text-gar-text-secondary mb-4">
+              Protocol: JSON request/response over Unix socket.
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Request format
+{"command": "close_all"}
+{"command": "set_paused", "paused": true, "level": 2}
+{"command": "close", "id": 42}
+
+# Response format
+{
+  "success": true,
+  "message": "Notification closed",
+  "data": null
+}`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Event Subscription</h3>
+            <p class="text-gar-text-secondary mb-4">
+              Subscribe to real-time events (connection stays open):
+            </p>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Send subscribe command
+{"command": "subscribe"}
+
+# Receive events as they happen
+{"event": "notification_new", "id": 1, "app_name": "Firefox", ...}
+{"event": "notification_closed", "id": 1, "reason": "Expired"}
+{"event": "paused_changed", "paused": true}
+{"event": "count_changed", "count": 2}`}</code></pre>
+            </div>
+          </section>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-5" class="space-y-8">
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Common Issues</h3>
+
+            <div class="space-y-6">
+              <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                <h4 class="font-semibold text-gar-text-primary mb-2">Notifications not appearing</h4>
+                <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 text-sm">
+                  <li>Check if garnotify is running: <code class="text-gar-accent-yellow">pgrep garnotify</code></li>
+                  <li>Check D-Bus registration: <code class="text-gar-accent-yellow">dbus-send --print-reply --dest=org.freedesktop.Notifications /org/freedesktop/Notifications org.freedesktop.Notifications.GetServerInformation</code></li>
+                  <li>Check if another notification daemon is running (dunst, mako, etc.)</li>
+                  <li>Check DND status: <code class="text-gar-accent-yellow">garnotifyctl is-paused</code></li>
+                </ol>
+              </div>
+
+              <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                <h4 class="font-semibold text-gar-text-primary mb-2">"Another instance is running" error</h4>
+                <ol class="list-decimal list-inside text-gar-text-secondary space-y-1 text-sm">
+                  <li>Kill existing instance: <code class="text-gar-accent-yellow">pkill garnotify</code></li>
+                  <li>Remove stale PID file: <code class="text-gar-accent-yellow">rm /tmp/garnotify.pid</code></li>
+                  <li>Restart garnotify</li>
+                </ol>
+              </div>
+
+              <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                <h4 class="font-semibold text-gar-text-primary mb-2">Icons not showing</h4>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                  <li>Ensure icon theme is installed</li>
+                  <li>Check if app provides valid icon path/name</li>
+                  <li>SVG icons require resvg support (included by default)</li>
+                </ul>
+              </div>
+
+              <div class="p-4 rounded-lg border border-gar-text-muted/20 bg-gar-bg-secondary/30">
+                <h4 class="font-semibold text-gar-text-primary mb-2">Notifications not auto-spawning with gar</h4>
+                <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                  <li>Ensure <code class="text-gar-accent-yellow">gar.notification = {}</code> is in your config</li>
+                  <li>Check gar log: <code class="text-gar-accent-yellow">cat /tmp/gar.log | grep garnotify</code></li>
+                  <li>Verify garnotify is in PATH</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Debug Mode</h3>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Run with debug logging
+RUST_LOG=debug garnotify
+
+# Or set in config
+[general]
+log_level = "debug"`}</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h3 class="text-xl font-bold text-gar-text-primary mb-4">Test Notifications</h3>
+            <div class="rounded-lg overflow-hidden border border-gar-text-muted/20">
+              <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`# Basic test
+notify-send "Test" "Hello World"
+
+# With urgency
+notify-send -u critical "Critical" "This is urgent!"
+
+# With icon
+notify-send -i firefox "Firefox" "Download complete"
+
+# With actions
+notify-send "File Ready" "Click to open" \\
+    --action="open=Open" --action="dismiss=Dismiss"`}</code></pre>
+            </div>
+          </section>
+        </div>
+
+      </TabbedCard>
+
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

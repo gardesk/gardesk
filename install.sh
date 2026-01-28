@@ -9,6 +9,7 @@
 #   - garterm: GPU-accelerated terminal emulator
 #   - garbar: Status bar with Cairo/Pango rendering
 #   - gartray: System tray with SNI/XEMBED support
+#   - garnotify: Desktop notification daemon
 #   - garbg: Wallpaper daemon with animation support
 #   - garshot: Screenshot utility with blur selection overlay
 #   - garlock: Screen locker with PAM authentication
@@ -49,6 +50,7 @@ INSTALL_GARFIELD=false
 INSTALL_GARTERM=false
 INSTALL_GARBAR=false
 INSTALL_GARTRAY=false
+INSTALL_GARNOTIFY=false
 INSTALL_GARBG=false
 INSTALL_GARSHOT=false
 INSTALL_GARLOCK=false
@@ -337,13 +339,14 @@ show_component_menu() {
     echo -e "  ${CYAN}3)${NC}  garterm    ${DIM}-${NC} GPU-accelerated terminal emulator"
     echo -e "  ${CYAN}4)${NC}  garbar     ${DIM}-${NC} Status bar with async modules"
     echo -e "  ${CYAN}5)${NC}  gartray    ${DIM}-${NC} System tray with SNI/XEMBED support"
-    echo -e "  ${CYAN}6)${NC}  garbg      ${DIM}-${NC} Wallpaper daemon with animations"
-    echo -e "  ${CYAN}7)${NC}  garshot    ${DIM}-${NC} Screenshot utility with blur selection"
-    echo -e "  ${CYAN}8)${NC}  garlock    ${DIM}-${NC} Screen locker with PAM auth"
-    echo -e "  ${CYAN}9)${NC}  gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
-    echo -e "  ${CYAN}10)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
-    echo -e "  ${CYAN}11)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
-    echo -e "  ${CYAN}12)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency)${NC}"
+    echo -e "  ${CYAN}6)${NC}  garnotify  ${DIM}-${NC} Desktop notification daemon"
+    echo -e "  ${CYAN}7)${NC}  garbg      ${DIM}-${NC} Wallpaper daemon with animations"
+    echo -e "  ${CYAN}8)${NC}  garshot    ${DIM}-${NC} Screenshot utility with blur selection"
+    echo -e "  ${CYAN}9)${NC}  garlock    ${DIM}-${NC} Screen locker with PAM auth"
+    echo -e "  ${CYAN}10)${NC} gardm      ${DIM}-${NC} Display manager ${YELLOW}[requires root]${NC}"
+    echo -e "  ${CYAN}11)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
+    echo -e "  ${CYAN}12)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
+    echo -e "  ${CYAN}13)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency)${NC}"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -359,6 +362,7 @@ prompt_components() {
         INSTALL_GARTERM=true
         INSTALL_GARBAR=true
         INSTALL_GARTRAY=true
+        INSTALL_GARNOTIFY=true
         INSTALL_GARBG=true
         INSTALL_GARSHOT=true
         INSTALL_GARLOCK=true
@@ -379,6 +383,7 @@ prompt_components() {
     INSTALL_GARTERM=false
     INSTALL_GARBAR=false
     INSTALL_GARTRAY=false
+    INSTALL_GARNOTIFY=false
     INSTALL_GARBG=false
     INSTALL_GARSHOT=false
     INSTALL_GARLOCK=false
@@ -393,19 +398,21 @@ prompt_components() {
         3) INSTALL_GARTERM=true ;;
         4) INSTALL_GARBAR=true ;;
         5) INSTALL_GARTRAY=true ;;
-        6) INSTALL_GARBG=true ;;
-        7) INSTALL_GARSHOT=true ;;
-        8) INSTALL_GARLOCK=true ;;
-        9) INSTALL_GARDM=true ;;
-        10) INSTALL_GARLAUNCH=true ;;
-        11) INSTALL_GARCLIP=true ;;
-        12) INSTALL_GARTK=true ;;
+        6) INSTALL_GARNOTIFY=true ;;
+        7) INSTALL_GARBG=true ;;
+        8) INSTALL_GARSHOT=true ;;
+        9) INSTALL_GARLOCK=true ;;
+        10) INSTALL_GARDM=true ;;
+        11) INSTALL_GARLAUNCH=true ;;
+        12) INSTALL_GARCLIP=true ;;
+        13) INSTALL_GARTK=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
             INSTALL_GARTERM=true
             INSTALL_GARBAR=true
             INSTALL_GARTRAY=true
+            INSTALL_GARNOTIFY=true
             INSTALL_GARBG=true
             INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
@@ -420,6 +427,7 @@ prompt_components() {
             INSTALL_GARTERM=true
             INSTALL_GARBAR=true
             INSTALL_GARTRAY=true
+            INSTALL_GARNOTIFY=true
             INSTALL_GARBG=true
             INSTALL_GARSHOT=true
             INSTALL_GARLOCK=true
@@ -439,13 +447,14 @@ prompt_components() {
                     3) INSTALL_GARTERM=true ;;
                     4) INSTALL_GARBAR=true ;;
                     5) INSTALL_GARTRAY=true ;;
-                    6) INSTALL_GARBG=true ;;
-                    7) INSTALL_GARSHOT=true ;;
-                    8) INSTALL_GARLOCK=true ;;
-                    9) INSTALL_GARDM=true ;;
-                    10) INSTALL_GARLAUNCH=true ;;
-                    11) INSTALL_GARCLIP=true ;;
-                    12) INSTALL_GARTK=true ;;
+                    6) INSTALL_GARNOTIFY=true ;;
+                    7) INSTALL_GARBG=true ;;
+                    8) INSTALL_GARSHOT=true ;;
+                    9) INSTALL_GARLOCK=true ;;
+                    10) INSTALL_GARDM=true ;;
+                    11) INSTALL_GARLAUNCH=true ;;
+                    12) INSTALL_GARCLIP=true ;;
+                    13) INSTALL_GARTK=true ;;
                 esac
             done
             ;;
@@ -454,10 +463,11 @@ prompt_components() {
     # Ensure at least one component is selected
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARFIELD" = false ] && \
        [ "$INSTALL_GARTERM" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARBG" = false ] && \
-       [ "$INSTALL_GARSHOT" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARNOTIFY" = false ] && \
+       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
+       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
+       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -498,6 +508,7 @@ show_selection_summary() {
     [ "$INSTALL_GARTERM" = true ] && echo -e "  ${GREEN}•${NC} garterm (terminal emulator)"
     [ "$INSTALL_GARBAR" = true ] && echo -e "  ${GREEN}•${NC} garbar (status bar)"
     [ "$INSTALL_GARTRAY" = true ] && echo -e "  ${GREEN}•${NC} gartray (system tray)"
+    [ "$INSTALL_GARNOTIFY" = true ] && echo -e "  ${GREEN}•${NC} garnotify (notification daemon)"
     [ "$INSTALL_GARBG" = true ] && echo -e "  ${GREEN}•${NC} garbg (wallpaper daemon)"
     [ "$INSTALL_GARSHOT" = true ] && echo -e "  ${GREEN}•${NC} garshot (screenshot utility)"
     [ "$INSTALL_GARLOCK" = true ] && echo -e "  ${GREEN}•${NC} garlock (screen locker)"
@@ -734,6 +745,98 @@ EOF
     echo -e "${GREEN}  ✓ gartray installed successfully${NC}"
     log_info "  Integrates with garbar tray module"
     log_info "  Use gartrayctl to control from scripts"
+}
+
+install_garnotify() {
+    log_step "Building garnotify (notification daemon)..."
+
+    cd "$BUILD_DIR/garnotify"
+    cargo build --release
+
+    log_info "Installing garnotify binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garnotify "$BIN_DIR/garnotify"
+    sudo install -Dm755 target/release/garnotifyctl "$BIN_DIR/garnotifyctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garnotify"
+
+    # Install default config if not present
+    if [ ! -f "$HOME/.config/garnotify/config.toml" ]; then
+        log_info "Creating default garnotify config..."
+        cat << 'EOF' > "$HOME/.config/garnotify/config.toml"
+# garnotify configuration
+# See https://gar.musicsian.com/components/garnotify for options
+
+[general]
+# Maximum number of notifications to show at once
+max_visible = 5
+
+# Default timeout in milliseconds (0 = no timeout)
+default_timeout = 5000
+
+# Position: top_right, top_left, bottom_right, bottom_left, top_center, bottom_center
+position = "top_right"
+
+# Spacing between notifications in pixels
+gap = 10
+
+# Margin from screen edges
+margin = [10, 10]
+
+# Width of notification popups
+width = 350
+
+[animations]
+# Enable animations
+enabled = true
+
+# Animation duration in milliseconds
+duration = 200
+
+# Fade in/out
+fade = true
+
+# Slide in/out
+slide = true
+
+# Direction for slide: up, down, left, right
+slide_direction = "right"
+
+[urgency.low]
+timeout = 3000
+background = "#1a1b26"
+foreground = "#a9b1d6"
+border_color = "#565f89"
+
+[urgency.normal]
+timeout = 5000
+background = "#1a1b26"
+foreground = "#c0caf5"
+border_color = "#7aa2f7"
+
+[urgency.critical]
+timeout = 0
+background = "#1a1b26"
+foreground = "#f7768e"
+border_color = "#f7768e"
+
+[history]
+# Enable notification history
+enabled = true
+
+# Maximum history size
+max_entries = 100
+
+# Persist history across restarts
+persist = true
+EOF
+    else
+        log_warn "Config exists at ~/.config/garnotify/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ garnotify installed successfully${NC}"
+    log_info "  Auto-starts with gar when gar.notification table is configured"
+    log_info "  Control via: garnotifyctl pause|resume|history"
 }
 
 install_garbg() {
@@ -1123,6 +1226,7 @@ parse_args() {
                         garterm) INSTALL_GARTERM=true ;;
                         garbar) INSTALL_GARBAR=true ;;
                         gartray) INSTALL_GARTRAY=true ;;
+                        garnotify) INSTALL_GARNOTIFY=true ;;
                         garbg) INSTALL_GARBG=true ;;
                         garshot) INSTALL_GARSHOT=true ;;
                         garlock) INSTALL_GARLOCK=true ;;
@@ -1136,6 +1240,7 @@ parse_args() {
                             INSTALL_GARTERM=true
                             INSTALL_GARBAR=true
                             INSTALL_GARTRAY=true
+                            INSTALL_GARNOTIFY=true
                             INSTALL_GARBG=true
                             INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
@@ -1150,6 +1255,7 @@ parse_args() {
                             INSTALL_GARTERM=true
                             INSTALL_GARBAR=true
                             INSTALL_GARTRAY=true
+                            INSTALL_GARNOTIFY=true
                             INSTALL_GARBG=true
                             INSTALL_GARSHOT=true
                             INSTALL_GARLOCK=true
@@ -1186,8 +1292,8 @@ parse_args() {
                 echo "  --no-deps           Skip dependency installation"
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
-                echo "                      Components: gar,garfield,garterm,garbar,gartray,garbg,"
-                echo "                                  garshot,garlock,gardm,garlaunch,garclip,gartk"
+                echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
+                echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,gartk"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1237,10 +1343,11 @@ main() {
     # Component selection (if not specified via CLI)
     if [ "$INSTALL_GAR" = false ] && [ "$INSTALL_GARFIELD" = false ] && \
        [ "$INSTALL_GARTERM" = false ] && [ "$INSTALL_GARBAR" = false ] && \
-       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARBG" = false ] && \
-       [ "$INSTALL_GARSHOT" = false ] && [ "$INSTALL_GARLOCK" = false ] && \
-       [ "$INSTALL_GARDM" = false ] && [ "$INSTALL_GARLAUNCH" = false ] && \
-       [ "$INSTALL_GARCLIP" = false ] && [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARTRAY" = false ] && [ "$INSTALL_GARNOTIFY" = false ] && \
+       [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
+       [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
+       [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
+       [ "$INSTALL_GARTK" = false ]; then
         prompt_components
     fi
 
@@ -1280,6 +1387,7 @@ main() {
     [ "$INSTALL_GARTERM" = true ] && install_garterm
     [ "$INSTALL_GARBAR" = true ] && install_garbar
     [ "$INSTALL_GARTRAY" = true ] && install_gartray
+    [ "$INSTALL_GARNOTIFY" = true ] && install_garnotify
     [ "$INSTALL_GARBG" = true ] && install_garbg
     [ "$INSTALL_GARSHOT" = true ] && install_garshot
     [ "$INSTALL_GARLOCK" = true ] && install_garlock
@@ -1358,6 +1466,13 @@ main() {
     if [ "$INSTALL_GARTRAY" = true ]; then
         echo "  gartray integrates with garbar's tray module"
         echo "  Control via: gartrayctl toggle-panel"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARNOTIFY" = true ]; then
+        echo "  garnotify auto-starts with gar when gar.notification is configured:"
+        echo "     gar.notification = { position = \"top_right\" }"
+        echo "  Control via: garnotifyctl pause|resume|history"
         echo ""
     fi
 

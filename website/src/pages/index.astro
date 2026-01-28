@@ -147,6 +147,28 @@ const components = [
     ]
   },
   {
+    id: 'garnotify',
+    name: 'garnotify',
+    tagline: 'Notification Daemon',
+    description: 'A desktop notification daemon implementing the FreeDesktop Notifications Spec. Features smooth animations, urgency styling, action buttons, history, and a powerful rule engine.',
+    features: [
+      'FreeDesktop Notifications 1.2 compliant',
+      'Smooth fade and slide animations',
+      'Urgency-based styling (low, normal, critical)',
+      'Rule engine for filtering/modifying',
+      'gar integration with auto-spawn'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garnotify notification daemon',
+    accentColor: 'yellow',
+    images: [
+      { src: '/images/thumbs/garnotify1.png', alt: 'garnotify notification popup' },
+      { src: '/images/thumbs/garnotify2.png', alt: 'garnotify urgency levels' },
+      { src: '/images/thumbs/garnotify3.png', alt: 'garnotify action buttons' }
+    ]
+  },
+  {
     id: 'garbg',
     name: 'garbg',
     tagline: 'Wallpaper Daemon',
