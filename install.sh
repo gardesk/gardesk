@@ -358,6 +358,8 @@ show_component_menu() {
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
     echo -e "  ${MAGENTA}Q)${NC} Quit"
     echo ""
+    echo -e "  ${DIM}Or enter numbers separated by commas/spaces (e.g., 1,3,4,7 or 1 3 4 7)${NC}"
+    echo ""
 }
 
 prompt_components() {
