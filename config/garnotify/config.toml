@@ -1,0 +1,30 @@
+# garnotify default configuration
+# Location: ~/.config/garnotify/config.toml
+
+[geometry]
+position = "top-right"
+width = 350
+
+# Notification rules
+# Rules are processed in order. First matching rule wins.
+# Available matchers: match_app_name, match_summary, match_body, match_urgency
+# Available actions: suppress, set_urgency, prepend_summary, append_summary
+
+# Example: Suppress noisy Spotify notifications
+# [[rules]]
+# name = "suppress-spotify"
+# match_app_name = "Spotify"
+# actions = [{ type = "suppress" }]
+
+# Example: Make Firefox errors critical
+# [[rules]]
+# name = "critical-firefox"
+# match_app_name = "Firefox*"
+# match_summary = "*error*"
+# actions = [{ type = "set_urgency", urgency = "critical" }]
+
+# Example: Prefix critical notifications
+[[rules]]
+name = "prefix-important"
+match_urgency = "critical"
+actions = [{ type = "prepend_summary", text = "[!] " }]

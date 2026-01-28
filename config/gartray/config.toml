@@ -1,0 +1,19 @@
+# gartray default configuration
+# Location: ~/.config/gartray/config.toml
+
+[tray]
+# XEmbed system tray - set to true to use standalone tray window
+# Set to false if garbar handles system tray via its tray module
+enabled = false
+
+# If enabled, these settings apply:
+position = "top-right"
+offset_x = 8
+offset_y = 40  # Below garbar (32px) + gap
+icon_size = 22
+background = "#1a1a1a"
+
+[panel]
+# Quick settings panel is always available via IPC
+enabled = true
+width = 360

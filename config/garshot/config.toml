@@ -1,0 +1,16 @@
+# garshot default configuration
+# Location: ~/.config/garshot/config.toml
+
+[general]
+save_dir = "~/Pictures/Screenshots"
+format = "png"
+quality = 90
+include_cursor = false
+
+[selection]
+blur_radius = 15
+line_color = "#ff6600"
+line_width = 2
+
+[naming]
+pattern = "screenshot-%Y%m%d-%H%M%S"

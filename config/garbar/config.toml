@@ -1,0 +1,162 @@
+# Garbar default configuration
+# Location: ~/.config/garbar/config.toml
+#
+# Colors reference:
+#   background = #1a1a1a
+#   background-alt = #2a2a2a
+#   foreground = #ffffff
+#   good = #00ff99
+#   info = #33ccff
+#   warning = #ffcc00
+#   critical = #ff5555
+#   disabled = #666666
+
+height = 32
+position = "top"
+background = "#1a1a1a"
+foreground = "#ffffff"
+opacity = 1.0
+
+fonts = [
+    "JetBrainsMono Nerd Font:size=11",
+    "Font Awesome 6 Free:style=Solid:size=11",
+    "monospace:size=11"
+]
+
+# Module layout
+modules_left = ["workspaces", "window_title"]
+modules_center = []
+modules_right = ["filesystem", "memory", "cpu", "battery", "wlan", "volume", "tray", "datetime", "quick_settings"]
+
+[padding]
+left = 8
+right = 16
+
+# ============================================================================
+# WORKSPACES (built-in i3 IPC)
+# ============================================================================
+[modules.workspaces]
+show_empty = false
+show_urgent = true
+pin_workspaces = true
+font_size = 10
+
+[modules.workspaces.focused]
+background = "transparent"
+foreground = "#ffffff"
+[modules.workspaces.focused.underline]
+width = 2.0
+color = "#33ccff"
+
+[modules.workspaces.unfocused]
+background = "transparent"
+foreground = "#666666"
+
+[modules.workspaces.urgent]
+background = "#ff5555"
+foreground = "#ffffff"
+
+# ============================================================================
+# WINDOW TITLE (built-in X11)
+# ============================================================================
+[modules.window_title]
+max_length = 50
+ellipsis = "..."
+empty_text = ""
+
+# ============================================================================
+# FILESYSTEM (custom script)
+# ============================================================================
+[modules.script.filesystem]
+font_size = 11
+exec = "df -h / | awk 'NR==2 {print \" \" $4}'"
+interval = 60
+
+# ============================================================================
+# MEMORY (built-in)
+# ============================================================================
+[modules.memory]
+format = " {percent}%"
+interval = 2
+warning_threshold = 80
+critical_threshold = 95
+
+# ============================================================================
+# CPU (built-in)
+# ============================================================================
+[modules.cpu]
+format = " {usage}%"
+interval = 2
+warning_threshold = 70
+critical_threshold = 90
+
+# ============================================================================
+# BATTERY (built-in)
+# ============================================================================
+[modules.battery]
+device = "auto"
+format_charging = " {percent}%"
+format_discharging = " {percent}%"
+format_full = " Full"
+low_threshold = 15
+
+# ============================================================================
+# WIRELESS NETWORK (custom script)
+# ============================================================================
+[modules.script.wlan]
+font_size = 11
+exec = """
+IFACE=$(ip -o link show | awk -F': ' '/wl/{print $2; exit}')
+if [ -n "$IFACE" ] && [ -d "/sys/class/net/$IFACE" ]; then
+  STATE=$(cat /sys/class/net/$IFACE/operstate 2>/dev/null)
+  if [ "$STATE" = "up" ]; then
+    ESSID=$(iwgetid -r 2>/dev/null || echo "")
+    IP=$(ip -4 addr show $IFACE 2>/dev/null | grep -oP '(?<=inet\\s)\\d+(\\.\\d+){3}' | head -1)
+    if [ -n "$ESSID" ]; then
+      echo " $ESSID $IP"
+    else
+      echo " connected"
+    fi
+  else
+    echo " offline"
+  fi
+else
+  echo " N/A"
+fi
+"""
+interval = 5
+
+# ============================================================================
+# VOLUME (custom script - PulseAudio/PipeWire)
+# ============================================================================
+[modules.script.volume]
+font_size = 11
+exec = """
+if command -v pamixer >/dev/null 2>&1; then
+  if pamixer --get-mute | grep -q true; then
+    echo " muted"
+  else
+    VOL=$(pamixer --get-volume)
+    echo " $VOL%"
+  fi
+elif command -v pactl >/dev/null 2>&1; then
+  VOL=$(pactl get-sink-volume @DEFAULT_SINK@ | grep -oP '\\d+%' | head -1)
+  MUTE=$(pactl get-sink-mute @DEFAULT_SINK@ | grep -oP 'yes|no')
+  if [ "$MUTE" = "yes" ]; then
+    echo " muted"
+  else
+    echo " $VOL"
+  fi
+else
+  echo " N/A"
+fi
+"""
+interval = 1
+click_right = "pavucontrol &"
+
+# ============================================================================
+# DATE/TIME (built-in)
+# ============================================================================
+[modules.datetime]
+format = " %a %b %d %H:%M"
+interval = 1

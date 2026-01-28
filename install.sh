@@ -614,12 +614,9 @@ EOF
     # Create user config directory and install default config
     mkdir -p "$HOME/.config/gar"
     if [ ! -f "$HOME/.config/gar/init.lua" ]; then
-        if [ -f "$BUILD_DIR/gar/gar/config/default.lua" ]; then
+        if [ -f "$BUILD_DIR/config/gar/init.lua" ]; then
             log_info "Installing default configuration..."
-            install -m644 "$BUILD_DIR/gar/gar/config/default.lua" "$HOME/.config/gar/init.lua"
-
-            # Update default config paths
-            sed -i "s|/home/mfwolffe/GithubOrgs/gardesk/gar/target/release/gar|$BIN_DIR/gar|g" "$HOME/.config/gar/init.lua" 2>/dev/null || true
+            install -m644 "$BUILD_DIR/config/gar/init.lua" "$HOME/.config/gar/init.lua"
         fi
     else
         log_warn "Config exists at ~/.config/gar/init.lua, not overwriting"
@@ -660,40 +657,9 @@ install_garterm() {
 
     # Install default config if not present
     if [ ! -f "$HOME/.config/garterm/config.toml" ]; then
-        if [ -f "$BUILD_DIR/garterm/garterm/config/default.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garterm/config.toml" ]; then
             log_info "Installing default configuration..."
-            install -m644 "$BUILD_DIR/garterm/garterm/config/default.toml" "$HOME/.config/garterm/config.toml"
-        else
-            log_info "Creating default garterm config..."
-            cat << 'EOF' > "$HOME/.config/garterm/config.toml"
-# garterm configuration
-# See https://gar.musicsian.com/components/garterm for options
-
-[general]
-# Rendering mode (false = continuous 60fps, true = VSync)
-vsync = false
-
-[font]
-family = "monospace"
-size = 14.0
-
-[window]
-title = "garterm"
-class = "garterm"
-padding = [0, 0]
-columns = 80
-rows = 24
-opacity = 1.0
-
-[terminal]
-scrollback_lines = 10000
-scroll_lines = 3
-
-[colors]
-# Theme preset: tokyo_night, catppuccin, gruvbox, dracula, nord,
-#               solarized, one_dark, one_light
-preset = "tokyo_night"
-EOF
+            install -m644 "$BUILD_DIR/config/garterm/config.toml" "$HOME/.config/garterm/config.toml"
         fi
     else
         log_warn "Config exists at ~/.config/garterm/config.toml, not overwriting"
@@ -714,6 +680,17 @@ install_garbar() {
     sudo install -Dm755 target/release/garbar "$BIN_DIR/garbar"
     sudo install -Dm755 target/release/garbarctl "$BIN_DIR/garbarctl"
 
+    # Create user config directory
+    mkdir -p "$HOME/.config/garbar"
+    if [ ! -f "$HOME/.config/garbar/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garbar/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garbar/config.toml" "$HOME/.config/garbar/config.toml"
+        fi
+    else
+        log_warn "Config exists at ~/.config/garbar/config.toml, not overwriting"
+    fi
+
     echo -e "${GREEN}  ✓ garbar installed successfully${NC}"
 }
 
@@ -732,36 +709,10 @@ install_gartray() {
 
     # Install default config if not present
     if [ ! -f "$HOME/.config/gartray/config.toml" ]; then
-        log_info "Creating default gartray config..."
-        cat << 'EOF' > "$HOME/.config/gartray/config.toml"
-# gartray configuration
-# See https://gar.musicsian.com/components/gartray for options
-
-[panel]
-# Enable quick settings panel
-enabled = true
-
-# Panel width in pixels
-width = 360
-
-# Enabled modules (order matters)
-modules = ["volume", "brightness", "network", "bluetooth", "battery", "power"]
-
-[panel.volume]
-show_per_app = false
-show_input = false
-
-[panel.network]
-show_vpn = false
-show_ethernet = false
-
-[panel.bluetooth]
-show_battery = false
-
-[theme]
-# Theme preset: dark, light
-preset = "dark"
-EOF
+        if [ -f "$BUILD_DIR/config/gartray/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/gartray/config.toml" "$HOME/.config/gartray/config.toml"
+        fi
     else
         log_warn "Config exists at ~/.config/gartray/config.toml, not overwriting"
     fi
@@ -786,74 +737,10 @@ install_garnotify() {
 
     # Install default config if not present
     if [ ! -f "$HOME/.config/garnotify/config.toml" ]; then
-        log_info "Creating default garnotify config..."
-        cat << 'EOF' > "$HOME/.config/garnotify/config.toml"
-# garnotify configuration
-# See https://gar.musicsian.com/components/garnotify for options
-
-[general]
-# Maximum number of notifications to show at once
-max_visible = 5
-
-# Default timeout in milliseconds (0 = no timeout)
-default_timeout = 5000
-
-# Position: top_right, top_left, bottom_right, bottom_left, top_center, bottom_center
-position = "top_right"
-
-# Spacing between notifications in pixels
-gap = 10
-
-# Margin from screen edges
-margin = [10, 10]
-
-# Width of notification popups
-width = 350
-
-[animations]
-# Enable animations
-enabled = true
-
-# Animation duration in milliseconds
-duration = 200
-
-# Fade in/out
-fade = true
-
-# Slide in/out
-slide = true
-
-# Direction for slide: up, down, left, right
-slide_direction = "right"
-
-[urgency.low]
-timeout = 3000
-background = "#1a1b26"
-foreground = "#a9b1d6"
-border_color = "#565f89"
-
-[urgency.normal]
-timeout = 5000
-background = "#1a1b26"
-foreground = "#c0caf5"
-border_color = "#7aa2f7"
-
-[urgency.critical]
-timeout = 0
-background = "#1a1b26"
-foreground = "#f7768e"
-border_color = "#f7768e"
-
-[history]
-# Enable notification history
-enabled = true
-
-# Maximum history size
-max_entries = 100
-
-# Persist history across restarts
-persist = true
-EOF
+        if [ -f "$BUILD_DIR/config/garnotify/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garnotify/config.toml" "$HOME/.config/garnotify/config.toml"
+        fi
     else
         log_warn "Config exists at ~/.config/garnotify/config.toml, not overwriting"
     fi
@@ -895,6 +782,15 @@ EOF
 
     systemctl --user daemon-reload
 
+    # Create user config directory
+    mkdir -p "$HOME/.config/garbg"
+    if [ ! -f "$HOME/.config/garbg/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garbg/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garbg/config.toml" "$HOME/.config/garbg/config.toml"
+        fi
+    fi
+
     echo -e "${GREEN}  ✓ garbg installed successfully${NC}"
     log_info "  Enable with: systemctl --user enable --now garbg"
 }
@@ -912,25 +808,10 @@ install_garshot() {
     # Create user config directory
     mkdir -p "$HOME/.config/garshot"
     if [ ! -f "$HOME/.config/garshot/config.toml" ]; then
-        log_info "Creating default garshot config..."
-        cat << 'EOF' > "$HOME/.config/garshot/config.toml"
-# garshot configuration
-# See https://gar.musicsian.com/components/garshot for options
-
-[general]
-save_dir = "~/Pictures/Screenshots"
-format = "png"
-quality = 90
-include_cursor = false
-
-[selection]
-blur_radius = 15
-line_color = "#ff6600"
-line_width = 2
-
-[naming]
-pattern = "screenshot-%Y%m%d-%H%M%S"
-EOF
+        if [ -f "$BUILD_DIR/config/garshot/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garshot/config.toml" "$HOME/.config/garshot/config.toml"
+        fi
     fi
 
     # Ensure screenshots directory exists
@@ -964,27 +845,10 @@ EOF
     # Create default config
     mkdir -p "$HOME/.config/garlock"
     if [ ! -f "$HOME/.config/garlock/config.toml" ]; then
-        log_info "Creating default garlock config..."
-        cat << 'EOF' > "$HOME/.config/garlock/config.toml"
-# garlock configuration
-# See https://gar.musicsian.com/docs/garlock for options
-
-[general]
-grace_period = 0
-pam_service = "garlock"
-max_attempts = 3
-cooldown_seconds = 5
-
-[background]
-blur_radius = 25.0
-brightness = 0.6
-
-[indicator]
-show_caps_lock = true
-show_failed_attempts = true
-show_time = true
-time_format = "%H:%M"
-EOF
+        if [ -f "$BUILD_DIR/config/garlock/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garlock/config.toml" "$HOME/.config/garlock/config.toml"
+        fi
     fi
 
     echo -e "${GREEN}  ✓ garlock installed successfully${NC}"
@@ -1088,37 +952,8 @@ install_garlaunch() {
     sudo install -Dm755 target/release/garlaunch "$BIN_DIR/garlaunch"
     sudo install -Dm755 target/release/garlaunchctl "$BIN_DIR/garlaunchctl"
 
-    # Create user config directory
+    # Create user config directory (garlaunch uses defaults internally)
     mkdir -p "$HOME/.config/garlaunch"
-    if [ ! -f "$HOME/.config/garlaunch/config.toml" ]; then
-        log_info "Creating default garlaunch config..."
-        cat << 'EOF' > "$HOME/.config/garlaunch/config.toml"
-# garlaunch configuration
-# See https://gar.musicsian.com/components/garlaunch for options
-
-[general]
-# Default mode when launching without arguments
-default_mode = "drun"
-
-# Maximum visible items in the list
-max_items = 10
-
-[theme]
-# Use gartk theme (dark, light, or high_contrast)
-theme = "dark"
-
-[modes.drun]
-# Directories to scan for .desktop files
-dirs = [
-  "/usr/share/applications",
-  "~/.local/share/applications"
-]
-
-[modes.script]
-# Default script timeout (seconds)
-timeout = 30
-EOF
-    fi
 
     echo -e "${GREEN}  ✓ garlaunch installed successfully${NC}"
     log_info "  Bind to a key: gar.key({ gar.mod, \"d\", gar.spawn(\"garlaunch\") })"
@@ -1158,33 +993,8 @@ EOF
 
     systemctl --user daemon-reload
 
-    # Create user config directory
+    # Create user config directory (garclip uses defaults internally)
     mkdir -p "$HOME/.config/garclip"
-    if [ ! -f "$HOME/.config/garclip/config.toml" ]; then
-        log_info "Creating default garclip config..."
-        cat << 'EOF' > "$HOME/.config/garclip/config.toml"
-# garclip configuration
-# See https://gar.musicsian.com/components/garclip for options
-
-[history]
-max_entries = 1000
-persist = true
-
-[behavior]
-watch_primary = true
-watch_clipboard = true
-deduplicate = true
-ignore_empty = true
-min_length = 1
-max_length = 10485760
-max_image_size = 52428800
-poll_interval_ms = 250
-
-[filters]
-ignore_patterns = []
-ignore_classes = []
-EOF
-    fi
 
     echo -e "${GREEN}  ✓ garclip installed successfully${NC}"
     log_info "  Enable with: systemctl --user enable --now garclip"
@@ -1224,6 +1034,17 @@ WantedBy=graphical-session.target
 EOF
 
     systemctl --user daemon-reload
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garchomp"
+    if [ ! -f "$HOME/.config/garchomp/init.lua" ]; then
+        if [ -f "$BUILD_DIR/config/garchomp/init.lua" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garchomp/init.lua" "$HOME/.config/garchomp/init.lua"
+        fi
+    else
+        log_warn "Config exists at ~/.config/garchomp/init.lua, not overwriting"
+    fi
 
     echo -e "${GREEN}  ✓ garchomp installed successfully${NC}"
     log_info "  Enable with: systemctl --user enable --now garchomp"
