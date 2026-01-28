@@ -178,7 +178,7 @@ install_dependencies() {
     log_step "Installing build dependencies for $distro..."
 
     case "$distro" in
-        fedora|rhel|centos|rocky|alma)
+        fedora*|rhel|centos|rocky|alma)
             sudo dnf install -y \
                 rust cargo gcc make git \
                 libxcb-devel libX11-devel xcb-util-devel \
