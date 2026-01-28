@@ -17,6 +17,8 @@
 #   - garlaunch: Application launcher with fuzzy search
 #   - garclip: Clipboard manager with history
 #   - gartk: Shared UI toolkit library
+#   - garchomp: X11 compositor with GPU rendering
+#   - gargears: Configuration GUI for gardesk
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -58,6 +60,8 @@ INSTALL_GARDM=false
 INSTALL_GARLAUNCH=false
 INSTALL_GARCLIP=false
 INSTALL_GARTK=false
+INSTALL_GARCHOMP=false
+INSTALL_GARGEARS=false
 
 # Options
 SKIP_DEPS=false
@@ -347,6 +351,8 @@ show_component_menu() {
     echo -e "  ${CYAN}11)${NC} garlaunch  ${DIM}-${NC} Application launcher with fuzzy search"
     echo -e "  ${CYAN}12)${NC} garclip    ${DIM}-${NC} Clipboard manager with history"
     echo -e "  ${CYAN}13)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency)${NC}"
+    echo -e "  ${CYAN}14)${NC} garchomp   ${DIM}-${NC} X11 compositor with GPU rendering"
+    echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -391,6 +397,8 @@ prompt_components() {
     INSTALL_GARLAUNCH=false
     INSTALL_GARCLIP=false
     INSTALL_GARTK=false
+    INSTALL_GARCHOMP=false
+    INSTALL_GARGEARS=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -406,6 +414,8 @@ prompt_components() {
         11) INSTALL_GARLAUNCH=true ;;
         12) INSTALL_GARCLIP=true ;;
         13) INSTALL_GARTK=true ;;
+        14) INSTALL_GARCHOMP=true ;;
+        15) INSTALL_GARGEARS=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -420,6 +430,8 @@ prompt_components() {
             INSTALL_GARLAUNCH=true
             INSTALL_GARCLIP=true
             INSTALL_GARTK=true
+            INSTALL_GARCHOMP=true
+            INSTALL_GARGEARS=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -433,6 +445,8 @@ prompt_components() {
             INSTALL_GARLOCK=true
             INSTALL_GARLAUNCH=true
             INSTALL_GARCLIP=true
+            INSTALL_GARCHOMP=true
+            INSTALL_GARGEARS=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -455,6 +469,8 @@ prompt_components() {
                     11) INSTALL_GARLAUNCH=true ;;
                     12) INSTALL_GARCLIP=true ;;
                     13) INSTALL_GARTK=true ;;
+                    14) INSTALL_GARCHOMP=true ;;
+                    15) INSTALL_GARGEARS=true ;;
                 esac
             done
             ;;
@@ -467,7 +483,8 @@ prompt_components() {
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
+       [ "$INSTALL_GARGEARS" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -497,6 +514,11 @@ prompt_components() {
         log_info "garclip-picker requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
+
+    if [ "$INSTALL_GARGEARS" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "gargears requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
 }
 
 show_selection_summary() {
@@ -516,6 +538,8 @@ show_selection_summary() {
     [ "$INSTALL_GARLAUNCH" = true ] && echo -e "  ${GREEN}•${NC} garlaunch (application launcher)"
     [ "$INSTALL_GARCLIP" = true ] && echo -e "  ${GREEN}•${NC} garclip (clipboard manager)"
     [ "$INSTALL_GARTK" = true ] && echo -e "  ${DIM}•${NC} gartk (UI toolkit library)"
+    [ "$INSTALL_GARCHOMP" = true ] && echo -e "  ${GREEN}•${NC} garchomp (X11 compositor)"
+    [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -881,8 +905,9 @@ install_garshot() {
     cd "$BUILD_DIR/garshot"
     cargo build --release
 
-    log_info "Installing garshot binary to $BIN_DIR..."
+    log_info "Installing garshot binaries to $BIN_DIR..."
     sudo install -Dm755 target/release/garshot "$BIN_DIR/garshot"
+    sudo install -Dm755 target/release/garshotctl "$BIN_DIR/garshotctl"
 
     # Create user config directory
     mkdir -p "$HOME/.config/garshot"
@@ -1166,6 +1191,63 @@ EOF
     log_info "  Bind picker to a key in ~/.config/gar/init.lua"
 }
 
+install_garchomp() {
+    log_step "Building garchomp (X11 compositor)..."
+
+    cd "$BUILD_DIR/garchomp"
+    cargo build --release
+
+    log_info "Installing garchomp binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garchomp "$BIN_DIR/garchomp"
+    sudo install -Dm755 target/release/garchompctl "$BIN_DIR/garchompctl"
+
+    # Install user systemd service
+    log_info "Installing systemd user service..."
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    cat << EOF > "$SYSTEMD_USER_DIR/garchomp.service"
+[Unit]
+Description=garchomp X11 compositor
+Documentation=https://gar.musicsian.com
+After=graphical-session.target
+PartOf=graphical-session.target
+Conflicts=picom.service
+
+[Service]
+Type=simple
+ExecStart=$BIN_DIR/garchomp
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+    systemctl --user daemon-reload
+
+    echo -e "${GREEN}  ✓ garchomp installed successfully${NC}"
+    log_info "  Enable with: systemctl --user enable --now garchomp"
+    log_info "  Or set gar.set(\"compositor\", \"garchomp\") in init.lua"
+}
+
+install_gargears() {
+    log_step "Building gargears (configuration GUI)..."
+
+    cd "$BUILD_DIR/gargears"
+    cargo build --release
+
+    log_info "Installing gargears binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/gargears "$BIN_DIR/gargears"
+    sudo install -Dm755 target/release/gargearsctl "$BIN_DIR/gargearsctl"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/gargears"
+
+    echo -e "${GREEN}  ✓ gargears installed successfully${NC}"
+    log_info "  Launch with: gargears"
+    log_info "  Or run as daemon: gargears --daemon"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1234,6 +1316,8 @@ parse_args() {
                         garlaunch) INSTALL_GARLAUNCH=true ;;
                         garclip) INSTALL_GARCLIP=true ;;
                         gartk) INSTALL_GARTK=true ;;
+                        garchomp) INSTALL_GARCHOMP=true ;;
+                        gargears) INSTALL_GARGEARS=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1248,6 +1332,8 @@ parse_args() {
                             INSTALL_GARLAUNCH=true
                             INSTALL_GARCLIP=true
                             INSTALL_GARTK=true
+                            INSTALL_GARCHOMP=true
+                            INSTALL_GARGEARS=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1261,6 +1347,8 @@ parse_args() {
                             INSTALL_GARLOCK=true
                             INSTALL_GARLAUNCH=true
                             INSTALL_GARCLIP=true
+                            INSTALL_GARCHOMP=true
+                            INSTALL_GARGEARS=true
                             ;;
                     esac
                 done
@@ -1280,6 +1368,9 @@ parse_args() {
                 if [ "$INSTALL_GARCLIP" = true ]; then
                     INSTALL_GARTK=true
                 fi
+                if [ "$INSTALL_GARGEARS" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 shift
                 ;;
             --help|-h)
@@ -1293,7 +1384,8 @@ parse_args() {
                 echo "  --non-interactive   Non-interactive mode (accept defaults)"
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
-                echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,gartk"
+                echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
+                echo "                                  gartk,garchomp,gargears"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1347,7 +1439,8 @@ main() {
        [ "$INSTALL_GARBG" = false ] && [ "$INSTALL_GARSHOT" = false ] && \
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
-       [ "$INSTALL_GARTK" = false ]; then
+       [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
+       [ "$INSTALL_GARGEARS" = false ]; then
         prompt_components
     fi
 
@@ -1394,6 +1487,8 @@ main() {
     [ "$INSTALL_GARDM" = true ] && install_gardm
     [ "$INSTALL_GARLAUNCH" = true ] && install_garlaunch
     [ "$INSTALL_GARCLIP" = true ] && install_garclip
+    [ "$INSTALL_GARCHOMP" = true ] && install_garchomp
+    [ "$INSTALL_GARGEARS" = true ] && install_gargears
 
     # PATH setup
     setup_path
@@ -1473,6 +1568,21 @@ main() {
         echo "  garnotify auto-starts with gar when gar.notification is configured:"
         echo "     gar.notification = { position = \"top_right\" }"
         echo "  Control via: garnotifyctl pause|resume|history"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARCHOMP" = true ]; then
+        echo "  garchomp compositor (alternative to picom):"
+        echo "     Enable with: systemctl --user enable --now garchomp"
+        echo "     Or set: gar.set(\"compositor\", \"garchomp\") in init.lua"
+        echo "  Control via: garchompctl enable|disable|blur|status"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARGEARS" = true ]; then
+        echo "  gargears configuration GUI:"
+        echo "     Launch with: gargears"
+        echo "     Or run as daemon for tray integration: gargears --daemon"
         echo ""
     fi
 
