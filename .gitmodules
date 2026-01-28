@@ -52,3 +52,7 @@
 [submodule "garchomp"]
 	path = garchomp
 	url = https://github.com/gardesk/garchomp
+[submodule "gargears"]
+	path = gargears
+	url = git@github.com:gardesk/gargears.git
+	branch = trunk
