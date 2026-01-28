@@ -31,6 +31,28 @@ const components = [
     ]
   },
   {
+    id: 'garchomp',
+    name: 'garchomp',
+    tagline: 'X11 Compositor',
+    description: 'A GPU-accelerated X11 compositor with wgpu rendering, Lua-scripted animations, per-window rules, and HDR support. Replaces picom with tighter gar integration.',
+    features: [
+      'GPU-accelerated wgpu rendering',
+      'Dual Kawase blur and shadow effects',
+      'Lua-scripted animation system',
+      'Per-window rules and overrides',
+      'HDR tonemapping support'
+    ],
+    status: 'beta' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'garchomp compositor effects',
+    accentColor: 'magenta',
+    images: [
+      { src: '/images/thumbs/garchomp1.png', alt: 'garchomp blur and shadow effects' },
+      { src: '/images/thumbs/garchomp2.png', alt: 'garchomp rounded corners' },
+      { src: '/images/thumbs/garchomp3.png', alt: 'garchomp HDR tonemapping' }
+    ]
+  },
+  {
     id: 'garfield',
     name: 'garfield',
     tagline: 'File Manager',

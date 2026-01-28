@@ -1,0 +1,911 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const garchompImages = [
+  { src: '/images/thumbs/garchomp1.png', alt: 'garchomp compositor - blur and shadow effects' },
+  { src: '/images/thumbs/garchomp2.png', alt: 'garchomp compositor - rounded corners' },
+  { src: '/images/thumbs/garchomp3.png', alt: 'garchomp compositor - workspace transition' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  { id: 'overview', label: 'Overview' },
+  {
+    id: 'effects',
+    label: 'Effects',
+    children: [
+      { id: 'effects-blur', label: 'Blur' },
+      { id: 'effects-shadows', label: 'Shadows' },
+      { id: 'effects-corners', label: 'Rounded Corners' },
+      { id: 'effects-opacity', label: 'Opacity' },
+    ]
+  },
+  {
+    id: 'animations',
+    label: 'Animations',
+    children: [
+      { id: 'animations-builtin', label: 'Built-in' },
+      { id: 'animations-custom', label: 'Custom Lua' },
+      { id: 'animations-easing', label: 'Easing Curves' },
+    ]
+  },
+  { id: 'window-rules', label: 'Window Rules' },
+  { id: 'workspace-transitions', label: 'Workspace Transitions' },
+  { id: 'hdr', label: 'HDR Support' },
+  { id: 'vsync', label: 'VSync Modes' },
+  { id: 'multi-monitor', label: 'Multi-Monitor' },
+  { id: 'gar-integration', label: 'gar Integration' },
+];
+---
+
+<BaseLayout title="garchomp - gardesk" description="X11 Compositor. A GPU-accelerated X11 compositor with wgpu rendering, Lua-scripted animations, and HDR support.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-magenta">garchomp</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">X11 Compositor</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A GPU-accelerated X11 compositor built with wgpu and Rust. garchomp replaces picom with tighter gar integration, Lua-scripted animations, per-window rules, and experimental HDR support. Enjoy smooth blur, shadows, rounded corners, and workspace transitions with modern GPU rendering.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garchomp" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garchompImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'GPU-accelerated rendering with wgpu (Vulkan/GL)',
+            'Dual Kawase blur for fast, high-quality backgrounds',
+            'Soft drop shadows with configurable radius and offset',
+            'Rounded window corners with per-window overrides',
+            'Lua-scripted animation system (open, close, workspace)',
+            'Per-window rules based on WM_CLASS, title, or instance',
+            'Configurable VSync modes (off, on, adaptive)',
+            'Experimental HDR support with ACES tonemapping',
+            'Multi-monitor support via RandR',
+            'Workspace transition animations synced with gar',
+            'Hot-reload configuration without restart',
+            'IPC control via garchompctl'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-magenta" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Getting Started Tab -->
+        <div slot="tab-0">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Quick Start Guide</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Get up and running with garchomp in just a few steps. This guide covers installation, basic configuration, and essential commands.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">1. Installation</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Install garchomp using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garchomp', comment: 'Install via script' },
+              { command: 'cd ~/.local/src/gardesk/garchomp && cargo build --release', comment: 'Or build from source' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">2. Running with gar</h4>
+          <p class="text-gar-text-secondary mb-4">
+            When using gar, garchomp starts automatically via <code class="text-gar-accent-magenta">gar.exec_once()</code> in your config. For standalone use:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garchomp', comment: 'Start compositor (uses DISPLAY env)' },
+              { command: 'garchomp -v', comment: 'Verbose logging' },
+              { command: 'garchomp -vv', comment: 'Debug logging' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">3. Essential Commands</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Use <code class="text-gar-accent-magenta">garchompctl</code> to control the compositor at runtime:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garchompctl ping', comment: 'Health check' },
+              { command: 'garchompctl status', comment: 'Show status (JSON)' },
+              { command: 'garchompctl reload', comment: 'Reload configuration' },
+              { command: 'garchompctl set blur false', comment: 'Disable blur' },
+              { command: 'garchompctl list', comment: 'List managed windows' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">4. Configuration File</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Configure garchomp in <code class="text-gar-accent-magenta">~/.config/gar/init.lua</code> using the <code class="text-gar-accent-magenta">garchomp</code> namespace. Changes apply after <code class="text-gar-accent-green">garchompctl reload</code>.
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'mkdir -p ~/.config/gar', comment: 'Create config directory' },
+              { command: '$EDITOR ~/.config/gar/init.lua', comment: 'Edit configuration' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">5. Quick Config</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Add these lines to your <code class="text-gar-accent-magenta">init.lua</code> to enable basic effects:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- garchomp compositor
+garchomp.set("blur_enabled", true)
+garchomp.set("blur_strength", 5)
+garchomp.set("shadow_enabled", true)
+garchomp.set("corner_radius", 12)
+garchomp.set("fade_enabled", true)
+
+-- Start with gar session
+gar.exec_once("garchomp")`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Config Tab -->
+        <div slot="tab-1">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Configuration Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            garchomp uses Lua for configuration, integrated with gar's shared config at <code class="text-gar-accent-magenta">~/.config/gar/init.lua</code>.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Minimal Configuration</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Minimal garchomp configuration
+garchomp.set("blur_enabled", true)
+garchomp.set("blur_strength", 5)
+garchomp.set("shadow_enabled", true)
+garchomp.set("shadow_radius", 12)
+garchomp.set("corner_radius", 12)
+garchomp.set("fade_enabled", true)
+garchomp.set("fade_duration", 0.15)`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <div class="px-4 py-2 bg-gar-bg-secondary border-b border-gar-text-muted/20">
+              <span class="text-sm text-gar-text-secondary font-mono">~/.config/gar/init.lua</span>
+            </div>
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto max-h-[32rem]"><code class="text-sm text-gar-text-primary font-mono">{`-- ═══════════════════════════════════════════
+-- garchomp compositor configuration
+-- ═══════════════════════════════════════════
+
+-- ═══════════════════════════════════════════
+-- Blur Effect
+-- ═══════════════════════════════════════════
+
+garchomp.set("blur_enabled", true)
+garchomp.set("blur_strength", 5)          -- 1-20, higher = more blur
+
+-- ═══════════════════════════════════════════
+-- Shadows
+-- ═══════════════════════════════════════════
+
+garchomp.set("shadow_enabled", true)
+garchomp.set("shadow_radius", 12)         -- Blur radius
+garchomp.set("shadow_offset_x", 0)        -- Horizontal offset
+garchomp.set("shadow_offset_y", 5)        -- Vertical offset
+garchomp.set("shadow_opacity", 0.5)       -- 0.0-1.0
+
+-- ═══════════════════════════════════════════
+-- Rounded Corners
+-- ═══════════════════════════════════════════
+
+garchomp.set("corner_radius", 12)
+
+-- ═══════════════════════════════════════════
+-- Fading / Opacity
+-- ═══════════════════════════════════════════
+
+garchomp.set("fade_enabled", true)
+garchomp.set("fade_duration", 0.15)       -- Seconds
+
+-- ═══════════════════════════════════════════
+-- Performance
+-- ═══════════════════════════════════════════
+
+garchomp.set("vsync", "adaptive")         -- off, on, adaptive
+
+-- ═══════════════════════════════════════════
+-- HDR (Experimental)
+-- ═══════════════════════════════════════════
+
+garchomp.set("hdr_enabled", false)
+garchomp.set("hdr_peak_luminance", 1000)  -- Peak nits
+garchomp.set("hdr_paper_white", 203)      -- SDR white level
+garchomp.set("tonemap_operator", "aces")  -- aces, reinhard, hable
+
+-- ═══════════════════════════════════════════
+-- Animations
+-- ═══════════════════════════════════════════
+
+garchomp.animate("window_open", {
+    duration = 0.2,
+    curve = "ease-out",
+    animate = function(t, window)
+        window:set_scale(0.95 + 0.05 * t, 0.95 + 0.05 * t)
+        window:set_opacity(t)
+    end
+})
+
+garchomp.animate("window_close", {
+    duration = 0.15,
+    curve = "ease-in",
+    animate = function(t, window)
+        local inv = 1 - t
+        window:set_scale(0.9 + inv * 0.1, 0.9 + inv * 0.1)
+        window:set_opacity(inv)
+    end
+})
+
+garchomp.animate("workspace_switch", {
+    duration = 0.25,
+    curve = "ease-in-out",
+})
+
+-- ═══════════════════════════════════════════
+-- Per-Window Rules
+-- ═══════════════════════════════════════════
+
+-- Disable corners for Firefox
+garchomp.rule({ class = "Firefox" }, {
+    blur_behind = true,
+    corner_radius = 0,
+    opacity = 1.0
+})
+
+-- Blur behind terminals
+garchomp.rule({ class = "Alacritty" }, {
+    blur_behind = true,
+    opacity = 0.95
+})
+
+garchomp.rule({ class = "kitty" }, {
+    blur_behind = true,
+    opacity = 0.95
+})
+
+-- No effects for video players
+garchomp.rule({ class = "mpv" }, {
+    shadow_enabled = false,
+    corner_radius = 0,
+    animations_enabled = false
+})
+
+-- Dialogs
+garchomp.rule({ title = "Open File" }, {
+    shadow_enabled = true,
+    corner_radius = 8
+})`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">All Configuration Options</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Option</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Type</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Default</th>
+                  <th class="text-left py-2 px-3 text-gar-text-primary font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable blur effect</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_strength</td><td class="py-2 px-3">int</td><td class="py-2 px-3">5</td><td class="py-2 px-3">Blur intensity (1-20)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable drop shadows</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_radius</td><td class="py-2 px-3">int</td><td class="py-2 px-3">12</td><td class="py-2 px-3">Shadow blur radius</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_offset_x</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Horizontal shadow offset</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_offset_y</td><td class="py-2 px-3">int</td><td class="py-2 px-3">5</td><td class="py-2 px-3">Vertical shadow offset</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">shadow_opacity</td><td class="py-2 px-3">float</td><td class="py-2 px-3">0.5</td><td class="py-2 px-3">Shadow opacity (0-1)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">corner_radius</td><td class="py-2 px-3">int</td><td class="py-2 px-3">12</td><td class="py-2 px-3">Window corner radius</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">fade_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable fade animations</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">fade_duration</td><td class="py-2 px-3">float</td><td class="py-2 px-3">0.15</td><td class="py-2 px-3">Fade duration (seconds)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">vsync</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"adaptive"</td><td class="py-2 px-3">VSync mode (off/on/adaptive)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">hdr_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Enable HDR rendering</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">hdr_peak_luminance</td><td class="py-2 px-3">int</td><td class="py-2 px-3">1000</td><td class="py-2 px-3">Display peak luminance (nits)</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">hdr_paper_white</td><td class="py-2 px-3">int</td><td class="py-2 px-3">203</td><td class="py-2 px-3">SDR white level (nits)</td></tr>
+                <tr><td class="py-2 px-3 font-mono text-xs">tonemap_operator</td><td class="py-2 px-3">string</td><td class="py-2 px-3">"aces"</td><td class="py-2 px-3">HDR tonemapper</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Docs Tab -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+            <!-- Overview -->
+            <div slot="doc-0">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Overview</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp is a GPU-accelerated X11 compositor built with Rust and wgpu. It intercepts window rendering via the X11 Composite extension and applies visual effects before presenting to the screen.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Architecture</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><strong>wgpu</strong> - Cross-platform GPU API (Vulkan, Metal, DX12, GL)</li>
+                <li><strong>EGL</strong> - Context creation and pixmap texture import</li>
+                <li><strong>X11 Composite</strong> - Window redirection and overlay window</li>
+                <li><strong>x11rb</strong> - Pure Rust X11 protocol implementation</li>
+                <li><strong>mlua</strong> - Lua 5.4 configuration scripting</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rendering Pipeline</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`X11 Server
+    |
+Composite Extension (redirect all windows)
+    |
+Window Pixmaps (NameWindowPixmap)
+    |
+EGL Texture Import
+    |
+wgpu Multi-Pass Pipeline:
+    Pass 1: Blur backgrounds (dual kawase)
+    Pass 2: Shadow rendering
+    Pass 3: Window content (rounded corners)
+    Pass 4: Animation transforms
+    Pass 5: Final composition + tonemapping
+    |
+Present to Overlay Window`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Effects > Blur -->
+            <div slot="doc-1">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Effects</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp provides several visual effects that can be configured globally or per-window.
+              </p>
+            </div>
+
+            <!-- Effects > Blur -->
+            <div slot="doc-2">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Blur</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp uses a <strong>dual Kawase</strong> blur algorithm for fast, high-quality background blur. This multi-pass technique is more efficient than Gaussian blur at large radii.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("blur_enabled", true)
+garchomp.set("blur_strength", 5)  -- 1-20`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Per-Window Blur</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Blur behind terminals
+garchomp.rule({ class = "Alacritty" }, {
+    blur_behind = true
+})`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-muted text-sm">
+                <strong>Note:</strong> Blur only affects windows with transparency. Fully opaque windows won't show blur.
+              </p>
+            </div>
+
+            <!-- Effects > Shadows -->
+            <div slot="doc-3">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Shadows</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Drop shadows add depth to windows. Shadows are rendered as a blurred rectangle behind each window.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("shadow_enabled", true)
+garchomp.set("shadow_radius", 12)      -- Blur amount
+garchomp.set("shadow_offset_x", 0)     -- Horizontal offset
+garchomp.set("shadow_offset_y", 5)     -- Vertical offset
+garchomp.set("shadow_opacity", 0.5)    -- 0.0-1.0`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Disable for Video Players</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.rule({ class = "mpv" }, {
+    shadow_enabled = false
+})`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Effects > Rounded Corners -->
+            <div slot="doc-4">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Rounded Corners</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Apply rounded corners to windows using a shader-based mask.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("corner_radius", 12)  -- Pixels`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Per-Window Override</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- No rounded corners for Firefox
+garchomp.rule({ class = "Firefox" }, {
+    corner_radius = 0
+})`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Effects > Opacity -->
+            <div slot="doc-5">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Opacity</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Control window transparency with fade animations for open/close.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("fade_enabled", true)
+garchomp.set("fade_duration", 0.15)  -- Seconds`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Per-Window Opacity</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.rule({ class = "Alacritty" }, {
+    opacity = 0.95
+})`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Animations (parent) -->
+            <div slot="doc-6">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Animations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp provides a Lua-based animation system for window open/close and workspace transitions.
+              </p>
+            </div>
+
+            <!-- Animations > Built-in -->
+            <div slot="doc-7">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Built-in Animations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Three animation triggers are supported:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-magenta">window_open</code> - When a window maps</li>
+                <li><code class="text-gar-accent-magenta">window_close</code> - When a window unmaps</li>
+                <li><code class="text-gar-accent-magenta">workspace_switch</code> - When changing workspaces</li>
+              </ul>
+            </div>
+
+            <!-- Animations > Custom Lua -->
+            <div slot="doc-8">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Custom Lua Animations</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Define custom animations using the <code class="text-gar-accent-magenta">garchomp.animate()</code> function.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.animate("window_open", {
+    duration = 0.2,          -- Seconds
+    curve = "ease-out",      -- Easing function
+    animate = function(t, window)
+        -- t goes from 0 to 1 over duration
+        window:set_scale(0.95 + 0.05 * t, 0.95 + 0.05 * t)
+        window:set_opacity(t)
+        window:set_offset(0, (1 - t) * 20)
+    end
+})`}</code></pre>
+              </div>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Window Methods</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-magenta">window:set_scale(sx, sy)</code> - Scale transform</li>
+                <li><code class="text-gar-accent-magenta">window:set_offset(x, y)</code> - Translate</li>
+                <li><code class="text-gar-accent-magenta">window:set_opacity(alpha)</code> - Transparency</li>
+                <li><code class="text-gar-accent-magenta">window:set_brightness(mult)</code> - Brightness</li>
+                <li><code class="text-gar-accent-magenta">window:set_blur_radius(r)</code> - Blur amount</li>
+                <li><code class="text-gar-accent-magenta">window:set_corner_radius(r)</code> - Corner radius</li>
+              </ul>
+            </div>
+
+            <!-- Animations > Easing -->
+            <div slot="doc-9">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Easing Curves</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Available easing functions for animations:
+              </p>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-magenta">linear</code> - Constant speed</li>
+                <li><code class="text-gar-accent-magenta">ease-in</code> - Slow start</li>
+                <li><code class="text-gar-accent-magenta">ease-out</code> - Slow end</li>
+                <li><code class="text-gar-accent-magenta">ease-in-out</code> - Slow start and end</li>
+                <li><code class="text-gar-accent-magenta">cubic-bezier(x1,y1,x2,y2)</code> - Custom curve</li>
+                <li><code class="text-gar-accent-magenta">bounce</code> - Bounce effect</li>
+              </ul>
+            </div>
+
+            <!-- Window Rules -->
+            <div slot="doc-10">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Window Rules</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Apply per-window settings using <code class="text-gar-accent-magenta">garchomp.rule()</code>.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Match Criteria</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-magenta">class</code> - WM_CLASS (e.g., "Firefox")</li>
+                <li><code class="text-gar-accent-magenta">title</code> - Window title</li>
+                <li><code class="text-gar-accent-magenta">instance</code> - WM_CLASS instance</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Rule Properties</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.rule({ class = "Firefox" }, {
+    blur_behind = true,       -- Enable blur
+    corner_radius = 0,        -- Override corners
+    opacity = 1.0,            -- Opacity
+    shadow_enabled = true,    -- Enable shadows
+    animations_enabled = true -- Enable animations
+})`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Workspace Transitions -->
+            <div slot="doc-11">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Workspace Transitions</h3>
+              <p class="text-gar-text-secondary mb-4">
+                When integrated with gar, garchomp receives workspace change events and animates the transition.
+              </p>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.animate("workspace_switch", {
+    duration = 0.25,
+    curve = "ease-in-out",
+})`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                The transition direction (left, right, up, down) is received from gar and used to determine the animation direction.
+              </p>
+            </div>
+
+            <!-- HDR -->
+            <div slot="doc-12">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">HDR Support</h3>
+              <p class="text-gar-text-secondary mb-4">
+                <strong>Experimental:</strong> garchomp can render in HDR using 10-bit visuals and tonemapping.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Requirements</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li>10-bit display support (check <code class="text-gar-accent-magenta">xdpyinfo | grep depth</code>)</li>
+                <li>GPU driver with HDR support</li>
+                <li>X11 DeepColor visual (depth 30)</li>
+              </ul>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("hdr_enabled", true)
+garchomp.set("hdr_peak_luminance", 1000)  -- Display peak
+garchomp.set("hdr_paper_white", 203)      -- SDR white
+garchomp.set("tonemap_operator", "aces")  -- aces, reinhard, hable`}</code></pre>
+              </div>
+            </div>
+
+            <!-- VSync -->
+            <div slot="doc-13">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">VSync Modes</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Control frame synchronization to prevent tearing or reduce latency.
+              </p>
+
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-2">
+                <li><code class="text-gar-accent-magenta">off</code> - No sync, may tear but lowest latency</li>
+                <li><code class="text-gar-accent-magenta">on</code> - Wait for vblank (Fifo), no tearing</li>
+                <li><code class="text-gar-accent-magenta">adaptive</code> - Mailbox mode, low latency with minimal tearing</li>
+              </ul>
+
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-4">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`garchomp.set("vsync", "adaptive")`}</code></pre>
+              </div>
+            </div>
+
+            <!-- Multi-Monitor -->
+            <div slot="doc-14">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Multi-Monitor</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp uses RandR to detect connected monitors and their geometry.
+              </p>
+
+              <p class="text-gar-text-secondary mb-4">
+                Monitor information is available via IPC:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'garchompctl status | jq .monitors', comment: 'List monitors' },
+                ]}
+              />
+            </div>
+
+            <!-- gar Integration -->
+            <div slot="doc-15">
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">gar Integration</h3>
+              <p class="text-gar-text-secondary mb-4">
+                garchomp communicates with gar via Unix socket IPC to receive window and workspace events.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Events from gar</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary mb-4 space-y-1">
+                <li><code class="text-gar-accent-magenta">workspace_changed</code> - Workspace switch with direction</li>
+                <li><code class="text-gar-accent-magenta">focus_changed</code> - Window focus change</li>
+                <li><code class="text-gar-accent-magenta">window_fullscreen</code> - Fullscreen state change</li>
+                <li><code class="text-gar-accent-magenta">window_moved</code> / <code class="text-gar-accent-magenta">window_resized</code></li>
+                <li><code class="text-gar-accent-magenta">sync</code> - Full state synchronization on connect</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                garchomp automatically reconnects to gar if the connection drops and re-syncs workspace state.
+              </p>
+            </div>
+          </DocsSidebar>
+        </div>
+
+        <!-- IPC Tab -->
+        <div slot="tab-3">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">IPC / API Reference</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Control garchomp at runtime via Unix socket IPC or the <code class="text-gar-accent-magenta">garchompctl</code> CLI.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">garchompctl Commands</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: 'garchompctl ping', comment: 'Health check' },
+              { command: 'garchompctl status', comment: 'Compositor status (JSON)' },
+              { command: 'garchompctl reload', comment: 'Reload configuration' },
+              { command: 'garchompctl set blur true', comment: 'Enable blur' },
+              { command: 'garchompctl set blur false', comment: 'Disable blur' },
+              { command: 'garchompctl set shadows true', comment: 'Enable shadows' },
+              { command: 'garchompctl set blur_strength 10', comment: 'Set blur strength' },
+              { command: 'garchompctl list', comment: 'List managed windows' },
+              { command: 'garchompctl info 12345678', comment: 'Window details' },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h4>
+          <p class="text-gar-text-secondary mb-4">
+            <code class="text-gar-accent-magenta">$XDG_RUNTIME_DIR/garchomp.sock</code>
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Protocol</h4>
+          <p class="text-gar-text-secondary mb-4">
+            JSON messages over Unix socket, newline-delimited.
+          </p>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Request Types</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{ "type": "ping" }
+{ "type": "reload" }
+{ "type": "status" }
+{ "type": "set_effect", "effect": "blur", "enabled": true }
+{ "type": "set_blur_strength", "strength": 8 }
+{ "type": "list_windows" }
+{ "type": "get_window_info", "window": 12345678 }
+{ "type": "version", "version": 1 }`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Response Types</h4>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{ "type": "pong" }
+{ "type": "ok" }
+{ "type": "error", "message": "Unknown effect" }
+{ "type": "version", "version": 1, "name": "garchomp" }
+{ "type": "status",
+  "version": 1,
+  "window_count": 5,
+  "current_workspace": 1,
+  "effects_enabled": {
+    "blur": true,
+    "shadows": true,
+    "animations": true,
+    "blur_strength": 5
+  },
+  "connected_to_gar": true,
+  "monitors": [
+    { "name": "DP-1", "x": 0, "y": 0, "width": 2560, "height": 1440, "primary": true }
+  ]
+}
+{ "type": "window_info",
+  "id": 12345678,
+  "x": 100,
+  "y": 100,
+  "width": 800,
+  "height": 600,
+  "mapped": true,
+  "override_redirect": false,
+  "workspace": 1,
+  "focused": true,
+  "fullscreen": false,
+  "class": "Firefox",
+  "title": "Mozilla Firefox"
+}
+{ "type": "window_list", "windows": [...] }`}</code></pre>
+          </div>
+
+          <h4 class="text-lg font-semibold text-gar-text-primary mb-3">gar Events</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Events received from gar window manager:
+          </p>
+          <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+            <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`{ "type": "workspace_changed", "from": 1, "to": 2, "direction": "right" }
+{ "type": "focus_changed", "old": 12345678, "new": 87654321 }
+{ "type": "window_fullscreen", "window": 12345678, "fullscreen": true }
+{ "type": "window_moved", "window": 12345678, "x": 200, "y": 200 }
+{ "type": "window_resized", "window": 12345678, "width": 1024, "height": 768 }
+{ "type": "window_workspace", "window": 12345678, "workspace": 2 }
+{ "type": "sync", "windows": [...], "current_workspace": 1 }`}</code></pre>
+          </div>
+        </div>
+
+        <!-- Troubleshooting Tab -->
+        <div slot="tab-4">
+          <h3 class="text-xl font-bold text-gar-text-primary mb-4">Troubleshooting</h3>
+
+          <p class="text-gar-text-secondary mb-6">
+            Common issues and solutions for garchomp.
+          </p>
+
+          <div class="space-y-6">
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Compositor Not Starting</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Check <code class="text-gar-accent-magenta">DISPLAY</code> environment variable is set</li>
+                <li>Verify X11 server is running: <code class="text-gar-accent-magenta">xdpyinfo</code></li>
+                <li>Check Composite extension: <code class="text-gar-accent-magenta">xdpyinfo | grep Composite</code></li>
+                <li>Run with verbose logging: <code class="text-gar-accent-magenta">garchomp -vv</code></li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">No Effects Visible</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Verify config syntax: <code class="text-gar-accent-magenta">lua -c ~/.config/gar/init.lua</code></li>
+                <li>Check effect states: <code class="text-gar-accent-magenta">garchompctl status</code></li>
+                <li>Ensure effects are enabled in config</li>
+                <li>Reload config: <code class="text-gar-accent-magenta">garchompctl reload</code></li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Performance Issues</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Reduce <code class="text-gar-accent-magenta">blur_strength</code> (lower = faster)</li>
+                <li>Try <code class="text-gar-accent-magenta">vsync = "on"</code> instead of "adaptive"</li>
+                <li>Disable HDR if not needed</li>
+                <li>Check GPU driver is properly installed</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Flickering / Tearing</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Switch VSync mode: try <code class="text-gar-accent-magenta">"on"</code> or <code class="text-gar-accent-magenta">"adaptive"</code></li>
+                <li>Check GPU driver (prefer Vulkan backend)</li>
+                <li>Verify no other compositor is running</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Window Not Blurred</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Window must have transparency (opacity &lt; 1.0)</li>
+                <li>Check window rule overrides</li>
+                <li>Blur only affects background behind transparent areas</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">HDR Not Working</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Requires 10-bit display support</li>
+                <li>Check: <code class="text-gar-accent-magenta">xdpyinfo | grep "depth.*30"</code></li>
+                <li>GPU driver must support HDR output</li>
+                <li>HDR is experimental - may not work on all systems</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Log Locations</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-1 text-sm">
+                <li>Journal: <code class="text-gar-accent-magenta">journalctl --user -u garchomp</code></li>
+                <li>Console: run <code class="text-gar-accent-magenta">garchomp -vv</code> manually</li>
+                <li>Set <code class="text-gar-accent-magenta">RUST_LOG=garchomp=debug</code> for more detail</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-text-primary mb-2">Debugging Tips</h4>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: 'RUST_LOG=garchomp=debug garchomp', comment: 'Debug logging' },
+                  { command: 'Xephyr -br -ac -screen 1920x1080 :1 &', comment: 'Start nested X' },
+                  { command: 'DISPLAY=:1 garchomp -vv', comment: 'Test in Xephyr' },
+                  { command: 'garchompctl status | jq', comment: 'Pretty-print status' },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
