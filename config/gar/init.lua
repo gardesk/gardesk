@@ -23,8 +23,7 @@ gar.exec_once("gartray daemon")
 -- Compositor (garchomp or picom)
 -- Use Mod+Shift+C to toggle between them
 -- Setting "compositor" to "none" disables gar's auto picom management
-gar.set("compositor", "none")
-gar.exec_once("sleep 0.5 && garchomp")
+gar.set("compositor", "garchomp")
 
 -- Compositor toggle function
 function toggle_compositor()
