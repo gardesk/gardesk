@@ -898,36 +898,11 @@ install_gardm() {
     sudo systemctl daemon-reload
 
     echo -e "${GREEN}  ✓ gardm installed successfully${NC}"
-
-    # Prompt to enable gardm
-    echo ""
-    if prompt_yes_no "Enable gardm as your display manager now?" "n"; then
-        echo ""
-        log_warn "This will disable your current display manager!"
-        log_warn "IMPORTANT: Keep a TTY login ready as backup (Ctrl+Alt+F2)"
-        echo ""
-
-        if prompt_yes_no "Are you absolutely sure?" "n"; then
-            # Detect and disable current DM
-            for dm in sddm gdm lightdm lxdm slim; do
-                if systemctl is-enabled "$dm" 2>/dev/null | grep -q enabled; then
-                    log_info "Disabling $dm..."
-                    sudo systemctl disable "$dm"
-                fi
-            done
-
-            log_info "Enabling gardm..."
-            sudo systemctl enable gardm
-
-            echo ""
-            if prompt_yes_no "Reboot now to start gardm?" "n"; then
-                log_info "Rebooting..."
-                sudo reboot
-            else
-                log_info "gardm will start on next reboot"
-            fi
-        fi
-    fi
+    log_info "  To enable gardm as your display manager:"
+    log_info "    sudo systemctl disable <current-dm>  # sddm, gdm, lightdm, etc."
+    log_info "    sudo systemctl enable gardm"
+    log_info "    sudo reboot"
+    log_warn "  Keep a TTY login ready as backup (Ctrl+Alt+F2)"
 }
 
 install_gartk() {
