@@ -1307,11 +1307,13 @@ main() {
     [ "$INSTALL_GARBG" = true ] && install_garbg
     [ "$INSTALL_GARSHOT" = true ] && install_garshot
     [ "$INSTALL_GARLOCK" = true ] && install_garlock
-    [ "$INSTALL_GARDM" = true ] && install_gardm
     [ "$INSTALL_GARLAUNCH" = true ] && install_garlaunch
     [ "$INSTALL_GARCLIP" = true ] && install_garclip
     [ "$INSTALL_GARCHOMP" = true ] && install_garchomp
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
+
+    # gardm last (may prompt for reboot)
+    [ "$INSTALL_GARDM" = true ] && install_gardm
 
     # PATH setup
     setup_path
