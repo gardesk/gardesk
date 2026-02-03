@@ -1,5 +1,5 @@
 Name:           gardm
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Display manager for the gar desktop suite
 

@@ -1,5 +1,5 @@
 Name:           garshot
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        Screenshot utility for the gar desktop suite
 

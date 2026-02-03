@@ -1,5 +1,5 @@
 Name:           garlaunch
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Application launcher for the gar desktop suite
 

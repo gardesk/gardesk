@@ -1,5 +1,5 @@
 Name:           garclip
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        Clipboard manager for the gar desktop suite
 

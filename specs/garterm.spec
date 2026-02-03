@@ -1,5 +1,5 @@
 Name:           garterm
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Terminal emulator for the gar desktop suite
 
