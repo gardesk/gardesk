@@ -1,5 +1,5 @@
 Name:           garlock
-Version:        0.3.0
+Version:        0.3.2
 Release:        1%{?dist}
 Summary:        Screen locker for the gar desktop suite
 
@@ -38,6 +38,9 @@ install -Dm755 %{_sourcedir}/garlock %{buildroot}%{_bindir}/garlock
 %{_bindir}/garlock
 
 %changelog
+* Mon Feb 03 2026 mfw <espadonne@outlook.com> - 0.3.2-1
+- Version bump to 0.3.2
+
 * Fri Jan 17 2025 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of garlock
 - Screen locker with blur and PAM auth
