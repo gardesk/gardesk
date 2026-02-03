@@ -1,0 +1,959 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'app-modes', label: 'Application Modes' },
+      { id: 'event-loop', label: 'Event Loop' },
+    ]
+  },
+  {
+    id: 'panels',
+    label: 'Configuration Panels',
+    children: [
+      { id: 'panel-gar', label: 'gar Panel' },
+      { id: 'panel-garbar', label: 'garbar Panel' },
+      { id: 'panel-garbg', label: 'garbg Panel' },
+      { id: 'panel-other', label: 'Other Panels' },
+    ]
+  },
+  {
+    id: 'widgets',
+    label: 'Widget System',
+  },
+  {
+    id: 'ipc-adapters',
+    label: 'IPC Adapters',
+  },
+  {
+    id: 'config-management',
+    label: 'Config Management',
+    children: [
+      { id: 'lua-configs', label: 'Lua Configs' },
+      { id: 'toml-configs', label: 'TOML Configs' },
+    ]
+  },
+  {
+    id: 'instant-apply',
+    label: 'Instant Apply Mode',
+  },
+  {
+    id: 'keyboard-shortcuts',
+    label: 'Keyboard Shortcuts',
+  },
+];
+---
+
+<BaseLayout title="gargears - gardesk" description="Centralized GUI control panel for all gardesk components with live configuration and daemon management.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-purple">gargears</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Desktop Control Panel</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A centralized GUI control panel for the gardesk desktop suite. Configure and control all gardesk components from a single interface with live daemon communication, instant apply mode, and persistent daemon operation.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/gargears" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            '11 configuration panels for all gardesk components',
+            'Real-time daemon communication via Unix socket IPC',
+            'Instant apply mode for live configuration changes',
+            'Daemon mode with persistent background operation',
+            'Visual status indicators for running components',
+            'Manages both Lua and TOML configuration files',
+            'Cairo/Pango rendering with dark theme',
+            'Keyboard-driven with full mouse support',
+            'Automatic daemon discovery and reconnection',
+            'CLI control via gargearsctl for scripting'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-purple" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Tab 0: Getting Started -->
+        <div slot="tab-0">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+
+          <div class="bg-gar-bg-secondary/50 rounded-lg p-6 mb-8 border border-gar-accent-purple/20">
+            <h3 class="text-lg font-semibold text-gar-accent-purple mb-4">What is gargears?</h3>
+            <p class="text-gar-text-secondary mb-4">
+              gargears is the control center for your gardesk desktop. It provides a unified interface to configure and control all gardesk components including the window manager (gar), status bar (garbar), wallpaper daemon (garbg), terminal (garterm), system tray (gartray), and more.
+            </p>
+            <p class="text-gar-text-secondary">
+              Changes can be applied instantly to running daemons or saved to configuration files for persistence across sessions.
+            </p>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Installation</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Install gargears using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=gargears", comment: "Install via script" },
+              { command: "cd ~/.local/src/gardesk/gargears && cargo build --release", comment: "Or build from source" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Running gargears</h3>
+          <p class="text-gar-text-secondary mb-4">
+            gargears supports two modes: GUI mode for immediate interaction and daemon mode for persistent background operation.
+          </p>
+
+          <h4 class="text-md font-semibold text-gar-text-primary mb-2">GUI Mode (Default)</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Launch gargears directly to open the configuration window:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gargears", comment: "Open control panel" },
+              { command: "gargears --panel garbg", comment: "Open directly to garbg panel" },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-md font-semibold text-gar-text-primary mb-2">Daemon Mode</h4>
+          <p class="text-gar-text-secondary mb-4">
+            Run gargears as a persistent daemon that can be shown/hidden on demand:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gargears --daemon", comment: "Start daemon (window hidden)" },
+              { command: "gargearsctl show", comment: "Show the window" },
+              { command: "gargearsctl toggle", comment: "Toggle visibility" },
+              { command: "gargearsctl quit", comment: "Stop daemon" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Basic Usage</h3>
+          <p class="text-gar-text-secondary mb-4">
+            The interface consists of a sidebar showing all 11 gardesk components and a content area displaying the selected panel's configuration options.
+          </p>
+
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 mb-6 border border-gar-text-muted/10">
+            <h4 class="text-md font-semibold text-gar-text-primary mb-2">Panel Actions</h4>
+            <ul class="space-y-2 text-gar-text-secondary">
+              <li><strong class="text-gar-accent-purple">Apply</strong> - Send changes to the running daemon immediately</li>
+              <li><strong class="text-gar-accent-purple">Reset</strong> - Revert to the last applied values</li>
+              <li><strong class="text-gar-accent-purple">Save</strong> - Persist changes to the configuration file</li>
+            </ul>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Instant Apply Mode</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Press <code class="bg-gar-bg-secondary px-2 py-1 rounded text-gar-accent-purple">I</code> to toggle instant apply mode. When enabled, every change is immediately sent to the running daemon without clicking Apply.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Keyboard Shortcuts</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+            <ul class="space-y-2 text-gar-text-secondary font-mono text-sm">
+              <li><code class="bg-gar-bg-secondary px-2 py-1 rounded">Escape</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">Q</code> - Close window (quit in GUI mode, hide in daemon mode)</li>
+              <li><code class="bg-gar-bg-secondary px-2 py-1 rounded">I</code> - Toggle instant apply mode</li>
+              <li><code class="bg-gar-bg-secondary px-2 py-1 rounded">Tab</code> - Navigate between widgets</li>
+              <li><code class="bg-gar-bg-secondary px-2 py-1 rounded">Enter</code> - Activate button / confirm input</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tab 1: Config -->
+        <div slot="tab-1">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Configuration</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            gargears manages configuration files for all gardesk components. It supports both Lua and TOML configuration formats depending on the component.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Managed Configuration Files</h3>
+
+          <div class="space-y-6 mb-8">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="text-md font-semibold text-gar-accent-purple mb-2">Lua Configuration</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Shared configuration file for gar, garbar, and garterm:</p>
+              <code class="block bg-gar-bg-secondary p-3 rounded text-sm">~/.config/gar/init.lua</code>
+              <ul class="mt-3 space-y-1 text-gar-text-secondary text-sm">
+                <li>• <strong>gar:</strong> border_width, border_color_focused/unfocused, gap_inner/outer, focus_follows_mouse</li>
+                <li>• <strong>garbar:</strong> height, position, font_family, font_size, modules_left/center/right</li>
+                <li>• <strong>garterm:</strong> font, colors, scrollback</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="text-md font-semibold text-gar-accent-purple mb-2">TOML Configuration Files</h4>
+              <p class="text-gar-text-secondary text-sm mb-3">Component-specific configuration files:</p>
+              <ul class="space-y-2 text-sm font-mono">
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garbg/config.toml</code> <span class="text-gar-text-muted">- Wallpaper daemon</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garlock/config.toml</code> <span class="text-gar-text-muted">- Screen locker</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garshot/config.toml</code> <span class="text-gar-text-muted">- Screenshot tool</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garclip/config.toml</code> <span class="text-gar-text-muted">- Clipboard manager</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garlaunch/config.toml</code> <span class="text-gar-text-muted">- Application launcher</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garnotify/config.toml</code> <span class="text-gar-text-muted">- Notification daemon</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/gartray/config.toml</code> <span class="text-gar-text-muted">- System tray</span></li>
+                <li class="text-gar-text-secondary"><code class="bg-gar-bg-secondary px-2 py-1 rounded">~/.config/garfield/config.toml</code> <span class="text-gar-text-muted">- File explorer</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Configuration Reload</h3>
+          <p class="text-gar-text-secondary mb-4">
+            After saving changes, components reload their configuration automatically or via these methods:
+          </p>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+            <ul class="space-y-2 text-gar-text-secondary text-sm">
+              <li>• <strong>gar:</strong> <code class="bg-gar-bg-secondary px-1 rounded">garctl reload</code> or automatic via IPC</li>
+              <li>• <strong>garbar:</strong> <code class="bg-gar-bg-secondary px-1 rounded">kill -SIGHUP $(pidof garbar)</code></li>
+              <li>• <strong>garbg:</strong> Automatic via IPC subscription</li>
+              <li>• <strong>garlock:</strong> Reloads on next lock activation</li>
+              <li>• <strong>garshot:</strong> Reads config on each invocation</li>
+            </ul>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mt-8 mb-3">Example: garbg Configuration</h3>
+          <p class="text-gar-text-secondary mb-4">
+            The garbg panel manages wallpaper settings. Here's the TOML structure gargears reads and writes:
+          </p>
+          <MultiTerminal
+            title="~/.config/garbg/config.toml"
+            commands={[
+              { command: "[slideshow]", comment: "" },
+              { command: "enabled = true", comment: "" },
+              { command: "interval_secs = 300", comment: "5 minutes" },
+              { command: "shuffle = true", comment: "" },
+              { command: "", comment: "" },
+              { command: "[[sources]]", comment: "" },
+              { command: 'type = "directory"', comment: "" },
+              { command: 'path = "/home/user/wallpapers"', comment: "" },
+              { command: "recursive = true", comment: "" },
+              { command: "", comment: "" },
+              { command: "[animation]", comment: "" },
+              { command: 'transition = "fade"', comment: "" },
+              { command: "duration_ms = 1000", comment: "" },
+            ]}
+            class="mb-6"
+          />
+        </div>
+
+        <!-- Tab 2: Docs -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- doc-0: Overview -->
+            <div slot="doc-0">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Overview</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears is a centralized GUI control panel for the gardesk X11 desktop suite. It provides a unified configuration and control interface for all gardesk components with real-time daemon communication, instant apply mode, and persistent daemon operation.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Components</h3>
+              <p class="text-gar-text-secondary mb-4">
+                gargears provides configuration panels for 11 gardesk components:
+              </p>
+              <ul class="grid grid-cols-2 gap-2 text-gar-text-secondary mb-6">
+                <li>• <strong>gar</strong> - Window manager</li>
+                <li>• <strong>garbar</strong> - Status bar</li>
+                <li>• <strong>garbg</strong> - Wallpaper daemon</li>
+                <li>• <strong>garterm</strong> - Terminal emulator</li>
+                <li>• <strong>gartray</strong> - System tray</li>
+                <li>• <strong>garshot</strong> - Screenshot tool</li>
+                <li>• <strong>garlock</strong> - Screen locker</li>
+                <li>• <strong>garfield</strong> - File explorer</li>
+                <li>• <strong>garclip</strong> - Clipboard manager</li>
+                <li>• <strong>garlaunch</strong> - App launcher</li>
+                <li>• <strong>garnotify</strong> - Notifications</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Project Structure</h3>
+              <MultiTerminal
+                title="workspace"
+                commands={[
+                  { command: "gargears/", comment: "Main GUI application" },
+                  { command: "  src/app.rs", comment: "Application state and event loop" },
+                  { command: "  src/daemon.rs", comment: "IPC server for daemon mode" },
+                  { command: "  src/config/", comment: "Lua and TOML config management" },
+                  { command: "  src/ipc/", comment: "Daemon communication adapters" },
+                  { command: "  src/panels/", comment: "11 configuration panels" },
+                  { command: "  src/ui/", comment: "Widget system and rendering" },
+                  { command: "gargearsctl/", comment: "CLI control utility" },
+                  { command: "gargears-ipc/", comment: "Shared IPC protocol types" },
+                ]}
+                class="mb-4"
+              />
+            </div>
+
+            <!-- doc-1: Architecture -->
+            <div slot="doc-1">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Architecture</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears is built on gartk for X11 window management and Cairo/Pango rendering. It uses an event-driven architecture with asynchronous IPC communication to multiple gardesk daemons.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Core Components</h3>
+              <ul class="space-y-3 text-gar-text-secondary mb-6">
+                <li><strong class="text-gar-accent-purple">App</strong> - Main application state managing window, renderer, panels, and connection manager</li>
+                <li><strong class="text-gar-accent-purple">ConnectionManager</strong> - Coordinates IPC connections to all 11 gardesk daemons</li>
+                <li><strong class="text-gar-accent-purple">Panel</strong> - Trait implemented by each component's configuration UI</li>
+                <li><strong class="text-gar-accent-purple">IpcAdapter</strong> - Trait for component-specific daemon communication</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Dependencies</h3>
+              <ul class="space-y-1 text-gar-text-secondary text-sm">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">gartk-core</code> - Colors, geometry, events, themes</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">gartk-x11</code> - X11 window management</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">gartk-render</code> - Cairo/Pango rendering</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">tokio</code> - Async runtime for IPC</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">serde</code> / <code class="bg-gar-bg-secondary px-1 rounded">serde_json</code> - JSON serialization</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">clap</code> - CLI argument parsing</li>
+              </ul>
+            </div>
+
+            <!-- doc-2: Application Modes -->
+            <div slot="doc-2">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Application Modes</h2>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">GUI Mode (Default)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                In GUI mode, gargears creates an X11 window (900x600, centered) that shows immediately when launched. The application exits when the user closes the window or presses Escape/Q.
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: "gargears", comment: "Launch GUI" },
+                  { command: "gargears --panel gar", comment: "Open to specific panel" },
+                ]}
+                class="mb-6"
+              />
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon Mode</h3>
+              <p class="text-gar-text-secondary mb-4">
+                In daemon mode, gargears starts with the window hidden and runs persistently in the background. It listens on a Unix socket for IPC commands to show, hide, or toggle the window.
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: "gargears --daemon", comment: "Start as daemon" },
+                  { command: "gargears --daemon --no-fork", comment: "Daemon without detaching" },
+                ]}
+                class="mb-6"
+              />
+              <p class="text-gar-text-secondary mb-4">
+                In daemon mode, closing the window hides it instead of exiting. Use <code class="bg-gar-bg-secondary px-1 rounded">gargearsctl quit</code> to stop the daemon.
+              </p>
+            </div>
+
+            <!-- doc-3: Event Loop -->
+            <div slot="doc-3">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Event Loop</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The gargears event loop processes X11 events, IPC events, and periodic tasks:
+              </p>
+
+              <ol class="space-y-3 text-gar-text-secondary mb-6">
+                <li><strong class="text-gar-accent-purple">1. X11 Event Processing</strong> - Keyboard, mouse, expose, resize events</li>
+                <li><strong class="text-gar-accent-purple">2. IPC Poll</strong> - Check for daemon status changes (throttled to 100ms)</li>
+                <li><strong class="text-gar-accent-purple">3. Panel Event Handling</strong> - Widget interactions, apply/reset/save actions</li>
+                <li><strong class="text-gar-accent-purple">4. Render</strong> - Sidebar + content panel + status message</li>
+                <li><strong class="text-gar-accent-purple">5. Blit</strong> - Cairo surface to X11 window via XPutImage</li>
+                <li><strong class="text-gar-accent-purple">6. Periodic Refresh</strong> - Reconnect to daemons every 5 seconds</li>
+              </ol>
+            </div>
+
+            <!-- doc-4: Configuration Panels (parent) -->
+            <div slot="doc-4">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Configuration Panels</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears provides dedicated configuration panels for 11 gardesk components. Select a panel from the sidebar to see its specific options.
+              </p>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">gar</h4>
+                  <p class="text-gar-text-secondary text-sm">Window manager settings</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">garbar</h4>
+                  <p class="text-gar-text-secondary text-sm">Status bar settings</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">garbg</h4>
+                  <p class="text-gar-text-secondary text-sm">Wallpaper settings</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Others</h4>
+                  <p class="text-gar-text-secondary text-sm">8 more component panels</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-5: gar Panel -->
+            <div slot="doc-5">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">gar Panel</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The gar panel configures the window manager with the following options:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Appearance</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>border_width</strong> - Window border thickness in pixels</li>
+                <li>• <strong>border_color_focused</strong> - Border color for focused windows</li>
+                <li>• <strong>border_color_unfocused</strong> - Border color for unfocused windows</li>
+                <li>• <strong>gap_inner</strong> - Gap between tiled windows</li>
+                <li>• <strong>gap_outer</strong> - Gap between windows and screen edge</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Behavior</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>focus_follows_mouse</strong> - Focus window when mouse enters</li>
+                <li>• <strong>mouse_follows_focus</strong> - Warp mouse to focused window</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Read-Only Information</h3>
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• <strong>Keybinds list</strong> - Configured keyboard shortcuts</li>
+                <li>• <strong>Window rules list</strong> - Automatic window placement rules</li>
+              </ul>
+            </div>
+
+            <!-- doc-6: garbar Panel -->
+            <div slot="doc-6">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">garbar Panel</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The garbar panel configures the status bar:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Layout</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>height</strong> - Bar height in pixels</li>
+                <li>• <strong>position</strong> - Top or bottom of screen</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Typography</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>font_family</strong> - Font for bar text</li>
+                <li>• <strong>font_size</strong> - Font size in points</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Colors</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>background</strong> - Bar background color</li>
+                <li>• <strong>foreground</strong> - Default text color</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Modules</h3>
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• <strong>modules_left</strong> - Left-aligned modules</li>
+                <li>• <strong>modules_center</strong> - Center-aligned modules</li>
+                <li>• <strong>modules_right</strong> - Right-aligned modules</li>
+              </ul>
+            </div>
+
+            <!-- doc-7: garbg Panel -->
+            <div slot="doc-7">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">garbg Panel</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The garbg panel shows current wallpaper status and provides slideshow controls:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Current Wallpaper Info</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>Source</strong> - Where the wallpaper came from</li>
+                <li>• <strong>File</strong> - Current wallpaper file path</li>
+                <li>• <strong>Position</strong> - Playlist position</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Slideshow Controls</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>Interval</strong> - Time between wallpaper changes</li>
+                <li>• <strong>Pause/Resume</strong> - Toggle slideshow</li>
+                <li>• <strong>Previous/Next</strong> - Manual wallpaper navigation</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                The panel subscribes to <code class="bg-gar-bg-secondary px-1 rounded">wallpaper_changed</code> events to show real-time updates.
+              </p>
+            </div>
+
+            <!-- doc-8: Other Panels -->
+            <div slot="doc-8">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Other Panels</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The remaining panels follow similar patterns with component-specific options:
+              </p>
+
+              <div class="space-y-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garterm</h4>
+                  <p class="text-gar-text-secondary text-sm">Terminal emulator settings: font, colors, scrollback</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">gartray</h4>
+                  <p class="text-gar-text-secondary text-sm">System tray and quick settings display options</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garshot</h4>
+                  <p class="text-gar-text-secondary text-sm">Screenshot tool: output format, save location</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garlock</h4>
+                  <p class="text-gar-text-secondary text-sm">Screen locker: PAM authentication, idle timeout</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garfield</h4>
+                  <p class="text-gar-text-secondary text-sm">File explorer: default directory, view options</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garclip</h4>
+                  <p class="text-gar-text-secondary text-sm">Clipboard manager: history size, retention</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garlaunch</h4>
+                  <p class="text-gar-text-secondary text-sm">Application launcher: modes (drun, run, script, window)</p>
+                </div>
+
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-2">garnotify</h4>
+                  <p class="text-gar-text-secondary text-sm">Notification daemon: position, timeout, styling</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-9: Widget System -->
+            <div slot="doc-9">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Widget System</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears uses a custom widget system built on gartk-render. Available widgets:
+              </p>
+
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Button</h4>
+                  <p class="text-gar-text-secondary text-sm">Clickable actions (Apply, Reset, Save)</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Toggle</h4>
+                  <p class="text-gar-text-secondary text-sm">On/Off switches</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">NumberInput</h4>
+                  <p class="text-gar-text-secondary text-sm">Numeric values with min/max/step</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Slider</h4>
+                  <p class="text-gar-text-secondary text-sm">Continuous value adjustment</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">TextInput</h4>
+                  <p class="text-gar-text-secondary text-sm">Free-form text entry</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Dropdown</h4>
+                  <p class="text-gar-text-secondary text-sm">Select from options</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">ColorPicker</h4>
+                  <p class="text-gar-text-secondary text-sm">Color selection</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-3 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-purple mb-1">Label</h4>
+                  <p class="text-gar-text-secondary text-sm">Read-only display</p>
+                </div>
+              </div>
+
+              <p class="text-gar-text-secondary">
+                Widgets emit <code class="bg-gar-bg-secondary px-1 rounded">WidgetEvent</code> values (Changed, Clicked, etc.) that panels handle to update state or trigger IPC commands.
+              </p>
+            </div>
+
+            <!-- doc-10: IPC Adapters -->
+            <div slot="doc-10">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">IPC Adapters</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Each gardesk component has a dedicated IPC adapter implementing the <code class="bg-gar-bg-secondary px-1 rounded">IpcAdapter</code> trait:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Common Methods</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-6">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">status()</code> - Query current daemon state</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">query_config()</code> - Get configuration values</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">set_config(key, value)</code> - Apply configuration change</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">subscribe(events)</code> - Subscribe to daemon events</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Locations</h3>
+              <p class="text-gar-text-secondary mb-3">Sockets are located in <code class="bg-gar-bg-secondary px-1 rounded">$XDG_RUNTIME_DIR</code> (typically <code class="bg-gar-bg-secondary px-1 rounded">/run/user/1000/</code>):</p>
+              <MultiTerminal
+                title="socket paths"
+                commands={[
+                  { command: "$XDG_RUNTIME_DIR/gar.sock", comment: "Window manager" },
+                  { command: "$XDG_RUNTIME_DIR/garbar.sock", comment: "Status bar" },
+                  { command: "$XDG_RUNTIME_DIR/garbg.sock", comment: "Wallpaper daemon" },
+                  { command: "$XDG_RUNTIME_DIR/gartray.sock", comment: "System tray" },
+                  { command: "$XDG_RUNTIME_DIR/garlock.sock", comment: "Screen locker" },
+                  { command: "$XDG_RUNTIME_DIR/garlaunch.sock", comment: "App launcher" },
+                  { command: "$XDG_RUNTIME_DIR/garnotify.sock", comment: "Notifications" },
+                ]}
+                class="mb-4"
+              />
+            </div>
+
+            <!-- doc-11: Config Management (parent) -->
+            <div slot="doc-11">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Config Management</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears manages configuration files for all gardesk components. It supports both Lua and TOML formats.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Lua Configs</strong> - For gar, garbar, garterm (shared init.lua)</li>
+                <li>• <strong>TOML Configs</strong> - For garbg, garlock, garshot, garclip, etc.</li>
+              </ul>
+            </div>
+
+            <!-- doc-12: Lua Configs -->
+            <div slot="doc-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Lua Configuration</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gargears manages the shared Lua configuration file at <code class="bg-gar-bg-secondary px-1 rounded">~/.config/gar/init.lua</code>. The Lua writer preserves comments and existing structure when modifying values.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Supported Value Types</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-6">
+                <li>• <strong>Number</strong> - Integer values (border_width, gap_inner)</li>
+                <li>• <strong>Float</strong> - Decimal values</li>
+                <li>• <strong>String</strong> - Text values (font_family)</li>
+                <li>• <strong>Bool</strong> - Boolean toggles (focus_follows_mouse)</li>
+                <li>• <strong>Color</strong> - Hex colors (#rrggbb format)</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Example Modifications</h3>
+              <MultiTerminal
+                title="init.lua changes"
+                commands={[
+                  { command: '-- Before', comment: '' },
+                  { command: 'gar.set("border_width", 2)', comment: '' },
+                  { command: '', comment: '' },
+                  { command: '-- After gargears save', comment: '' },
+                  { command: 'gar.set("border_width", 4)', comment: 'Changed via panel' },
+                ]}
+                class="mb-4"
+              />
+            </div>
+
+            <!-- doc-13: TOML Configs -->
+            <div slot="doc-13">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">TOML Configuration</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Components with TOML configuration have dedicated config types that gargears serializes:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Config Structures</h3>
+              <ul class="space-y-2 text-gar-text-secondary mb-6">
+                <li><strong class="text-gar-accent-purple">GarbgConfig</strong> - Slideshow settings, sources, animation</li>
+                <li><strong class="text-gar-accent-purple">GarlockConfig</strong> - PAM service, timeout, indicator settings</li>
+                <li><strong class="text-gar-accent-purple">GarshotConfig</strong> - Output format, save path, quality</li>
+                <li><strong class="text-gar-accent-purple">GarclipConfig</strong> - History size, persist location</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                TOML files are written with pretty-printing and automatic directory creation.
+              </p>
+            </div>
+
+            <!-- doc-14: Instant Apply Mode -->
+            <div slot="doc-14">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Instant Apply Mode</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Instant apply mode sends configuration changes to daemons immediately as you modify values, without clicking Apply.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Enabling</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Press <code class="bg-gar-bg-secondary px-2 py-1 rounded text-gar-accent-purple">I</code> to toggle instant apply mode. A status indicator shows when it's active.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Behavior</h3>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Each widget change triggers <code class="bg-gar-bg-secondary px-1 rounded">panel.apply_instant()</code></li>
+                <li>• Changes are sent via IPC to the running daemon</li>
+                <li>• You can still use Reset to revert to last saved values</li>
+                <li>• Use Save to persist changes to the config file</li>
+              </ul>
+            </div>
+
+            <!-- doc-15: Keyboard Shortcuts -->
+            <div slot="doc-15">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Keyboard Shortcuts</h2>
+
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 text-gar-text-primary">Key</th>
+                      <th class="text-left py-2 text-gar-text-primary">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Escape</code></td>
+                      <td class="py-2">Close window (quit GUI / hide daemon)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Q</code></td>
+                      <td class="py-2">Close window</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">I</code></td>
+                      <td class="py-2">Toggle instant apply mode</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Tab</code></td>
+                      <td class="py-2">Navigate to next widget</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Shift+Tab</code></td>
+                      <td class="py-2">Navigate to previous widget</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Enter</code></td>
+                      <td class="py-2">Activate button / confirm input</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Tab 3: IPC/API -->
+        <div slot="tab-3">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">IPC Protocol</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            gargears exposes an IPC interface when running in daemon mode. The CLI tool <code class="bg-gar-bg-secondary px-1 rounded">gargearsctl</code> communicates with the daemon via Unix socket.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h3>
+          <MultiTerminal
+            title="socket"
+            commands={[
+              { command: "$XDG_RUNTIME_DIR/gargears.sock", comment: "Default location" },
+              { command: "/run/user/1000/gargears.sock", comment: "Typical path" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">gargearsctl Commands</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gargearsctl show", comment: "Show gargears window" },
+              { command: "gargearsctl hide", comment: "Hide gargears window" },
+              { command: "gargearsctl toggle", comment: "Toggle window visibility" },
+              { command: "gargearsctl status", comment: "Get daemon status (JSON)" },
+              { command: "gargearsctl quit", comment: "Stop the daemon" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Commands are sent as JSON objects over the Unix socket:
+          </p>
+
+          <div class="space-y-4 mb-6">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-purple mb-2">Request Format</h4>
+              <MultiTerminal
+                title="json"
+                commands={[
+                  { command: '{ "command": "show" }', comment: "" },
+                  { command: '{ "command": "hide" }', comment: "" },
+                  { command: '{ "command": "toggle" }', comment: "" },
+                  { command: '{ "command": "status" }', comment: "" },
+                  { command: '{ "command": "quit" }', comment: "" },
+                ]}
+              />
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-purple mb-2">Response Format</h4>
+              <MultiTerminal
+                title="json"
+                commands={[
+                  { command: '{ "success": true }', comment: "Success response" },
+                  { command: '{ "success": false, "error": "message" }', comment: "Error response" },
+                  { command: '{ "success": true, "data": { "visible": true, "running": true } }', comment: "Status response" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Keybinding Integration</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Bind gargearsctl to a key in your gar configuration for quick access:
+          </p>
+          <MultiTerminal
+            title="~/.config/gar/init.lua"
+            commands={[
+              { command: '-- Toggle gargears with Super+G', comment: "" },
+              { command: 'gar.bind("Super", "g", function()', comment: "" },
+              { command: '  gar.spawn("gargearsctl toggle")', comment: "" },
+              { command: 'end)', comment: "" },
+            ]}
+            class="mb-4"
+          />
+        </div>
+
+        <!-- Tab 4: Troubleshooting -->
+        <div slot="tab-4">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Troubleshooting</h2>
+
+          <div class="space-y-6">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">Daemon not connecting to components</h3>
+              <p class="text-gar-text-secondary mb-3">
+                gargears shows red status indicators for components it can't connect to.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Verify the component is running: <code class="bg-gar-bg-secondary px-1 rounded">pidof gar</code></li>
+                <li>• Check socket exists: <code class="bg-gar-bg-secondary px-1 rounded">ls $XDG_RUNTIME_DIR/*.sock</code></li>
+                <li>• gargears retries connections every 5 seconds automatically</li>
+                <li>• Check component logs for IPC errors</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">Changes not persisting after restart</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Apply sends changes to the running daemon but doesn't save to disk.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Use the <strong>Save</strong> button to write to config files</li>
+                <li>• Verify config file permissions: <code class="bg-gar-bg-secondary px-1 rounded">ls -la ~/.config/gar/</code></li>
+                <li>• Check that the config directory exists</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">gargearsctl: connection refused</h3>
+              <p class="text-gar-text-secondary mb-3">
+                The daemon is not running or socket doesn't exist.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Start daemon: <code class="bg-gar-bg-secondary px-1 rounded">gargears --daemon</code></li>
+                <li>• Check socket: <code class="bg-gar-bg-secondary px-1 rounded">ls $XDG_RUNTIME_DIR/gargears.sock</code></li>
+                <li>• Verify XDG_RUNTIME_DIR is set: <code class="bg-gar-bg-secondary px-1 rounded">echo $XDG_RUNTIME_DIR</code></li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">Window doesn't appear</h3>
+              <p class="text-gar-text-secondary mb-3">
+                In daemon mode, the window starts hidden.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Run <code class="bg-gar-bg-secondary px-1 rounded">gargearsctl show</code> to display the window</li>
+                <li>• For immediate display, run without <code class="bg-gar-bg-secondary px-1 rounded">--daemon</code> flag</li>
+                <li>• Check if another gargears instance is running</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">Instant apply not working</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Changes aren't being applied in real-time.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Press <code class="bg-gar-bg-secondary px-1 rounded">I</code> to enable instant apply mode</li>
+                <li>• Check status indicator shows instant apply is active</li>
+                <li>• Verify the component daemon is connected (green indicator)</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-purple mb-2">Debug logging</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Enable debug output to diagnose issues:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: "RUST_LOG=debug gargears", comment: "Full debug output" },
+                  { command: "RUST_LOG=gargears=debug gargears", comment: "gargears only" },
+                  { command: "RUST_LOG=info gargears --daemon --no-fork", comment: "Daemon with logs" },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

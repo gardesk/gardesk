@@ -108,7 +108,9 @@ const docsItems = [
             'Battery, CPU, memory monitoring widgets',
             'Workspace indicator synced with gar/i3/sway',
             'Active window title display via EWMH',
-            'System tray support (freedesktop.org XEMBED)',
+            'System tray with XEMBED and SNI D-Bus support',
+            'Per-monitor bars on multi-monitor setups',
+            'Quick settings integration with gartray',
             'Custom script modules with click/scroll handlers',
             'TOML or Lua configuration (via gar integration)',
             'IPC control via garbarctl',
@@ -500,6 +502,7 @@ scroll_down = "playerctl volume 0.05-"`}</code></pre>
                 <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">battery</code></div>
                 <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">datetime</code></div>
                 <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">tray</code></div>
+                <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">quick_settings</code></div>
                 <div class="p-2 bg-gar-bg-secondary/30 rounded text-center"><code class="text-gar-accent-green">script</code></div>
               </div>
             </div>
@@ -515,7 +518,7 @@ scroll_down = "playerctl volume 0.05-"`}</code></pre>
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
                 <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`modules_left = ["workspaces", "window_title"]
 modules_center = []
-modules_right = ["cpu", "memory", "battery", "tray", "datetime"]`}</code></pre>
+modules_right = ["cpu", "memory", "battery", "quick_settings", "tray", "datetime"]`}</code></pre>
               </div>
 
               <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Module Interactions</h4>
@@ -818,8 +821,14 @@ interval = 10`}</code></pre>
             <div slot="doc-9">
               <h3 class="text-xl font-bold text-gar-text-primary mb-4">System Tray Module</h3>
               <p class="text-gar-text-secondary mb-4">
-                Displays system tray icons from freedesktop.org-compatible applications using the XEMBED protocol.
+                Displays system tray icons from applications using two protocols: the modern <strong>StatusNotifierItem (SNI)</strong> D-Bus protocol and the legacy <strong>XEMBED</strong> protocol.
               </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Protocols</h4>
+              <ul class="list-disc list-inside text-gar-text-secondary space-y-2 mb-4">
+                <li><strong>SNI (StatusNotifierItem)</strong> — Modern D-Bus protocol used by KDE apps, Electron apps, and most modern software. Provides richer icon/menu support.</li>
+                <li><strong>XEMBED</strong> — Legacy X11 protocol for older GTK2/Qt4 applications.</li>
+              </ul>
 
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
                 <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`[modules.tray]
@@ -834,7 +843,7 @@ bottom = 0.0`}</code></pre>
               </div>
 
               <p class="text-gar-text-secondary text-sm mb-4">
-                <strong>Supported apps:</strong> nm-applet, blueman-applet, Discord, Slack, and any app using the freedesktop.org System Tray protocol.
+                <strong>Supported apps:</strong> nm-applet, blueman-applet, Discord, Slack, Spotify, and any app using freedesktop.org StatusNotifierItem or legacy XEMBED protocols.
               </p>
 
               <div class="p-3 rounded-lg bg-gar-accent-blue/10 border border-gar-accent-blue/20">

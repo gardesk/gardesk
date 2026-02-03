@@ -151,7 +151,7 @@ const docsItems = [
             'Window rules for automatic placement and floating',
             'Click-to-focus with keyboard navigation',
             'Mouse drag for moving/resizing floating windows',
-            'Automatic picom compositor configuration',
+            'Compositor support: picom, garchomp, or none',
             'Session management with systemd integration'
           ].map(function(feature) {
             return (
@@ -500,6 +500,8 @@ gar.exec_once("garbg set ~/Pictures/wallpaper.png")`}</code></pre>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">gap_outer</td><td class="py-2 px-3">int</td><td class="py-2 px-3">0</td><td class="py-2 px-3">Gap at screen edges</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">follow_window_on_move</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Follow window to new workspace</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">mouse_follows_focus</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">false</td><td class="py-2 px-3">Warp mouse to focused window</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">focus_follows_mouse</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Focus window when mouse enters</td></tr>
+                <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">compositor</td><td class="py-2 px-3">string</td><td class="py-2 px-3">picom</td><td class="py-2 px-3">Compositor: picom, garchomp, none</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">corner_radius</td><td class="py-2 px-3">int</td><td class="py-2 px-3">12</td><td class="py-2 px-3">Window corner radius (picom)</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_enabled</td><td class="py-2 px-3">bool</td><td class="py-2 px-3">true</td><td class="py-2 px-3">Enable blur effect</td></tr>
                 <tr class="border-b border-gar-text-muted/10"><td class="py-2 px-3 font-mono text-xs">blur_method</td><td class="py-2 px-3">string</td><td class="py-2 px-3">dual_kawase</td><td class="py-2 px-3">gaussian, dual_kawase, box</td></tr>
@@ -939,13 +941,26 @@ gar.bind("mod+shift+period", gar.move_to_monitor("next"))`}</code></pre>
 
             <!-- Picom -->
             <div slot="doc-16">
-              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Picom Integration</h3>
+              <h3 class="text-xl font-bold text-gar-text-primary mb-4">Compositor Integration</h3>
               <p class="text-gar-text-secondary mb-4">
-                gar auto-generates a picom configuration at <code class="text-gar-accent-blue">~/.config/gar/picom.conf</code> based on your Lua settings.
+                gar supports multiple compositors. Select which compositor to use with the <code class="text-gar-accent-blue">compositor</code> setting.
               </p>
 
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Compositor Selection</h4>
               <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
-                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Compositor settings
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Select compositor: "picom" (default), "garchomp", or "none"
+gar.set("compositor", "picom")      -- Use picom (auto-generates config)
+gar.set("compositor", "garchomp")   -- Use garchomp (GPU-accelerated)
+gar.set("compositor", "none")       -- Disable compositor`}</code></pre>
+              </div>
+
+              <p class="text-gar-text-secondary mb-4">
+                When using picom, gar auto-generates a configuration at <code class="text-gar-accent-blue">~/.config/gar/picom.conf</code> based on your Lua settings. When using garchomp, effects are configured in <code class="text-gar-accent-blue">~/.config/garchomp/config.lua</code>.
+              </p>
+
+              <h4 class="text-lg font-semibold text-gar-text-primary mb-3">Picom Settings</h4>
+              <div class="rounded-lg overflow-hidden border border-gar-text-muted/20 mb-6">
+                <pre class="bg-gar-bg-primary p-4 overflow-x-auto"><code class="text-sm text-gar-text-primary font-mono">{`-- Picom compositor settings (only used when compositor = "picom")
 gar.set("corner_radius", 12)
 gar.set("blur_enabled", true)
 gar.set("blur_method", "dual_kawase")  -- or "gaussian", "box"

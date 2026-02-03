@@ -52,7 +52,7 @@ const docsItems = [
       { id: 'monitor', label: 'Monitor Detection' },
       { id: 'keyboard', label: 'Keyboard Handling' },
       { id: 'cursor', label: 'Cursor Management' },
-      { id: 'atoms', label: 'X11 Atoms' }
+      { id: 'atoms', label: 'Atoms & Clipboard' }
     ]
   },
   {
@@ -117,6 +117,10 @@ const docsItems = [
             'Event loop with input handling',
             'Monitor detection via RandR',
             'Keyboard and cursor management',
+            'Clipboard manager with X11 selection protocol',
+            'Dialog window support with transient/modal',
+            'Window activation API (EWMH _NET_ACTIVE_WINDOW)',
+            'Motion event coalescing and idle events',
             'Theme system for consistent styling',
             'Transparency and compositing support',
             'Modular crate architecture',
@@ -955,6 +959,35 @@ window.ungrab_keyboard()?;
 window.ungrab_pointer()?;`}</pre>
               </div>
 
+              <h4 class="font-semibold text-gar-text-primary mb-2">Dialog Windows (v0.4.0)</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">{`// Create a dialog window that belongs to a parent
+let config = WindowConfig::dialog()
+    .title("Save changes?")
+    .size(400, 200);
+
+let dialog = Window::create(conn.clone(), config)?;
+
+// Set transient relationship (dialog belongs to parent)
+dialog.set_transient_for(parent.id())?;
+
+// Make it modal (blocks interaction with parent)
+dialog.add_state(atoms.net_wm_state_modal)?;
+
+// Clear modal state when done
+dialog.clear_state(atoms.net_wm_state_modal)?;`}</pre>
+              </div>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2">Window Activation (v0.4.0)</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono">{`// Request window activation via _NET_ACTIVE_WINDOW
+// Proper way for applications to request focus
+window.activate()?;
+
+// Resize window
+window.set_size(800, 600)?;`}</pre>
+              </div>
+
               <div class="bg-gar-bg-accent/10 rounded-lg p-4 border-l-4 border-gar-accent-cyan">
                 <p class="text-sm text-gar-text-secondary">
                   <strong class="text-gar-text-primary">Note:</strong> Window automatically registers for common
@@ -1024,7 +1057,24 @@ event_loop.run(|el, event| {
                 <li>• Expose → InputEvent::Expose (also sets needs_redraw flag)</li>
                 <li>• ConfigureNotify → InputEvent::Resize</li>
                 <li>• ClientMessage (WM_DELETE_WINDOW) → CloseRequested</li>
+                <li>• <strong>(v0.4.0)</strong> InputEvent::Idle - emitted once per frame when no events</li>
+                <li>• <strong>(v0.4.0)</strong> SelectionRequest/SelectionClear - clipboard events</li>
               </ul>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2 mt-4">Motion Event Coalescing (v0.4.0)</h4>
+              <p class="text-gar-text-secondary mb-2">
+                EventLoop automatically coalesces consecutive MotionNotify events into a single MouseMove event,
+                reducing lag during fast mouse movement. Only the final position is delivered.
+              </p>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2 mt-4">Idle Events (v0.4.0)</h4>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-2">
+                <pre class="text-sm text-gar-text-primary font-mono">{`InputEvent::Idle => {
+    // Emitted once per frame when there are no pending events
+    // Useful for animations, timers, or background tasks
+    animation_tick();
+}`}</pre>
+              </div>
               </section>
             </div>
 
@@ -1171,11 +1221,38 @@ atoms.net_wm_state_fullscreen
 // Clipboard
 atoms.clipboard
 atoms.primary
-atoms.utf8_string`}</pre>
+atoms.utf8_string
+atoms.text_uri_list       // (v0.4.0) file:// URIs
+atoms.gnome_copied_files  // (v0.4.0) GNOME format`}</pre>
               </div>
 
-              <p class="text-gar-text-secondary">
+              <p class="text-gar-text-secondary mb-4">
                 Atoms is used internally by Window for setting properties. It's Clone-able via Arc.
+              </p>
+
+              <h4 class="font-semibold text-gar-text-primary mb-2 mt-4">Clipboard Manager (v0.4.0)</h4>
+              <p class="text-gar-text-secondary mb-4">
+                ClipboardManager handles X11 clipboard operations for file paths and text:
+              </p>
+              <div class="bg-gar-bg-secondary/50 rounded-lg p-4 mb-4">
+                <pre class="text-sm text-gar-text-primary font-mono overflow-x-auto">{`use gartk_x11::ClipboardManager;
+
+let mut clipboard = ClipboardManager::new(conn.clone(), atoms.clone())?;
+
+// Copy file paths (for file managers)
+clipboard.copy_files(&["/home/user/file.txt"], false)?; // Copy
+clipboard.copy_files(&["/home/user/file.txt"], true)?;  // Cut
+
+// Handle clipboard events in event loop
+InputEvent::SelectionRequest(req) => {
+    clipboard.handle_selection_request(&req)?;
+}
+InputEvent::SelectionClear => {
+    clipboard.handle_selection_clear();
+}`}</pre>
+              </div>
+              <p class="text-gar-text-secondary text-sm">
+                Supports GNOME (<code>x-special/gnome-copied-files</code>) and KDE (<code>application/x-kde-cutselection</code>) formats for file operations.
               </p>
               </section>
             </div>

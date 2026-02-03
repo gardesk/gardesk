@@ -1,0 +1,869 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+
+const gartopImages = [
+  { src: '/images/thumbs/gartop1.png', alt: 'gartop CPU monitoring with per-core graphs' },
+  { src: '/images/thumbs/gartop2.png', alt: 'gartop memory and swap usage' },
+  { src: '/images/thumbs/gartop3.png', alt: 'gartop network interface statistics' },
+  { src: '/images/thumbs/gartop4.png', alt: 'gartop process list with tree view' },
+];
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'architecture',
+    label: 'Architecture',
+    children: [
+      { id: 'daemon-mode', label: 'Daemon Mode' },
+      { id: 'gui-mode', label: 'GUI Mode' },
+    ]
+  },
+  {
+    id: 'metrics',
+    label: 'System Metrics',
+    children: [
+      { id: 'cpu', label: 'CPU' },
+      { id: 'memory', label: 'Memory' },
+      { id: 'network', label: 'Network' },
+      { id: 'disk', label: 'Disk I/O' },
+      { id: 'temperature', label: 'Temperature' },
+      { id: 'gpu', label: 'GPU' },
+    ]
+  },
+  {
+    id: 'processes',
+    label: 'Process Monitoring',
+  },
+  {
+    id: 'gui-features',
+    label: 'GUI Features',
+    children: [
+      { id: 'tabs', label: 'Metric Tabs' },
+      { id: 'graphs', label: 'Time-Series Graphs' },
+      { id: 'process-list', label: 'Process List' },
+    ]
+  },
+  {
+    id: 'keyboard-shortcuts',
+    label: 'Keyboard Shortcuts',
+  },
+];
+---
+
+<BaseLayout title="gartop - gardesk" description="Modular system monitor daemon and interactive GUI for the gar desktop environment.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="stable" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-green">gartop</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">System Monitor</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A modular system monitor daemon and interactive GUI for the gardesk environment. Real-time monitoring of CPU, memory, network, disk I/O, temperature, GPU, and processes with time-series graphs and an interactive process list.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/gartop" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={gartopImages} />
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            'Real-time CPU monitoring (overall and per-core)',
+            'Memory and swap usage tracking',
+            'Network interface statistics and rates',
+            'Disk I/O monitoring per device',
+            'Temperature sensors via hwmon',
+            'GPU utilization and VRAM usage',
+            'Interactive process list with tree view',
+            'Time-series graphs with Cairo rendering',
+            'Background daemon with ring buffer history',
+            'CLI control via gartopctl',
+            'Configurable collection intervals',
+            'systemd user service integration'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-green" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Tab 0: Getting Started -->
+        <div slot="tab-0">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+
+          <div class="bg-gar-bg-secondary/50 rounded-lg p-6 mb-8 border border-gar-accent-green/20">
+            <h3 class="text-lg font-semibold text-gar-accent-green mb-4">What is gartop?</h3>
+            <p class="text-gar-text-secondary mb-4">
+              gartop is a system monitor consisting of a background daemon that collects metrics and an interactive GUI for visualization. It monitors CPU, memory, network, disk, temperature, GPU, and running processes.
+            </p>
+            <p class="text-gar-text-secondary">
+              The daemon maintains a ring buffer history of metrics that can be queried via <code class="bg-gar-bg-secondary px-1 rounded">gartopctl</code> or displayed in real-time graphs.
+            </p>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Installation</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Install gartop using the unified installer or build from source:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=gartop", comment: "Install via script" },
+              { command: "cd ~/.local/src/gardesk/gartop && cargo build --release", comment: "Or build from source" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Running gartop</h3>
+          <p class="text-gar-text-secondary mb-4">
+            gartop can run as a standalone GUI or as a daemon with separate visualization:
+          </p>
+
+          <h4 class="text-md font-semibold text-gar-text-primary mb-2">GUI Mode (Default)</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gartop", comment: "Start interactive GUI" },
+              { command: "gartop gui --pane memory", comment: "Open to Memory tab" },
+              { command: "gartop gui --pane network", comment: "Open to Network tab" },
+            ]}
+            class="mb-6"
+          />
+
+          <h4 class="text-md font-semibold text-gar-text-primary mb-2">Daemon Mode</h4>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gartop daemon", comment: "Start background daemon" },
+              { command: "gartop daemon --foreground", comment: "Run in foreground (for debugging)" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Querying with gartopctl</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gartopctl status", comment: "Daemon version, uptime, intervals" },
+              { command: "gartopctl cpu", comment: "Current CPU stats" },
+              { command: "gartopctl memory", comment: "Current memory stats" },
+              { command: "gartopctl processes --sort cpu --limit 10", comment: "Top 10 by CPU" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">systemd Integration</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Run gartop as a systemd user service for automatic startup:
+          </p>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "systemctl --user enable gartop", comment: "Enable on login" },
+              { command: "systemctl --user start gartop", comment: "Start now" },
+              { command: "systemctl --user status gartop", comment: "Check status" },
+            ]}
+            class="mb-4"
+          />
+        </div>
+
+        <!-- Tab 1: Config -->
+        <div slot="tab-1">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Configuration</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            gartop is configured via TOML at <code class="bg-gar-bg-secondary px-1 rounded">~/.config/gartop/config.toml</code>.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h3>
+          <MultiTerminal
+            title="~/.config/gartop/config.toml"
+            commands={[
+              { command: "[daemon]", comment: "Background daemon settings" },
+              { command: "sample_interval_ms = 1000", comment: "Collection interval (1 second)" },
+              { command: "history_size = 300", comment: "Ring buffer size (5 min @ 1Hz)" },
+              { command: "max_processes = 100", comment: "Max processes to track" },
+              { command: "", comment: "" },
+              { command: "[gui]", comment: "GUI settings" },
+              { command: "width = 600", comment: "Window width" },
+              { command: "height = 500", comment: "Window height" },
+              { command: "refresh_rate = 30", comment: "FPS (frames per second)" },
+              { command: "show_legend = true", comment: "Show graph legends" },
+              { command: 'font_family = "sans-serif"', comment: "Font for text" },
+              { command: "font_size = 12.0", comment: "Font size" },
+              { command: 'default_pane = "cpu"', comment: "Start on CPU tab" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Daemon Settings</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 text-gar-text-primary">Option</th>
+                  <th class="text-left py-2 text-gar-text-primary">Default</th>
+                  <th class="text-left py-2 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>sample_interval_ms</code></td>
+                  <td class="py-2">1000</td>
+                  <td class="py-2">Metric collection interval in milliseconds</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>history_size</code></td>
+                  <td class="py-2">300</td>
+                  <td class="py-2">Number of samples to keep in ring buffer</td>
+                </tr>
+                <tr>
+                  <td class="py-2"><code>max_processes</code></td>
+                  <td class="py-2">100</td>
+                  <td class="py-2">Maximum processes to track</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">GUI Settings</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 text-gar-text-primary">Option</th>
+                  <th class="text-left py-2 text-gar-text-primary">Default</th>
+                  <th class="text-left py-2 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>width</code></td>
+                  <td class="py-2">600</td>
+                  <td class="py-2">Window width in pixels</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>height</code></td>
+                  <td class="py-2">500</td>
+                  <td class="py-2">Window height in pixels</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>refresh_rate</code></td>
+                  <td class="py-2">30</td>
+                  <td class="py-2">GUI refresh rate (FPS)</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>show_legend</code></td>
+                  <td class="py-2">true</td>
+                  <td class="py-2">Display legends on graphs</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>font_family</code></td>
+                  <td class="py-2">"sans-serif"</td>
+                  <td class="py-2">Font for GUI text</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>font_size</code></td>
+                  <td class="py-2">12.0</td>
+                  <td class="py-2">Font size in points</td>
+                </tr>
+                <tr>
+                  <td class="py-2"><code>default_pane</code></td>
+                  <td class="py-2">"cpu"</td>
+                  <td class="py-2">Starting tab: cpu, memory, network, disk</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: Docs -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- doc-0: Overview -->
+            <div slot="doc-0">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Overview</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gartop provides comprehensive system monitoring through three components:
+              </p>
+              <ul class="space-y-3 text-gar-text-secondary mb-6">
+                <li><strong class="text-gar-accent-green">gartop daemon</strong> - Background service collecting system metrics at configurable intervals</li>
+                <li><strong class="text-gar-accent-green">gartop gui</strong> - Interactive X11 window with graphs, process list, and real-time updates</li>
+                <li><strong class="text-gar-accent-green">gartopctl</strong> - Command-line tool for querying daemon and controlling processes</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Data Sources</h3>
+              <ul class="space-y-1 text-gar-text-secondary text-sm">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/proc/stat</code> - CPU statistics</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/proc/meminfo</code> - Memory information</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/proc/net/dev</code> - Network interface stats</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/proc/diskstats</code> - Disk I/O statistics</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/sys/class/hwmon</code> - Temperature sensors</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/sys/class/drm</code> - GPU information</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">/proc/[pid]/</code> - Per-process data</li>
+              </ul>
+            </div>
+
+            <!-- doc-1: Architecture -->
+            <div slot="doc-1">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Architecture</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gartop uses a modular collector architecture with async processing via Tokio. Each metric type has a dedicated collector module.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Project Structure</h3>
+              <MultiTerminal
+                title="workspace"
+                commands={[
+                  { command: "gartop/", comment: "Main daemon + GUI binary" },
+                  { command: "  src/collector/", comment: "Metric collectors (CPU, memory, etc.)" },
+                  { command: "  src/daemon/", comment: "Background service" },
+                  { command: "  src/gui/", comment: "Interactive GUI" },
+                  { command: "  src/ipc/", comment: "Unix socket IPC" },
+                  { command: "gartopctl/", comment: "CLI control tool" },
+                  { command: "gartop-ipc/", comment: "Shared IPC types" },
+                ]}
+                class="mb-4"
+              />
+            </div>
+
+            <!-- doc-2: Daemon Mode -->
+            <div slot="doc-2">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Daemon Mode</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The daemon runs as a background service, collecting metrics and maintaining a ring buffer history. It listens on a Unix socket for IPC commands.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Collection Loop</h3>
+              <ul class="space-y-2 text-gar-text-secondary mb-6">
+                <li>• <strong>CPU/Memory/Network/Disk:</strong> Collected every <code class="bg-gar-bg-secondary px-1 rounded">sample_interval_ms</code></li>
+                <li>• <strong>Processes:</strong> Collected every 2 seconds (less frequent)</li>
+                <li>• <strong>History:</strong> Ring buffer with FIFO eviction when full</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Delta Calculations</h3>
+              <p class="text-gar-text-secondary">
+                Rate metrics (CPU %, I/O bytes/sec, network bandwidth) are computed as deltas between collection cycles. The daemon tracks previous values to enable accurate rate calculations.
+              </p>
+            </div>
+
+            <!-- doc-3: GUI Mode -->
+            <div slot="doc-3">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">GUI Mode</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The GUI provides an interactive window with tabs for different metric categories and a live process list.
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Layout</h3>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Header Bar:</strong> Summary stats (CPU%, memory%, temps, uptime)</li>
+                <li>• <strong>Tab Bar:</strong> CPU | Memory | Network | Disk</li>
+                <li>• <strong>Graph Area:</strong> Time-series visualization</li>
+                <li>• <strong>Process List:</strong> Sortable table with tree view</li>
+              </ul>
+            </div>
+
+            <!-- doc-4: System Metrics (parent) -->
+            <div slot="doc-4">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">System Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                gartop monitors various system metrics from the Linux /proc and /sys filesystems. Select a specific metric type from the sidebar to learn more.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">CPU</h4>
+                  <p class="text-gar-text-secondary text-sm">Overall and per-core usage from /proc/stat</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Memory</h4>
+                  <p class="text-gar-text-secondary text-sm">RAM and swap from /proc/meminfo</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Network</h4>
+                  <p class="text-gar-text-secondary text-sm">Interface stats from /proc/net/dev</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Disk I/O</h4>
+                  <p class="text-gar-text-secondary text-sm">Read/write from /proc/diskstats</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Temperature</h4>
+                  <p class="text-gar-text-secondary text-sm">Sensors from /sys/class/hwmon</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">GPU</h4>
+                  <p class="text-gar-text-secondary text-sm">Utilization from /sys/class/drm</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-5: CPU -->
+            <div slot="doc-5">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">CPU Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                CPU metrics are collected from <code class="bg-gar-bg-secondary px-1 rounded">/proc/stat</code>:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Available Data</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>Overall usage %</strong> - Combined usage across all cores</li>
+                <li>• <strong>Per-core usage</strong> - Individual core percentages</li>
+                <li>• <strong>Core count</strong> - Number of logical CPUs</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Calculation</h3>
+              <p class="text-gar-text-secondary">
+                Usage = <code class="bg-gar-bg-secondary px-1 rounded">(active_delta / total_delta) * 100</code><br/>
+                Where active = user + nice + system + irq + softirq + steal
+              </p>
+            </div>
+
+            <!-- doc-6: Memory -->
+            <div slot="doc-6">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Memory Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Memory metrics are collected from <code class="bg-gar-bg-secondary px-1 rounded">/proc/meminfo</code>:
+              </p>
+
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• <strong>Total</strong> - Total physical memory</li>
+                <li>• <strong>Used</strong> - Memory in use</li>
+                <li>• <strong>Free</strong> - Unused memory</li>
+                <li>• <strong>Available</strong> - Memory available for applications (kernel 3.14+)</li>
+                <li>• <strong>Swap Total/Used</strong> - Swap space statistics</li>
+                <li>• <strong>Usage %</strong> - (used / total) * 100</li>
+              </ul>
+            </div>
+
+            <!-- doc-7: Network -->
+            <div slot="doc-7">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Network Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Network metrics are collected from <code class="bg-gar-bg-secondary px-1 rounded">/proc/net/dev</code>:
+              </p>
+
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>Per-interface RX/TX bytes</strong> - Total transferred</li>
+                <li>• <strong>Per-interface RX/TX packets</strong> - Packet counts</li>
+                <li>• <strong>Rates (bytes/sec)</strong> - Calculated from deltas</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                <em>Note: Loopback (lo), veth*, and docker* interfaces are filtered out.</em>
+              </p>
+            </div>
+
+            <!-- doc-8: Disk -->
+            <div slot="doc-8">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Disk I/O Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Disk metrics are collected from <code class="bg-gar-bg-secondary px-1 rounded">/proc/diskstats</code>:
+              </p>
+
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>Per-device read/write bytes</strong></li>
+                <li>• <strong>Per-device operations count</strong></li>
+                <li>• <strong>Rates (bytes/sec)</strong> - Calculated from deltas</li>
+              </ul>
+
+              <p class="text-gar-text-secondary">
+                <em>Note: Only physical disks (sda, nvme0n1, vda) are tracked; partitions are excluded.</em>
+              </p>
+            </div>
+
+            <!-- doc-9: Temperature -->
+            <div slot="doc-9">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Temperature Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Temperature sensors are read from <code class="bg-gar-bg-secondary px-1 rounded">/sys/class/hwmon</code>:
+              </p>
+
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• <strong>Per-sensor temperature</strong> - In degrees Celsius</li>
+                <li>• <strong>Critical/high thresholds</strong> - When available</li>
+                <li>• <strong>Device names</strong> - coretemp, k10temp, etc.</li>
+              </ul>
+            </div>
+
+            <!-- doc-10: GPU -->
+            <div slot="doc-10">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">GPU Metrics</h2>
+              <p class="text-gar-text-secondary mb-4">
+                GPU metrics are read from <code class="bg-gar-bg-secondary px-1 rounded">/sys/class/drm</code> (AMD/Intel):
+              </p>
+
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• <strong>Utilization %</strong> - GPU busy percentage</li>
+                <li>• <strong>VRAM used/total</strong> - Video memory usage</li>
+                <li>• <strong>Clock speed</strong> - In MHz (when available)</li>
+                <li>• <strong>Temperature</strong> - Via hwmon (when available)</li>
+                <li>• <strong>Power</strong> - In watts (when available)</li>
+              </ul>
+            </div>
+
+            <!-- doc-11: Process Monitoring -->
+            <div slot="doc-11">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Process Monitoring</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Process data is collected from <code class="bg-gar-bg-secondary px-1 rounded">/proc/[pid]/</code>:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Available Fields</h3>
+              <ul class="space-y-1 text-gar-text-secondary mb-4">
+                <li>• <strong>PID</strong> - Process ID</li>
+                <li>• <strong>Name</strong> - Process name</li>
+                <li>• <strong>CPU %</strong> - CPU usage percentage</li>
+                <li>• <strong>Memory %</strong> - Memory usage percentage</li>
+                <li>• <strong>RSS/VSize</strong> - Resident and virtual memory</li>
+                <li>• <strong>I/O rates</strong> - Read/write bytes per second</li>
+                <li>• <strong>Network sockets</strong> - TCP/UDP connection counts</li>
+                <li>• <strong>State</strong> - Running, sleeping, zombie, etc.</li>
+                <li>• <strong>User</strong> - Owner username</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Sorting Options</h3>
+              <p class="text-gar-text-secondary">
+                Sort by: <code class="bg-gar-bg-secondary px-1 rounded">cpu</code>, <code class="bg-gar-bg-secondary px-1 rounded">memory</code>, <code class="bg-gar-bg-secondary px-1 rounded">disk</code>, <code class="bg-gar-bg-secondary px-1 rounded">network</code>, <code class="bg-gar-bg-secondary px-1 rounded">pid</code>, <code class="bg-gar-bg-secondary px-1 rounded">name</code>
+              </p>
+            </div>
+
+            <!-- doc-12: GUI Features (parent) -->
+            <div slot="doc-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">GUI Features</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The gartop GUI provides an interactive interface for visualizing system metrics. Select a topic from the sidebar to learn more.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Metric Tabs</strong> - CPU, Memory, Network, and Disk tabs</li>
+                <li>• <strong>Time-Series Graphs</strong> - Cairo-rendered historical data</li>
+                <li>• <strong>Process List</strong> - Interactive table with tree view</li>
+              </ul>
+            </div>
+
+            <!-- doc-13: Metric Tabs -->
+            <div slot="doc-13">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Metric Tabs</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The GUI has four main tabs, each with dedicated visualizations:
+              </p>
+
+              <div class="space-y-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">CPU Tab</h4>
+                  <p class="text-gar-text-secondary text-sm">Overall usage graph + per-core breakdown</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Memory Tab</h4>
+                  <p class="text-gar-text-secondary text-sm">Used/available/swap over time</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Network Tab</h4>
+                  <p class="text-gar-text-secondary text-sm">RX/TX rates per interface</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-green mb-2">Disk Tab</h4>
+                  <p class="text-gar-text-secondary text-sm">Read/write rates per device</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-14: Time-Series Graphs -->
+            <div slot="doc-14">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Time-Series Graphs</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Graphs are rendered using Cairo with Pango text. Features include:
+              </p>
+
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Line graphs</strong> with smooth curves</li>
+                <li>• <strong>Legend toggles</strong> to show/hide series</li>
+                <li>• <strong>Auto-scaling Y-axis</strong> based on data range</li>
+                <li>• <strong>Time axis</strong> showing sample history</li>
+                <li>• <strong>Catppuccin Mocha</strong> color theme</li>
+              </ul>
+            </div>
+
+            <!-- doc-15: Process List -->
+            <div slot="doc-15">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Process List</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The interactive process list provides:
+              </p>
+
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Tree view</strong> - Collapsible parent-child hierarchy</li>
+                <li>• <strong>Freeze mode</strong> - Pause updates for navigation</li>
+                <li>• <strong>Search/filter</strong> - Filter by process name</li>
+                <li>• <strong>Type-to-jump</strong> - Fuzzy matching to quickly find processes</li>
+                <li>• <strong>Kill dialog</strong> - Confirmation before sending signals</li>
+                <li>• <strong>Detail view</strong> - Expanded info for selected process</li>
+              </ul>
+            </div>
+
+            <!-- doc-16: Keyboard Shortcuts -->
+            <div slot="doc-16">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Keyboard Shortcuts</h2>
+
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 text-gar-text-primary">Key</th>
+                      <th class="text-left py-2 text-gar-text-primary">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">q</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">Escape</code></td>
+                      <td class="py-2">Quit application</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">1</code> - <code class="bg-gar-bg-secondary px-2 py-1 rounded">4</code></td>
+                      <td class="py-2">Switch to CPU/Memory/Network/Disk tab</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Tab</code></td>
+                      <td class="py-2">Cycle through tabs</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">/</code></td>
+                      <td class="py-2">Search/filter processes</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">f</code></td>
+                      <td class="py-2">Toggle freeze mode</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">k</code></td>
+                      <td class="py-2">Kill selected process</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">t</code></td>
+                      <td class="py-2">Toggle tree view</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">?</code></td>
+                      <td class="py-2">Show help overlay</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Up</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">Down</code></td>
+                      <td class="py-2">Navigate process list</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Tab 3: IPC/API -->
+        <div slot="tab-3">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">IPC Protocol</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            gartop exposes an IPC interface via Unix socket. The <code class="bg-gar-bg-secondary px-1 rounded">gartopctl</code> CLI provides easy access to daemon functionality.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h3>
+          <MultiTerminal
+            title="socket"
+            commands={[
+              { command: "$XDG_RUNTIME_DIR/gartop.sock", comment: "Default location" },
+              { command: "/run/user/1000/gartop.sock", comment: "Typical path" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">gartopctl Commands</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "gartopctl status", comment: "Daemon version, uptime, intervals" },
+              { command: "gartopctl cpu", comment: "Current CPU stats" },
+              { command: "gartopctl memory", comment: "Current memory stats" },
+              { command: "gartopctl cpu-history --count 20", comment: "Last 20 CPU samples" },
+              { command: "gartopctl memory-history --count 20", comment: "Last 20 memory samples" },
+              { command: "gartopctl processes --sort cpu --limit 10", comment: "Top 10 by CPU" },
+              { command: "gartopctl processes --sort memory --limit 5", comment: "Top 5 by memory" },
+              { command: "gartopctl kill 1234", comment: "Kill PID 1234 (SIGTERM)" },
+              { command: "gartopctl kill 1234 --signal 9", comment: "Kill PID 1234 (SIGKILL)" },
+              { command: "gartopctl reload", comment: "Reload configuration" },
+              { command: "gartopctl quit", comment: "Shutdown daemon" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">JSON Protocol</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Commands are sent as JSON lines over the Unix socket:
+          </p>
+
+          <div class="space-y-4 mb-6">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-green mb-2">Request Examples</h4>
+              <MultiTerminal
+                title="json"
+                commands={[
+                  { command: '{"command": "status"}', comment: "" },
+                  { command: '{"command": "get_cpu"}', comment: "" },
+                  { command: '{"command": "get_memory"}', comment: "" },
+                  { command: '{"command": "get_cpu_history", "count": 10}', comment: "" },
+                  { command: '{"command": "get_processes", "sort_by": "cpu", "limit": 20}', comment: "" },
+                  { command: '{"command": "kill_process", "pid": 1234, "signal": 15}', comment: "" },
+                ]}
+              />
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h4 class="font-semibold text-gar-accent-green mb-2">Response Format</h4>
+              <MultiTerminal
+                title="json"
+                commands={[
+                  { command: '{"success": true, "data": {...}}', comment: "Success" },
+                  { command: '{"success": false, "error": "message"}', comment: "Error" },
+                ]}
+              />
+            </div>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Event Subscriptions</h3>
+          <p class="text-gar-text-secondary mb-4">
+            Subscribe to real-time updates:
+          </p>
+          <ul class="space-y-1 text-gar-text-secondary text-sm">
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">cpu_update</code> - CPU stats changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">memory_update</code> - Memory stats changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">process_update</code> - Process list changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">network_update</code> - Network stats changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">disk_update</code> - Disk stats changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">temp_update</code> - Temperature changed</li>
+            <li>• <code class="bg-gar-bg-secondary px-1 rounded">gpu_update</code> - GPU stats changed</li>
+          </ul>
+        </div>
+
+        <!-- Tab 4: Troubleshooting -->
+        <div slot="tab-4">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Troubleshooting</h2>
+
+          <div class="space-y-6">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-green mb-2">gartopctl: connection refused</h3>
+              <p class="text-gar-text-secondary mb-3">
+                The daemon is not running or socket doesn't exist.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Start daemon: <code class="bg-gar-bg-secondary px-1 rounded">gartop daemon</code></li>
+                <li>• Check socket: <code class="bg-gar-bg-secondary px-1 rounded">ls $XDG_RUNTIME_DIR/gartop.sock</code></li>
+                <li>• Check systemd: <code class="bg-gar-bg-secondary px-1 rounded">systemctl --user status gartop</code></li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-green mb-2">Missing temperature sensors</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Temperature readings require hwmon kernel modules.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Check sensors: <code class="bg-gar-bg-secondary px-1 rounded">ls /sys/class/hwmon/</code></li>
+                <li>• Load modules: <code class="bg-gar-bg-secondary px-1 rounded">modprobe coretemp</code> or <code class="bg-gar-bg-secondary px-1 rounded">modprobe k10temp</code></li>
+                <li>• Install lm-sensors: <code class="bg-gar-bg-secondary px-1 rounded">sensors-detect</code></li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-green mb-2">No GPU metrics</h3>
+              <p class="text-gar-text-secondary mb-3">
+                GPU metrics require DRM sysfs files (AMD/Intel).
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Check DRM: <code class="bg-gar-bg-secondary px-1 rounded">ls /sys/class/drm/card*/device/</code></li>
+                <li>• NVIDIA GPUs require separate tooling (nvidia-smi)</li>
+                <li>• Some integrated GPUs may not expose utilization metrics</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-green mb-2">High CPU usage from gartop itself</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Reduce collection frequency or GUI refresh rate.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Increase <code class="bg-gar-bg-secondary px-1 rounded">sample_interval_ms</code> (e.g., 2000)</li>
+                <li>• Reduce <code class="bg-gar-bg-secondary px-1 rounded">refresh_rate</code> (e.g., 15)</li>
+                <li>• Reduce <code class="bg-gar-bg-secondary px-1 rounded">max_processes</code> (e.g., 50)</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-green mb-2">Debug logging</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Enable debug output to diagnose issues:
+              </p>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: "RUST_LOG=debug gartop daemon --foreground", comment: "Full debug" },
+                  { command: "RUST_LOG=gartop=debug gartop", comment: "gartop only" },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

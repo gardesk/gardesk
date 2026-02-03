@@ -298,6 +298,46 @@ const components = [
       { src: '/images/thumbs/garshot3.png', alt: 'garshot annotation tools' },
       { src: '/images/thumbs/garshot4.png', alt: 'garshot color picker' }
     ]
+  },
+  {
+    id: 'gargears',
+    name: 'gargears',
+    tagline: 'Desktop Control Panel',
+    description: 'A centralized GUI control panel for all gardesk components. Configure window manager, status bar, wallpapers, and more from a single interface with live daemon communication.',
+    features: [
+      '11 configuration panels for all components',
+      'Real-time daemon communication via IPC',
+      'Instant apply mode for live changes',
+      'Manages Lua and TOML config files',
+      'CLI control via gargearsctl'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'left' as const,
+    imageAlt: 'gargears control panel interface',
+    accentColor: 'purple'
+  },
+  {
+    id: 'gartop',
+    name: 'gartop',
+    tagline: 'System Monitor',
+    description: 'A modular system monitor daemon and interactive GUI. Real-time monitoring of CPU, memory, network, disk I/O, temperature, GPU, and processes with time-series graphs.',
+    features: [
+      'CPU, memory, network, disk monitoring',
+      'Temperature sensors and GPU stats',
+      'Interactive process list with tree view',
+      'Time-series graphs with Cairo rendering',
+      'Background daemon with gartopctl CLI'
+    ],
+    status: 'stable' as const,
+    imagePosition: 'right' as const,
+    imageAlt: 'gartop system monitor interface',
+    accentColor: 'green',
+    images: [
+      { src: '/images/thumbs/gartop1.png', alt: 'gartop CPU monitoring with per-core graphs' },
+      { src: '/images/thumbs/gartop2.png', alt: 'gartop memory and swap usage' },
+      { src: '/images/thumbs/gartop3.png', alt: 'gartop network interface statistics' },
+      { src: '/images/thumbs/gartop4.png', alt: 'gartop process list with tree view' }
+    ]
   }
 ];
 ---
