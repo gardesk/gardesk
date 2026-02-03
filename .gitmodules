@@ -60,3 +60,7 @@
 	path = gartop
 	url = https://github.com/gardesk/gartop.git
 	branch = trunk
+[submodule "garview"]
+	path = garview
+	url = https://github.com/gardesk/garview.git
+	branch = trunk
