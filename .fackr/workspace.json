@@ -1,0 +1,29 @@
+{
+  "active_tab": 0,
+  "tabs": [
+    {
+      "files": [
+        {
+          "path": "new-gar.md",
+          "is_orphan": false
+        }
+      ],
+      "active_pane": 0,
+      "panes": [
+        {
+          "buffer_idx": 0,
+          "cursor_line": 0,
+          "cursor_col": 1593,
+          "viewport_line": 0,
+          "viewport_col": 1484,
+          "bounds": {
+            "x_start": 0.0,
+            "y_start": 0.0,
+            "x_end": 1.0,
+            "y_end": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}
