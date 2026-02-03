@@ -56,3 +56,7 @@
 	path = gargears
 	url = git@github.com:gardesk/gargears.git
 	branch = trunk
+[submodule "gartop"]
+	path = gartop
+	url = https://github.com/gardesk/gartop.git
+	branch = trunk
