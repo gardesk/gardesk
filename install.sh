@@ -19,6 +19,7 @@
 #   - gartk: Shared UI toolkit library
 #   - garchomp: X11 compositor with GPU rendering
 #   - gargears: Configuration GUI for gardesk
+#   - gartop: System monitor with resource graphs
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -62,6 +63,7 @@ INSTALL_GARCLIP=false
 INSTALL_GARTK=false
 INSTALL_GARCHOMP=false
 INSTALL_GARGEARS=false
+INSTALL_GARTOP=false
 
 # Options
 SKIP_DEPS=false
@@ -353,6 +355,7 @@ show_component_menu() {
     echo -e "  ${CYAN}13)${NC} gartk      ${DIM}-${NC} UI toolkit library ${DIM}(dependency)${NC}"
     echo -e "  ${CYAN}14)${NC} garchomp   ${DIM}-${NC} X11 compositor with GPU rendering"
     echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
+    echo -e "  ${CYAN}16)${NC} gartop     ${DIM}-${NC} System monitor with resource graphs"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -401,6 +404,7 @@ prompt_components() {
     INSTALL_GARTK=false
     INSTALL_GARCHOMP=false
     INSTALL_GARGEARS=false
+    INSTALL_GARTOP=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -418,6 +422,7 @@ prompt_components() {
         13) INSTALL_GARTK=true ;;
         14) INSTALL_GARCHOMP=true ;;
         15) INSTALL_GARGEARS=true ;;
+        16) INSTALL_GARTOP=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -434,6 +439,7 @@ prompt_components() {
             INSTALL_GARTK=true
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
+            INSTALL_GARTOP=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -449,6 +455,7 @@ prompt_components() {
             INSTALL_GARCLIP=true
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
+            INSTALL_GARTOP=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -473,6 +480,7 @@ prompt_components() {
                     13) INSTALL_GARTK=true ;;
                     14) INSTALL_GARCHOMP=true ;;
                     15) INSTALL_GARGEARS=true ;;
+                    16) INSTALL_GARTOP=true ;;
                 esac
             done
             ;;
@@ -486,7 +494,7 @@ prompt_components() {
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
-       [ "$INSTALL_GARGEARS" = false ]; then
+       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -521,6 +529,11 @@ prompt_components() {
         log_info "gargears requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
+
+    if [ "$INSTALL_GARTOP" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "gartop requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
 }
 
 show_selection_summary() {
@@ -542,6 +555,7 @@ show_selection_summary() {
     [ "$INSTALL_GARTK" = true ] && echo -e "  ${DIM}•${NC} gartk (UI toolkit library)"
     [ "$INSTALL_GARCHOMP" = true ] && echo -e "  ${GREEN}•${NC} garchomp (X11 compositor)"
     [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
+    [ "$INSTALL_GARTOP" = true ] && echo -e "  ${GREEN}•${NC} gartop (system monitor)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -1046,6 +1060,56 @@ install_gargears() {
     log_info "  Or run as daemon: gargears --daemon"
 }
 
+install_gartop() {
+    log_step "Building gartop (system monitor)..."
+
+    cd "$BUILD_DIR/gartop"
+    cargo build --release
+
+    log_info "Installing gartop binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/gartop "$BIN_DIR/gartop"
+    sudo install -Dm755 target/release/gartopctl "$BIN_DIR/gartopctl"
+
+    # Install user systemd service for daemon mode
+    log_info "Installing systemd user service..."
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    cat << EOF > "$SYSTEMD_USER_DIR/gartop.service"
+[Unit]
+Description=gartop system monitor daemon
+Documentation=https://gar.musicsian.com
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=$BIN_DIR/gartop --daemon
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+    systemctl --user daemon-reload
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/gartop"
+    if [ ! -f "$HOME/.config/gartop/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/gartop/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/gartop/config.toml" "$HOME/.config/gartop/config.toml"
+        fi
+    else
+        log_warn "Config exists at ~/.config/gartop/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ gartop installed successfully${NC}"
+    log_info "  Launch GUI with: gartop"
+    log_info "  Enable daemon: systemctl --user enable --now gartop"
+    log_info "  Control via: gartopctl cpu|memory|network|processes"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1116,6 +1180,7 @@ parse_args() {
                         gartk) INSTALL_GARTK=true ;;
                         garchomp) INSTALL_GARCHOMP=true ;;
                         gargears) INSTALL_GARGEARS=true ;;
+                        gartop) INSTALL_GARTOP=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1132,6 +1197,7 @@ parse_args() {
                             INSTALL_GARTK=true
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
+                            INSTALL_GARTOP=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1147,6 +1213,7 @@ parse_args() {
                             INSTALL_GARCLIP=true
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
+                            INSTALL_GARTOP=true
                             ;;
                     esac
                 done
@@ -1169,6 +1236,9 @@ parse_args() {
                 if [ "$INSTALL_GARGEARS" = true ]; then
                     INSTALL_GARTK=true
                 fi
+                if [ "$INSTALL_GARTOP" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 shift
                 ;;
             --help|-h)
@@ -1183,7 +1253,7 @@ parse_args() {
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
                 echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
-                echo "                                  gartk,garchomp,gargears"
+                echo "                                  gartk,garchomp,gargears,gartop"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1238,7 +1308,7 @@ main() {
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
-       [ "$INSTALL_GARGEARS" = false ]; then
+       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ]; then
         prompt_components
     fi
 
@@ -1286,6 +1356,7 @@ main() {
     [ "$INSTALL_GARCLIP" = true ] && install_garclip
     [ "$INSTALL_GARCHOMP" = true ] && install_garchomp
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
+    [ "$INSTALL_GARTOP" = true ] && install_gartop
 
     # gardm last (may prompt for reboot)
     [ "$INSTALL_GARDM" = true ] && install_gardm
@@ -1383,6 +1454,14 @@ main() {
         echo "  gargears configuration GUI:"
         echo "     Launch with: gargears"
         echo "     Or run as daemon for tray integration: gargears --daemon"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARTOP" = true ]; then
+        echo "  gartop system monitor:"
+        echo "     Launch GUI with: gartop"
+        echo "     Enable daemon: systemctl --user enable --now gartop"
+        echo "     Query metrics: gartopctl cpu|memory|network|processes"
         echo ""
     fi
 
