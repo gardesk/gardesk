@@ -1,5 +1,5 @@
 Name:           garview
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Document viewer for the gar desktop suite
 
@@ -33,6 +33,10 @@ install -Dm755 %{_sourcedir}/garviewctl %{buildroot}%{_bindir}/garviewctl
 %{_bindir}/garviewctl
 
 %changelog
+* Sat Feb 08 2026 mfw <espadonne@outlook.com> - 0.1.1-1
+- Version bump to 0.1.1
+- Fix aarch64 build
+
 * Sat Feb 08 2026 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of garview
 - Document viewer for gardesk desktop suite
