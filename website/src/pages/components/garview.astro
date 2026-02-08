@@ -1,0 +1,1081 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/layout/Header.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Badge from '../../components/ui/Badge.astro';
+import Button from '../../components/ui/Button.astro';
+import TabbedCard from '../../components/ui/TabbedCard.astro';
+import MultiTerminal from '../../components/ui/MultiTerminal.astro';
+import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+
+const tabs = [
+  { id: 'getting-started', label: 'Getting Started' },
+  { id: 'config', label: 'Config' },
+  { id: 'docs', label: 'Docs' },
+  { id: 'ipc', label: 'IPC/API' },
+  { id: 'troubleshooting', label: 'Troubleshooting' },
+];
+
+const docsItems = [
+  {
+    id: 'overview',
+    label: 'Overview',
+  },
+  {
+    id: 'navigation',
+    label: 'Navigation',
+    children: [
+      { id: 'zoom', label: 'Zoom Controls' },
+      { id: 'pan', label: 'Pan & Scroll' },
+      { id: 'pages', label: 'Page Navigation' },
+    ]
+  },
+  {
+    id: 'formats',
+    label: 'Format Support',
+    children: [
+      { id: 'raster', label: 'Raster Images' },
+      { id: 'svg', label: 'SVG/SVGZ' },
+      { id: 'pdf', label: 'PDF Documents' },
+      { id: 'comics', label: 'Comics (CBZ/CB7)' },
+      { id: 'ebooks', label: 'eBooks (EPUB/MOBI)' },
+    ]
+  },
+  {
+    id: 'annotations',
+    label: 'Annotations',
+    children: [
+      { id: 'annotation-tools', label: 'Drawing Tools' },
+      { id: 'annotation-colors', label: 'Colors & Styles' },
+      { id: 'annotation-persistence', label: 'Saving & Loading' },
+    ]
+  },
+  {
+    id: 'print-export',
+    label: 'Print & Export',
+  },
+  {
+    id: 'gallery',
+    label: 'Gallery Mode',
+  },
+  {
+    id: 'slideshow',
+    label: 'Slideshow',
+  },
+  {
+    id: 'pdf-features',
+    label: 'PDF Features',
+    children: [
+      { id: 'search', label: 'Text Search' },
+      { id: 'selection', label: 'Text Selection' },
+      { id: 'forms', label: 'Form Fields' },
+      { id: 'toc', label: 'Table of Contents' },
+    ]
+  },
+  {
+    id: 'sidebar-ui',
+    label: 'Sidebar & UI',
+  },
+  {
+    id: 'keyboard-shortcuts',
+    label: 'Keyboard Shortcuts',
+  },
+];
+---
+
+<BaseLayout title="garview - gardesk" description="Multi-format image and document viewer with annotations for the gar desktop environment.">
+  <Header />
+
+  <main class="pt-24 pb-20 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Hero -->
+      <div class="mb-12">
+        <Badge status="beta" class="mb-4" />
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">
+          <span class="text-gar-accent-cyan">garview</span>
+        </h1>
+        <p class="text-xl text-gar-text-secondary mb-6">Image & Document Viewer</p>
+        <p class="text-gar-text-secondary leading-relaxed mb-8">
+          A multi-format image and document viewer with annotation tools, PDF text search, form fields, and print/export support. View images, PDFs, comics, and eBooks with session persistence and IPC control.
+        </p>
+
+        <div class="flex flex-wrap gap-4">
+          <Button href="https://github.com/gardesk/garview" variant="primary">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View on GitHub
+          </Button>
+          <Button href="/#install" variant="secondary">
+            Install
+          </Button>
+        </div>
+      </div>
+
+      <!-- Features Grid -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Features</h2>
+        <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            '8 annotation tools with undo/redo history',
+            'PDF with text search, selection, and form fields',
+            'Print via CUPS and export to PNG/JPEG',
+            'Comics (CBZ, CB7, CBT) and eBooks (EPUB, MOBI)',
+            'Raster images: PNG, JPEG, GIF, WebP, AVIF, TIFF',
+            'SVG/SVGZ vector graphics with resvg',
+            'Animated GIF and APNG playback',
+            'Zoom: fit, fill, 100%, custom (5-2000%)',
+            'Gallery mode with thumbnail grid',
+            'Slideshow with configurable interval',
+            'Session persistence (zoom, page, position)',
+            'IPC control via garviewctl'
+          ].map(function(feature) {
+            return (
+              <li class="flex items-start gap-3 p-4 rounded-lg bg-gar-bg-secondary/50 border border-gar-text-muted/10">
+                <svg class="w-5 h-5 mt-0.5 flex-shrink-0 text-gar-accent-cyan" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gar-text-primary">{feature}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <!-- Tabbed Documentation Card -->
+      <TabbedCard tabs={tabs} defaultTab="getting-started" class="mb-12">
+
+        <!-- Tab 0: Getting Started -->
+        <div slot="tab-0">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Quick Start</h2>
+
+          <div class="bg-gar-bg-secondary/50 rounded-lg p-6 mb-8 border border-gar-accent-cyan/20">
+            <h3 class="text-lg font-semibold text-gar-accent-cyan mb-4">What is garview?</h3>
+            <p class="text-gar-text-secondary mb-4">
+              garview is a feature-rich image and document viewer for the gardesk desktop environment. It handles raster images, SVG, PDF, comics, and eBooks with annotation tools, print support, and session persistence.
+            </p>
+            <p class="text-gar-text-secondary">
+              Control garview remotely via <code class="bg-gar-bg-secondary px-1 rounded">garviewctl</code> for scripting and automation.
+            </p>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Installation</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "curl -fsSL https://gar.musicsian.com/install.sh | bash -s -- --component=garview", comment: "Install via script" },
+              { command: "cd ~/.local/src/gardesk/garview && cargo build --release", comment: "Or build from source" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Basic Usage</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "garview", comment: "Open with recent files panel" },
+              { command: "garview /path/to/image.png", comment: "Open specific image" },
+              { command: "garview /path/to/document.pdf", comment: "Open PDF document" },
+              { command: "garview /path/to/comic.cbz", comment: "Open comic archive" },
+              { command: "garview /path/to/directory/", comment: "Open directory in gallery mode" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Command-Line Options</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "garview --fullscreen /path/to/image", comment: "Start in fullscreen" },
+              { command: "garview --slideshow /path/to/directory", comment: "Start slideshow of directory" },
+              { command: "garview --help", comment: "Show all options" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Quick Reference</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+            <table class="w-full text-sm">
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2 w-32"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+A</code></td>
+                  <td class="py-2">Enter annotation mode</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+P</code></td>
+                  <td class="py-2">Print current document</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+E</code></td>
+                  <td class="py-2">Export as PNG/JPEG</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">F7</code></td>
+                  <td class="py-2">Toggle sidebar</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Tab</code></td>
+                  <td class="py-2">Toggle gallery mode</td>
+                </tr>
+                <tr>
+                  <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">q</code></td>
+                  <td class="py-2">Quit</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 1: Config -->
+        <div slot="tab-1">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Configuration</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            garview is configured via TOML at <code class="bg-gar-bg-secondary px-1 rounded">~/.config/garview/config.toml</code>.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Full Configuration Example</h3>
+          <MultiTerminal
+            title="~/.config/garview/config.toml"
+            commands={[
+              { command: "[general]", comment: "General settings" },
+              { command: 'default_zoom = "fit"', comment: "fit, fill, 1:1, or 100%" },
+              { command: "remember_position = false", comment: "Restore scroll position" },
+              { command: "remember_zoom = false", comment: "Restore zoom level" },
+              { command: 'background_color = "#1a1b26"', comment: "Window background" },
+              { command: "", comment: "" },
+              { command: "[images]", comment: "Image settings" },
+              { command: "auto_rotate_exif = true", comment: "Auto-rotate by EXIF" },
+              { command: 'interpolation = "lanczos"', comment: "lanczos, nearest, linear" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">General Settings</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 text-gar-text-primary">Option</th>
+                  <th class="text-left py-2 text-gar-text-primary">Default</th>
+                  <th class="text-left py-2 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>default_zoom</code></td>
+                  <td class="py-2">"fit"</td>
+                  <td class="py-2">Initial zoom mode: fit, fill, 1:1, or 100%</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>remember_position</code></td>
+                  <td class="py-2">false</td>
+                  <td class="py-2">Restore scroll position when reopening files</td>
+                </tr>
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>remember_zoom</code></td>
+                  <td class="py-2">false</td>
+                  <td class="py-2">Restore zoom level when reopening files</td>
+                </tr>
+                <tr>
+                  <td class="py-2"><code>background_color</code></td>
+                  <td class="py-2">"#1a1b26"</td>
+                  <td class="py-2">Background color (hex or CSS color)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Image Settings</h3>
+          <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gar-text-muted/20">
+                  <th class="text-left py-2 text-gar-text-primary">Option</th>
+                  <th class="text-left py-2 text-gar-text-primary">Default</th>
+                  <th class="text-left py-2 text-gar-text-primary">Description</th>
+                </tr>
+              </thead>
+              <tbody class="text-gar-text-secondary">
+                <tr class="border-b border-gar-text-muted/10">
+                  <td class="py-2"><code>auto_rotate_exif</code></td>
+                  <td class="py-2">true</td>
+                  <td class="py-2">Auto-rotate based on EXIF orientation tag</td>
+                </tr>
+                <tr>
+                  <td class="py-2"><code>interpolation</code></td>
+                  <td class="py-2">"lanczos"</td>
+                  <td class="py-2">Scaling filter: lanczos, nearest, linear</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Data Locations</h3>
+          <MultiTerminal
+            title="paths"
+            commands={[
+              { command: "~/.config/garview/config.toml", comment: "Configuration file" },
+              { command: "~/.local/share/garview/recent.json", comment: "Recent files & session state" },
+              { command: "~/.cache/garview/thumbnails/", comment: "Thumbnail cache" },
+              { command: "$XDG_RUNTIME_DIR/garview.sock", comment: "IPC socket" },
+            ]}
+          />
+        </div>
+
+        <!-- Tab 2: Docs -->
+        <div slot="tab-2">
+          <DocsSidebar items={docsItems} defaultItem="overview">
+
+            <!-- doc-0: Overview -->
+            <div slot="doc-0">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Overview</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview is a unified viewer for images, documents, comics, and eBooks:
+              </p>
+              <ul class="space-y-3 text-gar-text-secondary mb-6">
+                <li><strong class="text-gar-accent-cyan">Image viewing</strong> - Raster images (25+ formats), SVG, and animated GIF/APNG</li>
+                <li><strong class="text-gar-accent-cyan">Document viewing</strong> - PDF with text search, selection, form fields, and TOC</li>
+                <li><strong class="text-gar-accent-cyan">Comics</strong> - CBZ, CB7, CBT archive formats</li>
+                <li><strong class="text-gar-accent-cyan">eBooks</strong> - EPUB and MOBI format support</li>
+                <li><strong class="text-gar-accent-cyan">Annotations</strong> - 8 drawing tools with sidecar persistence</li>
+                <li><strong class="text-gar-accent-cyan">Print & Export</strong> - Print via CUPS, export to PNG/JPEG</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Binaries</h3>
+              <ul class="space-y-1 text-gar-text-secondary text-sm">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">garview</code> - Main viewer application</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">garviewctl</code> - IPC control client</li>
+              </ul>
+            </div>
+
+            <!-- doc-1: Navigation (parent) -->
+            <div slot="doc-1">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Navigation</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview provides comprehensive navigation controls. Select a topic from the sidebar.
+              </p>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Zoom</h4>
+                  <p class="text-gar-text-secondary text-sm">5% to 2000% with multiple modes</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Pan</h4>
+                  <p class="text-gar-text-secondary text-sm">Click-drag or keyboard panning</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Pages</h4>
+                  <p class="text-gar-text-secondary text-sm">Multi-page navigation</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-2: Zoom Controls -->
+            <div slot="doc-2">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Zoom Controls</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview supports zoom levels from 5% to 2000%:
+              </p>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Zoom Modes</h3>
+              <ul class="space-y-2 text-gar-text-secondary mb-6">
+                <li>• <strong>Fit</strong> (<code class="bg-gar-bg-secondary px-1 rounded">f</code>) - Entire image fits in viewport</li>
+                <li>• <strong>Fill</strong> (<code class="bg-gar-bg-secondary px-1 rounded">Shift+F</code>) - Image fills viewport (may crop)</li>
+                <li>• <strong>100%</strong> (<code class="bg-gar-bg-secondary px-1 rounded">0</code> or <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+Z</code>) - Native pixel resolution</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Keyboard Controls</h3>
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-24"><code class="bg-gar-bg-secondary px-2 py-1 rounded">+</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">=</code></td>
+                      <td class="py-2">Zoom in</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">-</code></td>
+                      <td class="py-2">Zoom out</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+Scroll</code></td>
+                      <td class="py-2">Zoom at mouse position</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-3: Pan & Scroll -->
+            <div slot="doc-3">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Pan & Scroll</h2>
+              <ul class="space-y-2 text-gar-text-secondary mb-6">
+                <li>• <strong>Click and drag</strong> - Pan with mouse</li>
+                <li>• <strong>Arrow keys</strong> - Pan when zoomed in</li>
+                <li>• <strong>Scroll wheel</strong> - Vertical scroll (horizontal with Shift)</li>
+                <li>• <strong>Vim keys</strong> - <code class="bg-gar-bg-secondary px-1 rounded">h/j/k/l</code> for navigation</li>
+              </ul>
+              <p class="text-gar-text-secondary">
+                Scrolling past an edge transitions to the previous/next image or page.
+              </p>
+            </div>
+
+            <!-- doc-4: Page Navigation -->
+            <div slot="doc-4">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Page Navigation</h2>
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-32"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Right</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">n</code></td>
+                      <td class="py-2">Next page</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Left</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">p</code></td>
+                      <td class="py-2">Previous page</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Home</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">End</code></td>
+                      <td class="py-2">First / last page</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+G</code></td>
+                      <td class="py-2">Go to page dialog</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-5: Format Support (parent) -->
+            <div slot="doc-5">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Format Support</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview supports a wide range of formats through specialized backends:
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Raster Images</h4>
+                  <p class="text-gar-text-secondary text-sm">PNG, JPEG, GIF, WebP, TIFF, BMP, AVIF, QOI, TGA, DDS, EXR</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Vector & Docs</h4>
+                  <p class="text-gar-text-secondary text-sm">SVG, SVGZ, PDF</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Comics</h4>
+                  <p class="text-gar-text-secondary text-sm">CBZ (zip), CB7 (7z), CBT (tar)</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">eBooks</h4>
+                  <p class="text-gar-text-secondary text-sm">EPUB, MOBI</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- doc-6: Raster Images -->
+            <div slot="doc-6">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Raster Images</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Raster images are handled by the <code class="bg-gar-bg-secondary px-1 rounded">image</code> crate (v0.25):
+              </p>
+              <ul class="space-y-1 text-gar-text-secondary">
+                <li>• PNG, JPEG (with EXIF auto-rotation), GIF (animated), WebP</li>
+                <li>• TIFF (multi-page), BMP, AVIF, QOI, TGA, DDS, EXR</li>
+                <li>• ICO, PBM/PGM/PPM (Netpbm), Farbfeld</li>
+              </ul>
+            </div>
+
+            <!-- doc-7: SVG/SVGZ -->
+            <div slot="doc-7">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">SVG/SVGZ</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Vector graphics are rendered using <code class="bg-gar-bg-secondary px-1 rounded">resvg</code> v0.44:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Scalable rendering at any zoom level</li>
+                <li>• SVGZ (compressed SVG) auto-decompression</li>
+                <li>• Full SVG 1.1 feature support</li>
+              </ul>
+            </div>
+
+            <!-- doc-8: PDF Documents -->
+            <div slot="doc-8">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">PDF Documents</h2>
+              <p class="text-gar-text-secondary mb-4">
+                PDF rendering uses <code class="bg-gar-bg-secondary px-1 rounded">poppler-rs</code> v0.24 with Cairo:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Text search with result highlighting</li>
+                <li>• Text selection and clipboard copy</li>
+                <li>• Interactive form fields (text, checkbox, dropdown)</li>
+                <li>• Clickable hyperlinks (internal and external)</li>
+                <li>• Table of Contents navigation</li>
+                <li>• Multi-page view modes</li>
+              </ul>
+            </div>
+
+            <!-- doc-9: Comics -->
+            <div slot="doc-9">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Comics (CBZ/CB7/CBT)</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Comic book archives are supported:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>CBZ</strong> - ZIP-compressed comic archives</li>
+                <li>• <strong>CB7</strong> - 7-Zip compressed archives</li>
+                <li>• <strong>CBT</strong> - TAR-based archives</li>
+              </ul>
+              <p class="text-gar-text-secondary mt-4">
+                Images within archives are extracted and displayed in natural sort order.
+              </p>
+            </div>
+
+            <!-- doc-10: eBooks -->
+            <div slot="doc-10">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">eBooks (EPUB/MOBI)</h2>
+              <p class="text-gar-text-secondary mb-4">
+                eBook formats are supported with page-based layout:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>EPUB</strong> - Open eBook format (epub crate v2.1)</li>
+                <li>• <strong>MOBI</strong> - Amazon Kindle format</li>
+              </ul>
+            </div>
+
+            <!-- doc-11: Annotations (parent) -->
+            <div slot="doc-11">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Annotations</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview includes a full annotation system for marking up images and documents:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+A</code> to enter annotation mode</li>
+                <li>• 8 drawing tools with color presets</li>
+                <li>• Undo/redo history (up to 50 steps)</li>
+                <li>• Sidecar file persistence</li>
+                <li>• Export annotated images</li>
+              </ul>
+            </div>
+
+            <!-- doc-12: Drawing Tools -->
+            <div slot="doc-12">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Drawing Tools</h2>
+              <p class="text-gar-text-secondary mb-4">
+                8 annotation tools available in annotation mode (<code class="bg-gar-bg-secondary px-1 rounded">Ctrl+A</code>):
+              </p>
+
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gar-text-muted/20">
+                      <th class="text-left py-2 text-gar-text-primary">Key</th>
+                      <th class="text-left py-2 text-gar-text-primary">Tool</th>
+                      <th class="text-left py-2 text-gar-text-primary">Description</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">b</code></td>
+                      <td class="py-2">Brush</td>
+                      <td class="py-2">Freehand drawing</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">l</code></td>
+                      <td class="py-2">Line</td>
+                      <td class="py-2">Straight lines</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">a</code></td>
+                      <td class="py-2">Arrow</td>
+                      <td class="py-2">Arrows with head (default)</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">r</code></td>
+                      <td class="py-2">Rectangle</td>
+                      <td class="py-2">Rectangular shapes</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">e</code></td>
+                      <td class="py-2">Ellipse</td>
+                      <td class="py-2">Circles and ellipses</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">t</code></td>
+                      <td class="py-2">Text</td>
+                      <td class="py-2">Text annotations</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">x</code></td>
+                      <td class="py-2">Blur</td>
+                      <td class="py-2">Blur regions</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">h</code></td>
+                      <td class="py-2">Highlight</td>
+                      <td class="py-2">Transparent highlighting</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Tool Controls</h3>
+              <ul class="space-y-1 text-gar-text-secondary text-sm">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">+</code>/<code class="bg-gar-bg-secondary px-1 rounded">-</code> - Adjust line width (1-50px)</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">f</code> - Toggle fill mode for shapes</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+Z</code>/<code class="bg-gar-bg-secondary px-1 rounded">Ctrl+Y</code> - Undo/redo</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+Shift+C</code> - Clear all annotations</li>
+              </ul>
+            </div>
+
+            <!-- doc-13: Colors & Styles -->
+            <div slot="doc-13">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Colors & Styles</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Quick color selection with number keys 1-9:
+              </p>
+
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-4">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-16"><code class="bg-gar-bg-secondary px-2 py-1 rounded">1</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-red-500 mr-2"></span>Red</td>
+                      <td class="py-2 w-16"><code class="bg-gar-bg-secondary px-2 py-1 rounded">6</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-blue-500 mr-2"></span>Blue</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">2</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-orange-500 mr-2"></span>Orange</td>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">7</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-fuchsia-500 mr-2"></span>Magenta</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">3</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-yellow-500 mr-2"></span>Yellow</td>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">8</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-white border mr-2"></span>White</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">4</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-green-500 mr-2"></span>Green</td>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">9</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-black border mr-2"></span>Black</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">5</code></td>
+                      <td class="py-2"><span class="inline-block w-4 h-4 rounded bg-cyan-500 mr-2"></span>Cyan</td>
+                      <td class="py-2"></td>
+                      <td class="py-2"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-14: Saving & Loading -->
+            <div slot="doc-14">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Saving & Loading</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Annotations are stored in sidecar files alongside the original:
+              </p>
+
+              <MultiTerminal
+                title="sidecar files"
+                commands={[
+                  { command: "image.png", comment: "Original file" },
+                  { command: "image.annotations.png", comment: "RGBA annotation layer" },
+                  { command: "image.annotations.json", comment: "Metadata (tool, color, bounds, page)" },
+                ]}
+                class="mb-4"
+              />
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Saving</h3>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+S</code> - Save annotations</li>
+                <li>• Auto-save on exit from annotation mode</li>
+                <li>• Empty sidecar files removed when annotations cleared</li>
+              </ul>
+            </div>
+
+            <!-- doc-15: Print & Export -->
+            <div slot="doc-15">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Print & Export</h2>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Print (Ctrl+P)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Print current document via CUPS (<code class="bg-gar-bg-secondary px-1 rounded">lpr</code> command):
+              </p>
+              <ul class="space-y-1 text-gar-text-secondary mb-6">
+                <li>• PDFs print directly</li>
+                <li>• Images converted to temporary PDF before printing</li>
+              </ul>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Export (Ctrl+E)</h3>
+              <p class="text-gar-text-secondary mb-4">
+                Export current page as PNG or JPEG:
+              </p>
+              <ul class="space-y-1 text-gar-text-secondary mb-6">
+                <li>• Normal mode: exports rendered page as <code class="bg-gar-bg-secondary px-1 rounded">filename_export.png</code></li>
+                <li>• Annotation mode: exports flattened image as <code class="bg-gar-bg-secondary px-1 rounded">filename_annotated.png</code></li>
+              </ul>
+            </div>
+
+            <!-- doc-16: Gallery Mode -->
+            <div slot="doc-16">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Gallery Mode</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Gallery mode shows a thumbnail grid of all images in a directory:
+              </p>
+
+              <ul class="space-y-2 text-gar-text-secondary mb-4">
+                <li>• Open a directory: <code class="bg-gar-bg-secondary px-1 rounded">garview /path/to/directory/</code></li>
+                <li>• Toggle with <code class="bg-gar-bg-secondary px-1 rounded">Tab</code> or <code class="bg-gar-bg-secondary px-1 rounded">g</code></li>
+                <li>• Arrow keys or <code class="bg-gar-bg-secondary px-1 rounded">h/j/k/l</code> to navigate</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Enter</code> to open selected</li>
+              </ul>
+            </div>
+
+            <!-- doc-17: Slideshow -->
+            <div slot="doc-17">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Slideshow</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Slideshow mode auto-advances through images:
+              </p>
+
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Start: <code class="bg-gar-bg-secondary px-1 rounded">garview --slideshow /path/</code></li>
+                <li>• Default interval: 3 seconds</li>
+                <li>• Adjust with <code class="bg-gar-bg-secondary px-1 rounded">[</code>/<code class="bg-gar-bg-secondary px-1 rounded">]</code> keys (1-30 seconds)</li>
+              </ul>
+            </div>
+
+            <!-- doc-18: PDF Features (parent) -->
+            <div slot="doc-18">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">PDF Features</h2>
+              <p class="text-gar-text-secondary mb-4">
+                garview provides advanced PDF functionality through poppler:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Text search with highlighting</li>
+                <li>• Text selection and copy</li>
+                <li>• Interactive form fields</li>
+                <li>• Table of Contents navigation</li>
+              </ul>
+            </div>
+
+            <!-- doc-19: Text Search -->
+            <div slot="doc-19">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Text Search</h2>
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-24"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+F</code></td>
+                      <td class="py-2">Open search bar</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">n</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">F3</code></td>
+                      <td class="py-2">Next result</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">N</code></td>
+                      <td class="py-2">Previous result</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Escape</code></td>
+                      <td class="py-2">Exit search</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- doc-20: Text Selection -->
+            <div slot="doc-20">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Text Selection</h2>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <strong>Shift+click-drag</strong> - Select text region</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+C</code> - Copy selected text</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+Shift+C</code> - Copy page as image</li>
+              </ul>
+            </div>
+
+            <!-- doc-21: Form Fields -->
+            <div slot="doc-21">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Form Fields</h2>
+              <p class="text-gar-text-secondary mb-4">
+                Interactive PDF form fields are supported:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• Click to focus field</li>
+                <li>• Type to edit text fields</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Tab</code> to move to next field</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Enter</code> to commit</li>
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">Escape</code> to cancel</li>
+              </ul>
+            </div>
+
+            <!-- doc-22: Table of Contents -->
+            <div slot="doc-22">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Table of Contents</h2>
+              <p class="text-gar-text-secondary mb-4">
+                PDF documents with an outline show a navigable TOC in the sidebar:
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary">
+                <li>• <code class="bg-gar-bg-secondary px-1 rounded">F7</code> to toggle sidebar</li>
+                <li>• Click TOC tab to view outline</li>
+                <li>• Click entry to jump to section</li>
+              </ul>
+            </div>
+
+            <!-- doc-23: Sidebar & UI -->
+            <div slot="doc-23">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Sidebar & UI</h2>
+              <p class="text-gar-text-secondary mb-4">
+                The sidebar (<code class="bg-gar-bg-secondary px-1 rounded">F7</code>) has three tabs:
+              </p>
+
+              <div class="space-y-4">
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Thumbnails</h4>
+                  <p class="text-gar-text-secondary text-sm">Page previews for multi-page documents. Click to navigate.</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">TOC</h4>
+                  <p class="text-gar-text-secondary text-sm">Document outline for PDFs. Click to jump to section.</p>
+                </div>
+                <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                  <h4 class="font-semibold text-gar-accent-cyan mb-2">Annotations</h4>
+                  <p class="text-gar-text-secondary text-sm">List of all annotations. Click to jump to annotation.</p>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3 mt-6">Status Bar</h3>
+              <p class="text-gar-text-secondary">
+                Shows filename, dimensions, zoom level, and page position.
+              </p>
+            </div>
+
+            <!-- doc-24: Keyboard Shortcuts -->
+            <div slot="doc-24">
+              <h2 class="text-2xl font-bold text-gar-text-primary mb-4">Keyboard Shortcuts</h2>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">General</h3>
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10 mb-6">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-32"><code class="bg-gar-bg-secondary px-2 py-1 rounded">q</code></td>
+                      <td class="py-2">Quit</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">F11</code></td>
+                      <td class="py-2">Toggle fullscreen</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">F7</code></td>
+                      <td class="py-2">Toggle sidebar</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Tab</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">g</code></td>
+                      <td class="py-2">Toggle gallery mode</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">i</code> / <code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+I</code></td>
+                      <td class="py-2">Properties panel</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+P</code></td>
+                      <td class="py-2">Print</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+E</code></td>
+                      <td class="py-2">Export</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Annotation Mode (Ctrl+A)</h3>
+              <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+                <table class="w-full text-sm">
+                  <tbody class="text-gar-text-secondary">
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2 w-32"><code class="bg-gar-bg-secondary px-2 py-1 rounded">b/l/a/r/e/t/x/h</code></td>
+                      <td class="py-2">Select tool</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">1-9</code></td>
+                      <td class="py-2">Color presets</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">+/-</code></td>
+                      <td class="py-2">Line width</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">f</code></td>
+                      <td class="py-2">Toggle fill</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+Z/Y</code></td>
+                      <td class="py-2">Undo/redo</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+S</code></td>
+                      <td class="py-2">Save annotations</td>
+                    </tr>
+                    <tr class="border-b border-gar-text-muted/10">
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Ctrl+E</code></td>
+                      <td class="py-2">Export annotated</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2"><code class="bg-gar-bg-secondary px-2 py-1 rounded">Escape</code></td>
+                      <td class="py-2">Exit annotation mode</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </DocsSidebar>
+        </div>
+
+        <!-- Tab 3: IPC/API -->
+        <div slot="tab-3">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">IPC Protocol</h2>
+
+          <p class="text-gar-text-secondary mb-6">
+            garview exposes an IPC interface via Unix socket. Use <code class="bg-gar-bg-secondary px-1 rounded">garviewctl</code> for command-line control.
+          </p>
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Socket Location</h3>
+          <MultiTerminal
+            title="socket"
+            commands={[
+              { command: "$XDG_RUNTIME_DIR/garview.sock", comment: "Default location" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">garviewctl Commands</h3>
+          <MultiTerminal
+            title="terminal"
+            commands={[
+              { command: "garviewctl open /path/to/file", comment: "Open file in running instance" },
+              { command: "garviewctl next", comment: "Next page/image" },
+              { command: "garviewctl prev", comment: "Previous page/image" },
+              { command: "garviewctl first", comment: "First page" },
+              { command: "garviewctl last", comment: "Last page" },
+              { command: "garviewctl goto 5", comment: "Go to page 5" },
+              { command: "garviewctl zoom-in", comment: "Zoom in" },
+              { command: "garviewctl zoom-out", comment: "Zoom out" },
+              { command: "garviewctl zoom-fit", comment: "Fit to window" },
+              { command: "garviewctl zoom-set 150", comment: "Set zoom to 150%" },
+              { command: "garviewctl rotate-cw", comment: "Rotate clockwise" },
+              { command: "garviewctl rotate-ccw", comment: "Rotate counter-clockwise" },
+              { command: "garviewctl flip-h", comment: "Flip horizontal" },
+              { command: "garviewctl flip-v", comment: "Flip vertical" },
+              { command: "garviewctl fullscreen", comment: "Toggle fullscreen" },
+              { command: "garviewctl sidebar", comment: "Toggle sidebar" },
+              { command: "garviewctl slideshow-start", comment: "Start slideshow" },
+              { command: "garviewctl slideshow-stop", comment: "Stop slideshow" },
+              { command: "garviewctl slideshow-interval 5", comment: "Set interval to 5 seconds" },
+              { command: "garviewctl info", comment: "Get viewer state" },
+              { command: "garviewctl ping", comment: "Check if running" },
+              { command: "garviewctl quit", comment: "Quit viewer" },
+            ]}
+            class="mb-6"
+          />
+
+          <h3 class="text-lg font-semibold text-gar-text-primary mb-3">Info Response</h3>
+          <p class="text-gar-text-secondary mb-4">
+            The <code class="bg-gar-bg-secondary px-1 rounded">info</code> command returns:
+          </p>
+          <MultiTerminal
+            title="json"
+            commands={[
+              { command: "{", comment: "" },
+              { command: '  "pid": 12345,', comment: "Process ID" },
+              { command: '  "file": "/path/to/current.pdf",', comment: "Current file" },
+              { command: '  "page": 5,', comment: "Current page (1-indexed)" },
+              { command: '  "page_count": 24,', comment: "Total pages" },
+              { command: '  "zoom": 150.0,', comment: "Zoom percentage" },
+              { command: '  "dimensions": [1920, 1080],', comment: "Image dimensions" },
+              { command: '  "fullscreen": false,', comment: "Fullscreen state" },
+              { command: '  "slideshow": false', comment: "Slideshow state" },
+              { command: "}", comment: "" },
+            ]}
+          />
+        </div>
+
+        <!-- Tab 4: Troubleshooting -->
+        <div slot="tab-4">
+          <h2 class="text-2xl font-bold text-gar-text-primary mb-6">Troubleshooting</h2>
+
+          <div class="space-y-6">
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-cyan mb-2">PDF rendering errors</h3>
+              <p class="text-gar-text-secondary mb-3">
+                PDF support requires poppler library.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Install: <code class="bg-gar-bg-secondary px-1 rounded">dnf install poppler-devel</code> or <code class="bg-gar-bg-secondary px-1 rounded">apt install libpoppler-dev</code></li>
+                <li>• Some corrupted PDFs may cause issues</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-cyan mb-2">Annotations not saving</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Check file permissions for sidecar files.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Sidecar files are saved alongside the original</li>
+                <li>• Ensure write permission to the directory</li>
+                <li>• Use <code class="bg-gar-bg-secondary px-1 rounded">Ctrl+S</code> to manually save</li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-cyan mb-2">Print not working</h3>
+              <p class="text-gar-text-secondary mb-3">
+                Printing requires CUPS and the <code class="bg-gar-bg-secondary px-1 rounded">lpr</code> command.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Install CUPS: <code class="bg-gar-bg-secondary px-1 rounded">dnf install cups</code></li>
+                <li>• Ensure a printer is configured</li>
+                <li>• Test with: <code class="bg-gar-bg-secondary px-1 rounded">lpstat -p</code></li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-cyan mb-2">garviewctl: connection refused</h3>
+              <p class="text-gar-text-secondary mb-3">
+                garview must be running for IPC to work.
+              </p>
+              <ul class="space-y-2 text-gar-text-secondary text-sm">
+                <li>• Start garview first: <code class="bg-gar-bg-secondary px-1 rounded">garview &</code></li>
+                <li>• Check socket: <code class="bg-gar-bg-secondary px-1 rounded">ls $XDG_RUNTIME_DIR/garview.sock</code></li>
+              </ul>
+            </div>
+
+            <div class="bg-gar-bg-secondary/30 rounded-lg p-4 border border-gar-text-muted/10">
+              <h3 class="text-lg font-semibold text-gar-accent-cyan mb-2">Debug logging</h3>
+              <MultiTerminal
+                title="terminal"
+                commands={[
+                  { command: "RUST_LOG=debug garview /path/to/file", comment: "Full debug" },
+                  { command: "RUST_LOG=garview=debug garview /path/to/file", comment: "garview only" },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+      </TabbedCard>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
