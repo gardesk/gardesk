@@ -1,5 +1,5 @@
 Name:           garterm
-Version:        0.1.1
+Version:        0.1.2
 Release:        1%{?dist}
 Summary:        Terminal emulator for the gar desktop suite
 
@@ -34,6 +34,9 @@ install -Dm755 %{_sourcedir}/gartermctl %{buildroot}%{_bindir}/gartermctl
 %{_bindir}/gartermctl
 
 %changelog
+* Sat Feb 08 2026 mfw <espadonne@outlook.com> - 0.1.2-1
+- Version bump to 0.1.2
+
 * Tue Jan 21 2026 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of garterm
 - Terminal emulator for gardesk desktop suite
