@@ -1,5 +1,5 @@
 Name:           garfield
-Version:        0.2.0
+Version:        0.2.1
 Release:        1%{?dist}
 Summary:        File manager for the gar desktop suite
 
@@ -34,6 +34,9 @@ install -Dm755 %{_sourcedir}/garfieldctl %{buildroot}%{_bindir}/garfieldctl
 %{_bindir}/garfieldctl
 
 %changelog
+* Sat Feb 08 2026 mfw <espadonne@outlook.com> - 0.2.1-1
+- Version bump to 0.2.1
+
 * Tue Jan 21 2026 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of garfield
 - File manager for gardesk desktop suite
