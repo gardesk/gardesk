@@ -48,13 +48,14 @@
 	branch = trunk
 [submodule "garnotify"]
 	path = garnotify
-	url = git@github.com:gardesk/garnotify.git
+	url = https://github.com/gardesk/garnotify.git
+	branch = trunk
 [submodule "garchomp"]
 	path = garchomp
 	url = https://github.com/gardesk/garchomp
 [submodule "gargears"]
 	path = gargears
-	url = git@github.com:gardesk/gargears.git
+	url = https://github.com/gardesk/gargears.git
 	branch = trunk
 [submodule "gartop"]
 	path = gartop
