@@ -73,3 +73,7 @@
 	path = gardisplay
 	url = https://github.com/gardesk/gardisplay.git
 	branch = trunk
+[submodule "garedit"]
+	path = garedit
+	url = git@github.com:gardesk/garedit.git
+	branch = trunk
