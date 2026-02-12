@@ -65,6 +65,10 @@
 	path = garview
 	url = https://github.com/gardesk/garview.git
 	branch = trunk
+[submodule "garcalc"]
+	path = garcalc
+	url = https://github.com/gardesk/garcalc.git
+	branch = trunk
 [submodule "gardisplay"]
 	path = gardisplay
 	url = https://github.com/gardesk/gardisplay.git
