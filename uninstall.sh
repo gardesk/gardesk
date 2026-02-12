@@ -34,6 +34,7 @@ BINARIES=(
     garclip garclipctl garclip-picker
     garchomp garchompctl
     gargears gargearsctl
+    garcalc garcalcctl garcas
 )
 
 # System binaries (gardm)
@@ -64,6 +65,7 @@ CONFIG_DIRS=(
     ~/.config/garclip
     ~/.config/garchomp
     ~/.config/gargears
+    ~/.config/garcalc
 )
 
 echo ""

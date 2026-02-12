@@ -20,6 +20,7 @@
 #   - garchomp: X11 compositor with GPU rendering
 #   - gargears: Configuration GUI for gardesk
 #   - gartop: System monitor with resource graphs
+#   - garcalc: TI-Nspire-like calculator with graphing/CAS
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -64,6 +65,7 @@ INSTALL_GARTK=false
 INSTALL_GARCHOMP=false
 INSTALL_GARGEARS=false
 INSTALL_GARTOP=false
+INSTALL_GARCALC=false
 
 # Options
 SKIP_DEPS=false
@@ -356,6 +358,7 @@ show_component_menu() {
     echo -e "  ${CYAN}14)${NC} garchomp   ${DIM}-${NC} X11 compositor with GPU rendering"
     echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
     echo -e "  ${CYAN}16)${NC} gartop     ${DIM}-${NC} System monitor with resource graphs"
+    echo -e "  ${CYAN}17)${NC} garcalc    ${DIM}-${NC} TI-Nspire-like calculator with graphing/CAS"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -379,6 +382,7 @@ prompt_components() {
         INSTALL_GARLOCK=true
         INSTALL_GARLAUNCH=true
         INSTALL_GARCLIP=true
+        INSTALL_GARCALC=true
         return 0
     fi
 
@@ -405,6 +409,7 @@ prompt_components() {
     INSTALL_GARCHOMP=false
     INSTALL_GARGEARS=false
     INSTALL_GARTOP=false
+    INSTALL_GARCALC=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -423,6 +428,7 @@ prompt_components() {
         14) INSTALL_GARCHOMP=true ;;
         15) INSTALL_GARGEARS=true ;;
         16) INSTALL_GARTOP=true ;;
+        17) INSTALL_GARCALC=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -440,6 +446,7 @@ prompt_components() {
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
+            INSTALL_GARCALC=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -456,6 +463,7 @@ prompt_components() {
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
+            INSTALL_GARCALC=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -481,6 +489,7 @@ prompt_components() {
                     14) INSTALL_GARCHOMP=true ;;
                     15) INSTALL_GARGEARS=true ;;
                     16) INSTALL_GARTOP=true ;;
+                    17) INSTALL_GARCALC=true ;;
                 esac
             done
             ;;
@@ -494,7 +503,8 @@ prompt_components() {
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
-       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ]; then
+       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
+       [ "$INSTALL_GARCALC" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -534,6 +544,11 @@ prompt_components() {
         log_info "gartop requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
+
+    if [ "$INSTALL_GARCALC" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garcalc requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
 }
 
 show_selection_summary() {
@@ -556,6 +571,7 @@ show_selection_summary() {
     [ "$INSTALL_GARCHOMP" = true ] && echo -e "  ${GREEN}•${NC} garchomp (X11 compositor)"
     [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
     [ "$INSTALL_GARTOP" = true ] && echo -e "  ${GREEN}•${NC} gartop (system monitor)"
+    [ "$INSTALL_GARCALC" = true ] && echo -e "  ${GREEN}•${NC} garcalc (calculator)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -1110,6 +1126,34 @@ EOF
     log_info "  Control via: gartopctl cpu|memory|network|processes"
 }
 
+install_garcalc() {
+    log_step "Building garcalc (calculator suite)..."
+
+    cd "$BUILD_DIR/garcalc"
+    cargo build --release --workspace
+
+    log_info "Installing garcalc binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garcalc "$BIN_DIR/garcalc"
+    sudo install -Dm755 target/release/garcalcctl "$BIN_DIR/garcalcctl"
+    sudo install -Dm755 target/release/garcas "$BIN_DIR/garcas"
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garcalc"
+    if [ ! -f "$HOME/.config/garcalc/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garcalc/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garcalc/config.toml" "$HOME/.config/garcalc/config.toml"
+        fi
+    else
+        log_warn "Config exists at ~/.config/garcalc/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ garcalc installed successfully${NC}"
+    log_info "  Launch with: garcalc"
+    log_info "  CLI CAS mode: garcas"
+    log_info "  Daemon control: garcalcctl"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1181,6 +1225,7 @@ parse_args() {
                         garchomp) INSTALL_GARCHOMP=true ;;
                         gargears) INSTALL_GARGEARS=true ;;
                         gartop) INSTALL_GARTOP=true ;;
+                        garcalc) INSTALL_GARCALC=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1198,6 +1243,7 @@ parse_args() {
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
+                            INSTALL_GARCALC=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1214,6 +1260,7 @@ parse_args() {
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
+                            INSTALL_GARCALC=true
                             ;;
                     esac
                 done
@@ -1239,6 +1286,9 @@ parse_args() {
                 if [ "$INSTALL_GARTOP" = true ]; then
                     INSTALL_GARTK=true
                 fi
+                if [ "$INSTALL_GARCALC" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 shift
                 ;;
             --help|-h)
@@ -1253,7 +1303,7 @@ parse_args() {
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
                 echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
-                echo "                                  gartk,garchomp,gargears,gartop"
+                echo "                                  gartk,garchomp,gargears,gartop,garcalc"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1308,7 +1358,8 @@ main() {
        [ "$INSTALL_GARLOCK" = false ] && [ "$INSTALL_GARDM" = false ] && \
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
-       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ]; then
+       [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
+       [ "$INSTALL_GARCALC" = false ]; then
         prompt_components
     fi
 
@@ -1357,6 +1408,7 @@ main() {
     [ "$INSTALL_GARCHOMP" = true ] && install_garchomp
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
     [ "$INSTALL_GARTOP" = true ] && install_gartop
+    [ "$INSTALL_GARCALC" = true ] && install_garcalc
 
     # gardm last (may prompt for reboot)
     [ "$INSTALL_GARDM" = true ] && install_gardm
@@ -1462,6 +1514,14 @@ main() {
         echo "     Launch GUI with: gartop"
         echo "     Enable daemon: systemctl --user enable --now gartop"
         echo "     Query metrics: gartopctl cpu|memory|network|processes"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARCALC" = true ]; then
+        echo "  garcalc calculator suite:"
+        echo "     Launch GUI with: garcalc"
+        echo "     Control daemon with: garcalcctl show|hide|toggle|status"
+        echo "     CAS CLI mode: garcas"
         echo ""
     fi
 

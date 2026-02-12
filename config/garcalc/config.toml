@@ -1,0 +1,20 @@
+[general]
+default_mode = "calculator"
+precision = 15
+angle_mode = "radians"
+exact_mode = false
+
+[popup]
+width = 700
+height = 500
+position = "center"
+
+[graph]
+default_x_range = [-10.0, 10.0]
+default_y_range = [-10.0, 10.0]
+grid_enabled = true
+
+[appearance]
+font_family = "monospace"
+font_size = 14
+button_panel_visible = false
