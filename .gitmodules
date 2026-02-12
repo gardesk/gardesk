@@ -67,7 +67,7 @@
 	branch = trunk
 [submodule "garcalc"]
 	path = garcalc
-	url = git@github.com:gardesk/garcalc.git
+	url = https://github.com/gardesk/garcalc.git
 	branch = trunk
 [submodule "gardisplay"]
 	path = gardisplay
