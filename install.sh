@@ -21,6 +21,7 @@
 #   - gargears: Configuration GUI for gardesk
 #   - gartop: System monitor with resource graphs
 #   - garcalc: TI-Nspire-like calculator with graphing/CAS
+#   - garedit: Native text/code editor with daemon + IPC control
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -66,6 +67,7 @@ INSTALL_GARCHOMP=false
 INSTALL_GARGEARS=false
 INSTALL_GARTOP=false
 INSTALL_GARCALC=false
+INSTALL_GAREDIT=false
 
 # Options
 SKIP_DEPS=false
@@ -359,6 +361,7 @@ show_component_menu() {
     echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
     echo -e "  ${CYAN}16)${NC} gartop     ${DIM}-${NC} System monitor with resource graphs"
     echo -e "  ${CYAN}17)${NC} garcalc    ${DIM}-${NC} TI-Nspire-like calculator with graphing/CAS"
+    echo -e "  ${CYAN}18)${NC} garedit    ${DIM}-${NC} Native text/code editor with daemon control"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -383,6 +386,7 @@ prompt_components() {
         INSTALL_GARLAUNCH=true
         INSTALL_GARCLIP=true
         INSTALL_GARCALC=true
+        INSTALL_GAREDIT=true
         return 0
     fi
 
@@ -410,6 +414,7 @@ prompt_components() {
     INSTALL_GARGEARS=false
     INSTALL_GARTOP=false
     INSTALL_GARCALC=false
+    INSTALL_GAREDIT=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -429,6 +434,7 @@ prompt_components() {
         15) INSTALL_GARGEARS=true ;;
         16) INSTALL_GARTOP=true ;;
         17) INSTALL_GARCALC=true ;;
+        18) INSTALL_GAREDIT=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -447,6 +453,7 @@ prompt_components() {
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
             INSTALL_GARCALC=true
+            INSTALL_GAREDIT=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -464,6 +471,7 @@ prompt_components() {
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
             INSTALL_GARCALC=true
+            INSTALL_GAREDIT=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -490,6 +498,7 @@ prompt_components() {
                     15) INSTALL_GARGEARS=true ;;
                     16) INSTALL_GARTOP=true ;;
                     17) INSTALL_GARCALC=true ;;
+                    18) INSTALL_GAREDIT=true ;;
                 esac
             done
             ;;
@@ -504,7 +513,7 @@ prompt_components() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARCALC" = false ]; then
+       [ "$INSTALL_GARCALC" = false ] && [ "$INSTALL_GAREDIT" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -549,6 +558,11 @@ prompt_components() {
         log_info "garcalc requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
+
+    if [ "$INSTALL_GAREDIT" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garedit requires gartk, adding to installation"
+        INSTALL_GARTK=true
+    fi
 }
 
 show_selection_summary() {
@@ -572,6 +586,7 @@ show_selection_summary() {
     [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
     [ "$INSTALL_GARTOP" = true ] && echo -e "  ${GREEN}•${NC} gartop (system monitor)"
     [ "$INSTALL_GARCALC" = true ] && echo -e "  ${GREEN}•${NC} garcalc (calculator)"
+    [ "$INSTALL_GAREDIT" = true ] && echo -e "  ${GREEN}•${NC} garedit (text/code editor)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -1154,6 +1169,25 @@ install_garcalc() {
     log_info "  Daemon control: garcalcctl"
 }
 
+install_garedit() {
+    log_step "Building garedit (text/code editor)..."
+
+    cd "$BUILD_DIR/garedit"
+    cargo build --release --workspace
+
+    log_info "Installing garedit binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garedit "$BIN_DIR/garedit"
+    sudo install -Dm755 target/release/gareditctl "$BIN_DIR/gareditctl"
+
+    # Create user config directory (garedit writes defaults on first run)
+    mkdir -p "$HOME/.config/garedit"
+
+    echo -e "${GREEN}  ✓ garedit installed successfully${NC}"
+    log_info "  Launch with: garedit"
+    log_info "  Daemon + control: garedit --daemon /path/file && gareditctl status"
+    log_info "  Auto-start daemon from ctl: gareditctl --start-daemon open /path/file"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1226,6 +1260,7 @@ parse_args() {
                         gargears) INSTALL_GARGEARS=true ;;
                         gartop) INSTALL_GARTOP=true ;;
                         garcalc) INSTALL_GARCALC=true ;;
+                        garedit) INSTALL_GAREDIT=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1244,6 +1279,7 @@ parse_args() {
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
                             INSTALL_GARCALC=true
+                            INSTALL_GAREDIT=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1261,6 +1297,7 @@ parse_args() {
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
                             INSTALL_GARCALC=true
+                            INSTALL_GAREDIT=true
                             ;;
                     esac
                 done
@@ -1289,6 +1326,9 @@ parse_args() {
                 if [ "$INSTALL_GARCALC" = true ]; then
                     INSTALL_GARTK=true
                 fi
+                if [ "$INSTALL_GAREDIT" = true ]; then
+                    INSTALL_GARTK=true
+                fi
                 shift
                 ;;
             --help|-h)
@@ -1303,7 +1343,7 @@ parse_args() {
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
                 echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
-                echo "                                  gartk,garchomp,gargears,gartop,garcalc"
+                echo "                                  gartk,garchomp,gargears,gartop,garcalc,garedit"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1359,7 +1399,7 @@ main() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARCALC" = false ]; then
+       [ "$INSTALL_GARCALC" = false ] && [ "$INSTALL_GAREDIT" = false ]; then
         prompt_components
     fi
 
@@ -1409,6 +1449,7 @@ main() {
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
     [ "$INSTALL_GARTOP" = true ] && install_gartop
     [ "$INSTALL_GARCALC" = true ] && install_garcalc
+    [ "$INSTALL_GAREDIT" = true ] && install_garedit
 
     # gardm last (may prompt for reboot)
     [ "$INSTALL_GARDM" = true ] && install_gardm
@@ -1522,6 +1563,15 @@ main() {
         echo "     Launch GUI with: garcalc"
         echo "     Control daemon with: garcalcctl show|hide|toggle|status"
         echo "     CAS CLI mode: garcas"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GAREDIT" = true ]; then
+        echo "  garedit editor:"
+        echo "     Launch: garedit /path/to/file"
+        echo "     Daemon mode: garedit --daemon /path/to/file"
+        echo "     Control: gareditctl open|show|hide|toggle|status|quit"
+        echo "     Auto-start daemon: gareditctl --start-daemon open /path/to/file"
         echo ""
     fi
 
