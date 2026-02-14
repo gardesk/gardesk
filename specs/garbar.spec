@@ -1,5 +1,5 @@
 Name:           garbar
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?dist}
 Summary:        Configurable status bar for the gar desktop suite
 
@@ -38,6 +38,10 @@ install -Dm755 %{_sourcedir}/garbarctl %{buildroot}%{_bindir}/garbarctl
 %{_bindir}/garbarctl
 
 %changelog
+* Fri Feb 14 2026 mfw <espadonne@outlook.com> - 0.3.1-1
+- Add remote server status module (SSH-based load/mem/disk)
+- Skip repaint when no module state changed
+
 * Fri Jan 17 2025 mfw <espadonne@outlook.com> - 0.1.0-1
 - Initial RPM release of garbar
 - Configurable status bar with modular widgets

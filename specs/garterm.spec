@@ -1,5 +1,5 @@
 Name:           garterm
-Version:        0.1.2
+Version:        0.1.3
 Release:        1%{?dist}
 Summary:        Terminal emulator for the gar desktop suite
 
@@ -34,6 +34,11 @@ install -Dm755 %{_sourcedir}/gartermctl %{buildroot}%{_bindir}/gartermctl
 %{_bindir}/gartermctl
 
 %changelog
+* Fri Feb 14 2026 mfw <espadonne@outlook.com> - 0.1.3-1
+- Dynamic fontconfig fallback for missing glyphs
+- OSC 52 clipboard support for zellij/tmux
+- NixOS portability fix for shell resolution
+
 * Sat Feb 08 2026 mfw <espadonne@outlook.com> - 0.1.2-1
 - Version bump to 0.1.2
 

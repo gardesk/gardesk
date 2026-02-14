@@ -7,6 +7,14 @@ import Button from '../../components/ui/Button.astro';
 import TabbedCard from '../../components/ui/TabbedCard.astro';
 import MultiTerminal from '../../components/ui/MultiTerminal.astro';
 import DocsSidebar from '../../components/ui/DocsSidebar.astro';
+import ImageCarousel from '../../components/ui/ImageCarousel.astro';
+
+const garviewImages = [
+  { src: '/images/garview1.png', alt: 'garview PDF annotation mode with drawing tools on a W-9 form' },
+  { src: '/images/garview2.png', alt: 'garview PDF viewer with sidebar showing table of contents' },
+  { src: '/images/garview3.png', alt: 'garview PDF document with sidebar navigation and table of contents' },
+  { src: '/images/garview4.png', alt: 'garview gallery mode with thumbnail grid of images' },
+];
 
 const tabs = [
   { id: 'getting-started', label: 'Getting Started' },
@@ -110,6 +118,11 @@ const docsItems = [
             Install
           </Button>
         </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="mb-12">
+        <ImageCarousel images={garviewImages} />
       </div>
 
       <!-- Features Grid -->

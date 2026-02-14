@@ -20,8 +20,7 @@
 #   - garchomp: X11 compositor with GPU rendering
 #   - gargears: Configuration GUI for gardesk
 #   - gartop: System monitor with resource graphs
-#   - garcalc: TI-Nspire-like calculator with graphing/CAS
-#   - garedit: Native text/code editor with daemon + IPC control
+#   - garview: Image and document viewer with annotations
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -66,8 +65,7 @@ INSTALL_GARTK=false
 INSTALL_GARCHOMP=false
 INSTALL_GARGEARS=false
 INSTALL_GARTOP=false
-INSTALL_GARCALC=false
-INSTALL_GAREDIT=false
+INSTALL_GARVIEW=false
 
 # Options
 SKIP_DEPS=false
@@ -193,7 +191,8 @@ install_dependencies() {
                 pulseaudio-libs-devel \
                 libxkbcommon-devel \
                 dbus-devel \
-                fontconfig-devel freetype-devel
+                fontconfig-devel freetype-devel \
+                poppler-devel
             ;;
 
         debian|ubuntu|pop|linuxmint|elementary)
@@ -206,7 +205,8 @@ install_dependencies() {
                 libpulse-dev \
                 libxkbcommon-dev \
                 libdbus-1-dev \
-                libfontconfig1-dev libfreetype6-dev
+                libfontconfig1-dev libfreetype6-dev \
+                libpoppler-glib-dev
             ;;
 
         arch|manjaro|endeavouros)
@@ -218,7 +218,8 @@ install_dependencies() {
                 libpulse \
                 libxkbcommon \
                 dbus \
-                fontconfig freetype2
+                fontconfig freetype2 \
+                poppler-glib
             ;;
 
         opensuse*|suse)
@@ -230,7 +231,8 @@ install_dependencies() {
                 libpulse-devel \
                 libxkbcommon-devel \
                 dbus-1-devel \
-                fontconfig-devel freetype2-devel
+                fontconfig-devel freetype2-devel \
+                libpoppler-devel
             ;;
 
         gentoo)
@@ -246,7 +248,8 @@ install_dependencies() {
                 sys-libs/pam \
                 media-sound/pulseaudio \
                 x11-libs/libxkbcommon \
-                sys-apps/dbus
+                sys-apps/dbus \
+                app-text/poppler
             ;;
 
         void)
@@ -257,7 +260,8 @@ install_dependencies() {
                 pam-devel \
                 pulseaudio-devel \
                 libxkbcommon-devel \
-                dbus-devel
+                dbus-devel \
+                poppler-devel
             ;;
 
         alpine)
@@ -268,7 +272,8 @@ install_dependencies() {
                 linux-pam-dev \
                 pulseaudio-dev \
                 libxkbcommon-dev \
-                dbus-dev
+                dbus-dev \
+                poppler-dev
             ;;
 
         *)
@@ -282,6 +287,7 @@ install_dependencies() {
             echo "  Audio: pulseaudio-dev (optional)"
             echo "  Keyboard: libxkbcommon-dev"
             echo "  IPC: dbus-dev"
+            echo "  PDF: poppler-dev (for garview)"
             echo ""
             return 1
             ;;
@@ -360,8 +366,7 @@ show_component_menu() {
     echo -e "  ${CYAN}14)${NC} garchomp   ${DIM}-${NC} X11 compositor with GPU rendering"
     echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
     echo -e "  ${CYAN}16)${NC} gartop     ${DIM}-${NC} System monitor with resource graphs"
-    echo -e "  ${CYAN}17)${NC} garcalc    ${DIM}-${NC} TI-Nspire-like calculator with graphing/CAS"
-    echo -e "  ${CYAN}18)${NC} garedit    ${DIM}-${NC} Native text/code editor with daemon control"
+    echo -e "  ${CYAN}17)${NC} garview    ${DIM}-${NC} Image and document viewer with annotations"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -385,8 +390,10 @@ prompt_components() {
         INSTALL_GARLOCK=true
         INSTALL_GARLAUNCH=true
         INSTALL_GARCLIP=true
-        INSTALL_GARCALC=true
-        INSTALL_GAREDIT=true
+        INSTALL_GARCHOMP=true
+        INSTALL_GARGEARS=true
+        INSTALL_GARTOP=true
+        INSTALL_GARVIEW=true
         return 0
     fi
 
@@ -413,8 +420,7 @@ prompt_components() {
     INSTALL_GARCHOMP=false
     INSTALL_GARGEARS=false
     INSTALL_GARTOP=false
-    INSTALL_GARCALC=false
-    INSTALL_GAREDIT=false
+    INSTALL_GARVIEW=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -433,8 +439,7 @@ prompt_components() {
         14) INSTALL_GARCHOMP=true ;;
         15) INSTALL_GARGEARS=true ;;
         16) INSTALL_GARTOP=true ;;
-        17) INSTALL_GARCALC=true ;;
-        18) INSTALL_GAREDIT=true ;;
+        17) INSTALL_GARVIEW=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -452,8 +457,7 @@ prompt_components() {
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
-            INSTALL_GARCALC=true
-            INSTALL_GAREDIT=true
+            INSTALL_GARVIEW=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -470,8 +474,7 @@ prompt_components() {
             INSTALL_GARCHOMP=true
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
-            INSTALL_GARCALC=true
-            INSTALL_GAREDIT=true
+            INSTALL_GARVIEW=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -497,8 +500,7 @@ prompt_components() {
                     14) INSTALL_GARCHOMP=true ;;
                     15) INSTALL_GARGEARS=true ;;
                     16) INSTALL_GARTOP=true ;;
-                    17) INSTALL_GARCALC=true ;;
-                    18) INSTALL_GAREDIT=true ;;
+                    17) INSTALL_GARVIEW=true ;;
                 esac
             done
             ;;
@@ -513,7 +515,7 @@ prompt_components() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARCALC" = false ] && [ "$INSTALL_GAREDIT" = false ]; then
+       [ "$INSTALL_GARVIEW" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -554,13 +556,8 @@ prompt_components() {
         INSTALL_GARTK=true
     fi
 
-    if [ "$INSTALL_GARCALC" = true ] && [ "$INSTALL_GARTK" = false ]; then
-        log_info "garcalc requires gartk, adding to installation"
-        INSTALL_GARTK=true
-    fi
-
-    if [ "$INSTALL_GAREDIT" = true ] && [ "$INSTALL_GARTK" = false ]; then
-        log_info "garedit requires gartk, adding to installation"
+    if [ "$INSTALL_GARVIEW" = true ] && [ "$INSTALL_GARTK" = false ]; then
+        log_info "garview requires gartk, adding to installation"
         INSTALL_GARTK=true
     fi
 }
@@ -585,8 +582,7 @@ show_selection_summary() {
     [ "$INSTALL_GARCHOMP" = true ] && echo -e "  ${GREEN}•${NC} garchomp (X11 compositor)"
     [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
     [ "$INSTALL_GARTOP" = true ] && echo -e "  ${GREEN}•${NC} gartop (system monitor)"
-    [ "$INSTALL_GARCALC" = true ] && echo -e "  ${GREEN}•${NC} garcalc (calculator)"
-    [ "$INSTALL_GAREDIT" = true ] && echo -e "  ${GREEN}•${NC} garedit (text/code editor)"
+    [ "$INSTALL_GARVIEW" = true ] && echo -e "  ${GREEN}•${NC} garview (image & document viewer)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -1141,51 +1137,30 @@ EOF
     log_info "  Control via: gartopctl cpu|memory|network|processes"
 }
 
-install_garcalc() {
-    log_step "Building garcalc (calculator suite)..."
+install_garview() {
+    log_step "Building garview (image & document viewer)..."
 
-    cd "$BUILD_DIR/garcalc"
-    cargo build --release --workspace
+    cd "$BUILD_DIR/garview"
+    cargo build --release
 
-    log_info "Installing garcalc binaries to $BIN_DIR..."
-    sudo install -Dm755 target/release/garcalc "$BIN_DIR/garcalc"
-    sudo install -Dm755 target/release/garcalcctl "$BIN_DIR/garcalcctl"
-    sudo install -Dm755 target/release/garcas "$BIN_DIR/garcas"
+    log_info "Installing garview binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garview "$BIN_DIR/garview"
+    sudo install -Dm755 target/release/garviewctl "$BIN_DIR/garviewctl"
 
     # Create user config directory
-    mkdir -p "$HOME/.config/garcalc"
-    if [ ! -f "$HOME/.config/garcalc/config.toml" ]; then
-        if [ -f "$BUILD_DIR/config/garcalc/config.toml" ]; then
+    mkdir -p "$HOME/.config/garview"
+    if [ ! -f "$HOME/.config/garview/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garview/config.toml" ]; then
             log_info "Installing default configuration..."
-            install -m644 "$BUILD_DIR/config/garcalc/config.toml" "$HOME/.config/garcalc/config.toml"
+            install -m644 "$BUILD_DIR/config/garview/config.toml" "$HOME/.config/garview/config.toml"
         fi
     else
-        log_warn "Config exists at ~/.config/garcalc/config.toml, not overwriting"
+        log_warn "Config exists at ~/.config/garview/config.toml, not overwriting"
     fi
 
-    echo -e "${GREEN}  ✓ garcalc installed successfully${NC}"
-    log_info "  Launch with: garcalc"
-    log_info "  CLI CAS mode: garcas"
-    log_info "  Daemon control: garcalcctl"
-}
-
-install_garedit() {
-    log_step "Building garedit (text/code editor)..."
-
-    cd "$BUILD_DIR/garedit"
-    cargo build --release --workspace
-
-    log_info "Installing garedit binaries to $BIN_DIR..."
-    sudo install -Dm755 target/release/garedit "$BIN_DIR/garedit"
-    sudo install -Dm755 target/release/gareditctl "$BIN_DIR/gareditctl"
-
-    # Create user config directory (garedit writes defaults on first run)
-    mkdir -p "$HOME/.config/garedit"
-
-    echo -e "${GREEN}  ✓ garedit installed successfully${NC}"
-    log_info "  Launch with: garedit"
-    log_info "  Daemon + control: garedit --daemon /path/file && gareditctl status"
-    log_info "  Auto-start daemon from ctl: gareditctl --start-daemon open /path/file"
+    echo -e "${GREEN}  ✓ garview installed successfully${NC}"
+    log_info "  Open files with: garview /path/to/file"
+    log_info "  Control via: garviewctl open|next|prev|zoom-in|zoom-out|info"
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1259,8 +1234,7 @@ parse_args() {
                         garchomp) INSTALL_GARCHOMP=true ;;
                         gargears) INSTALL_GARGEARS=true ;;
                         gartop) INSTALL_GARTOP=true ;;
-                        garcalc) INSTALL_GARCALC=true ;;
-                        garedit) INSTALL_GAREDIT=true ;;
+                        garview) INSTALL_GARVIEW=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1278,8 +1252,7 @@ parse_args() {
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
-                            INSTALL_GARCALC=true
-                            INSTALL_GAREDIT=true
+                            INSTALL_GARVIEW=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1296,8 +1269,7 @@ parse_args() {
                             INSTALL_GARCHOMP=true
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
-                            INSTALL_GARCALC=true
-                            INSTALL_GAREDIT=true
+                            INSTALL_GARVIEW=true
                             ;;
                     esac
                 done
@@ -1323,10 +1295,7 @@ parse_args() {
                 if [ "$INSTALL_GARTOP" = true ]; then
                     INSTALL_GARTK=true
                 fi
-                if [ "$INSTALL_GARCALC" = true ]; then
-                    INSTALL_GARTK=true
-                fi
-                if [ "$INSTALL_GAREDIT" = true ]; then
+                if [ "$INSTALL_GARVIEW" = true ]; then
                     INSTALL_GARTK=true
                 fi
                 shift
@@ -1343,7 +1312,7 @@ parse_args() {
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
                 echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
-                echo "                                  gartk,garchomp,gargears,gartop,garcalc,garedit"
+                echo "                                  gartk,garchomp,gargears,gartop,garview"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1399,7 +1368,7 @@ main() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARCALC" = false ] && [ "$INSTALL_GAREDIT" = false ]; then
+       [ "$INSTALL_GARVIEW" = false ]; then
         prompt_components
     fi
 
@@ -1448,8 +1417,7 @@ main() {
     [ "$INSTALL_GARCHOMP" = true ] && install_garchomp
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
     [ "$INSTALL_GARTOP" = true ] && install_gartop
-    [ "$INSTALL_GARCALC" = true ] && install_garcalc
-    [ "$INSTALL_GAREDIT" = true ] && install_garedit
+    [ "$INSTALL_GARVIEW" = true ] && install_garview
 
     # gardm last (may prompt for reboot)
     [ "$INSTALL_GARDM" = true ] && install_gardm
@@ -1550,28 +1518,19 @@ main() {
         echo ""
     fi
 
+    if [ "$INSTALL_GARVIEW" = true ]; then
+        echo "  garview image & document viewer:"
+        echo "     Open files: garview /path/to/file.pdf"
+        echo "     Control via: garviewctl open|next|prev|zoom-in|info"
+        echo "     Annotations: Ctrl+A to enter annotation mode"
+        echo ""
+    fi
+
     if [ "$INSTALL_GARTOP" = true ]; then
         echo "  gartop system monitor:"
         echo "     Launch GUI with: gartop"
         echo "     Enable daemon: systemctl --user enable --now gartop"
         echo "     Query metrics: gartopctl cpu|memory|network|processes"
-        echo ""
-    fi
-
-    if [ "$INSTALL_GARCALC" = true ]; then
-        echo "  garcalc calculator suite:"
-        echo "     Launch GUI with: garcalc"
-        echo "     Control daemon with: garcalcctl show|hide|toggle|status"
-        echo "     CAS CLI mode: garcas"
-        echo ""
-    fi
-
-    if [ "$INSTALL_GAREDIT" = true ]; then
-        echo "  garedit editor:"
-        echo "     Launch: garedit /path/to/file"
-        echo "     Daemon mode: garedit --daemon /path/to/file"
-        echo "     Control: gareditctl open|show|hide|toggle|status|quit"
-        echo "     Auto-start daemon: gareditctl --start-daemon open /path/to/file"
         echo ""
     fi
 
