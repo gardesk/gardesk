@@ -34,6 +34,7 @@ BINARIES=(
     garclip garclipctl garclip-picker
     garchomp garchompctl
     gargears gargearsctl
+    garcard garcardctl
     garcalc garcalcctl garcas
 )
 
@@ -48,6 +49,7 @@ USER_SERVICES=(
     garbg.service
     garclip.service
     garchomp.service
+    garcard.service
 )
 
 # User config directories (optional removal)
@@ -65,6 +67,7 @@ CONFIG_DIRS=(
     ~/.config/garclip
     ~/.config/garchomp
     ~/.config/gargears
+    ~/.config/garcard
     ~/.config/garcalc
 )
 

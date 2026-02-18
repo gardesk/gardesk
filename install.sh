@@ -21,6 +21,7 @@
 #   - gargears: Configuration GUI for gardesk
 #   - gartop: System monitor with resource graphs
 #   - garview: Image and document viewer with annotations
+#   - garcard: Polkit authentication agent for privileged desktop actions
 #
 # Usage:
 #   curl -fsSL https://gar.musicsian.com/install.sh | bash
@@ -66,6 +67,7 @@ INSTALL_GARCHOMP=false
 INSTALL_GARGEARS=false
 INSTALL_GARTOP=false
 INSTALL_GARVIEW=false
+INSTALL_GARCARD=false
 
 # Options
 SKIP_DEPS=false
@@ -367,6 +369,7 @@ show_component_menu() {
     echo -e "  ${CYAN}15)${NC} gargears   ${DIM}-${NC} Configuration GUI for gardesk"
     echo -e "  ${CYAN}16)${NC} gartop     ${DIM}-${NC} System monitor with resource graphs"
     echo -e "  ${CYAN}17)${NC} garview    ${DIM}-${NC} Image and document viewer with annotations"
+    echo -e "  ${CYAN}18)${NC} garcard   ${DIM}-${NC} Polkit authentication agent"
     echo ""
     echo -e "  ${MAGENTA}A)${NC} All components"
     echo -e "  ${MAGENTA}D)${NC} Desktop only (recommended for most users)"
@@ -394,6 +397,7 @@ prompt_components() {
         INSTALL_GARGEARS=true
         INSTALL_GARTOP=true
         INSTALL_GARVIEW=true
+        INSTALL_GARCARD=true
         return 0
     fi
 
@@ -421,6 +425,7 @@ prompt_components() {
     INSTALL_GARGEARS=false
     INSTALL_GARTOP=false
     INSTALL_GARVIEW=false
+    INSTALL_GARCARD=false
 
     case "${selection^^}" in
         1) INSTALL_GAR=true ;;
@@ -440,6 +445,7 @@ prompt_components() {
         15) INSTALL_GARGEARS=true ;;
         16) INSTALL_GARTOP=true ;;
         17) INSTALL_GARVIEW=true ;;
+        18) INSTALL_GARCARD=true ;;
         A|ALL)
             INSTALL_GAR=true
             INSTALL_GARFIELD=true
@@ -458,6 +464,7 @@ prompt_components() {
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
             INSTALL_GARVIEW=true
+            INSTALL_GARCARD=true
             ;;
         D|DESKTOP)
             INSTALL_GAR=true
@@ -475,6 +482,7 @@ prompt_components() {
             INSTALL_GARGEARS=true
             INSTALL_GARTOP=true
             INSTALL_GARVIEW=true
+            INSTALL_GARCARD=true
             ;;
         Q|QUIT)
             log_info "Installation cancelled"
@@ -501,6 +509,7 @@ prompt_components() {
                     15) INSTALL_GARGEARS=true ;;
                     16) INSTALL_GARTOP=true ;;
                     17) INSTALL_GARVIEW=true ;;
+                    18) INSTALL_GARCARD=true ;;
                 esac
             done
             ;;
@@ -515,7 +524,7 @@ prompt_components() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARVIEW" = false ]; then
+       [ "$INSTALL_GARVIEW" = false ] && [ "$INSTALL_GARCARD" = false ]; then
         log_error "No components selected"
         return 1
     fi
@@ -583,6 +592,7 @@ show_selection_summary() {
     [ "$INSTALL_GARGEARS" = true ] && echo -e "  ${GREEN}•${NC} gargears (configuration GUI)"
     [ "$INSTALL_GARTOP" = true ] && echo -e "  ${GREEN}•${NC} gartop (system monitor)"
     [ "$INSTALL_GARVIEW" = true ] && echo -e "  ${GREEN}•${NC} garview (image & document viewer)"
+    [ "$INSTALL_GARCARD" = true ] && echo -e "  ${GREEN}•${NC} garcard (polkit authentication agent)"
 
     echo ""
     log_info "Installation prefix: $PREFIX"
@@ -1163,6 +1173,55 @@ install_garview() {
     log_info "  Control via: garviewctl open|next|prev|zoom-in|zoom-out|info"
 }
 
+install_garcard() {
+    log_step "Building garcard (polkit authentication agent)..."
+
+    cd "$BUILD_DIR/garcard"
+    cargo build --release --workspace
+
+    log_info "Installing garcard binaries to $BIN_DIR..."
+    sudo install -Dm755 target/release/garcard "$BIN_DIR/garcard"
+    sudo install -Dm755 target/release/garcardctl "$BIN_DIR/garcardctl"
+
+    # Install user systemd service
+    log_info "Installing systemd user service..."
+    mkdir -p "$SYSTEMD_USER_DIR"
+
+    cat << EOF > "$SYSTEMD_USER_DIR/garcard.service"
+[Unit]
+Description=garcard polkit auth agent
+Documentation=https://github.com/gardesk/gardesk
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=$BIN_DIR/garcard daemon
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
+EOF
+
+    systemctl --user daemon-reload
+
+    # Create user config directory
+    mkdir -p "$HOME/.config/garcard"
+    if [ ! -f "$HOME/.config/garcard/config.toml" ]; then
+        if [ -f "$BUILD_DIR/config/garcard/config.toml" ]; then
+            log_info "Installing default configuration..."
+            install -m644 "$BUILD_DIR/config/garcard/config.toml" "$HOME/.config/garcard/config.toml"
+        fi
+    else
+        log_warn "Config exists at ~/.config/garcard/config.toml, not overwriting"
+    fi
+
+    echo -e "${GREEN}  ✓ garcard installed successfully${NC}"
+    log_info "  Enable daemon: systemctl --user enable --now garcard"
+    log_info "  Control via: garcardctl status|auth-summary|quit"
+}
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PATH Setup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1235,6 +1294,7 @@ parse_args() {
                         gargears) INSTALL_GARGEARS=true ;;
                         gartop) INSTALL_GARTOP=true ;;
                         garview) INSTALL_GARVIEW=true ;;
+                        garcard) INSTALL_GARCARD=true ;;
                         all)
                             INSTALL_GAR=true
                             INSTALL_GARFIELD=true
@@ -1253,6 +1313,7 @@ parse_args() {
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
                             INSTALL_GARVIEW=true
+                            INSTALL_GARCARD=true
                             ;;
                         desktop)
                             INSTALL_GAR=true
@@ -1270,6 +1331,7 @@ parse_args() {
                             INSTALL_GARGEARS=true
                             INSTALL_GARTOP=true
                             INSTALL_GARVIEW=true
+                            INSTALL_GARCARD=true
                             ;;
                     esac
                 done
@@ -1312,7 +1374,7 @@ parse_args() {
                 echo "  --component=LIST    Comma-separated components to install"
                 echo "                      Components: gar,garfield,garterm,garbar,gartray,garnotify,"
                 echo "                                  garbg,garshot,garlock,gardm,garlaunch,garclip,"
-                echo "                                  gartk,garchomp,gargears,gartop,garview"
+                echo "                                  gartk,garchomp,gargears,gartop,garview,garcard"
                 echo "                      Presets: all, desktop"
                 echo "  --help              Show this help message"
                 echo ""
@@ -1368,7 +1430,7 @@ main() {
        [ "$INSTALL_GARLAUNCH" = false ] && [ "$INSTALL_GARCLIP" = false ] && \
        [ "$INSTALL_GARTK" = false ] && [ "$INSTALL_GARCHOMP" = false ] && \
        [ "$INSTALL_GARGEARS" = false ] && [ "$INSTALL_GARTOP" = false ] && \
-       [ "$INSTALL_GARVIEW" = false ]; then
+       [ "$INSTALL_GARVIEW" = false ] && [ "$INSTALL_GARCARD" = false ]; then
         prompt_components
     fi
 
@@ -1418,6 +1480,7 @@ main() {
     [ "$INSTALL_GARGEARS" = true ] && install_gargears
     [ "$INSTALL_GARTOP" = true ] && install_gartop
     [ "$INSTALL_GARVIEW" = true ] && install_garview
+    [ "$INSTALL_GARCARD" = true ] && install_garcard
 
     # gardm last (may prompt for reboot)
     [ "$INSTALL_GARDM" = true ] && install_gardm
@@ -1531,6 +1594,14 @@ main() {
         echo "     Launch GUI with: gartop"
         echo "     Enable daemon: systemctl --user enable --now gartop"
         echo "     Query metrics: gartopctl cpu|memory|network|processes"
+        echo ""
+    fi
+
+    if [ "$INSTALL_GARCARD" = true ]; then
+        echo "  garcard authentication agent:"
+        echo "     Enable daemon: systemctl --user enable --now garcard"
+        echo "     Query status: garcardctl status"
+        echo "     Check sessions: garcardctl auth-summary"
         echo ""
     fi
 
