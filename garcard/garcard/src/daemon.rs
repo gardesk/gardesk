@@ -1,5 +1,5 @@
-use crate::agent::{AuthAgentBackend, StubPolkitAgent};
-use crate::config::Config;
+use crate::agent::{AuthAgentBackend, PolkitAgent, PolkitBackendConfig, StubPolkitAgent};
+use crate::config::{AgentBackendMode, Config};
 use crate::state::RuntimeState;
 use anyhow::{Context, Result};
 use garcard_ipc::{Command, Response};
@@ -29,8 +29,7 @@ impl Drop for SocketGuard {
 }
 
 pub async fn run(config: Config) -> Result<()> {
-    let backend = StubPolkitAgent;
-    backend.register()?;
+    let mut backend = init_backend(&config)?;
 
     prepare_socket(&config.socket_path).await?;
     if let Some(parent) = config.socket_path.parent() {
@@ -111,6 +110,49 @@ pub async fn run(config: Config) -> Result<()> {
     backend.unregister()?;
     tracing::info!("garcard daemon stopped");
     Ok(())
+}
+
+fn init_backend(config: &Config) -> Result<Box<dyn AuthAgentBackend>> {
+    match config.agent_backend {
+        AgentBackendMode::Stub => {
+            let mut backend: Box<dyn AuthAgentBackend> = Box::new(StubPolkitAgent);
+            backend.register()?;
+            Ok(backend)
+        }
+        AgentBackendMode::Polkit => {
+            let mut backend: Box<dyn AuthAgentBackend> =
+                Box::new(PolkitAgent::new(PolkitBackendConfig {
+                    object_path: config.polkit_object_path.clone(),
+                    locale: config.locale.clone(),
+                })?);
+            backend.register()?;
+            Ok(backend)
+        }
+        AgentBackendMode::Auto => {
+            let attempt = (|| -> Result<Box<dyn AuthAgentBackend>> {
+                let mut backend: Box<dyn AuthAgentBackend> =
+                    Box::new(PolkitAgent::new(PolkitBackendConfig {
+                        object_path: config.polkit_object_path.clone(),
+                        locale: config.locale.clone(),
+                    })?);
+                backend.register()?;
+                Ok(backend)
+            })();
+
+            match attempt {
+                Ok(backend) => Ok(backend),
+                Err(err) => {
+                    tracing::warn!(
+                        error = %err,
+                        "Failed to initialize polkit backend, falling back to stub"
+                    );
+                    let mut fallback: Box<dyn AuthAgentBackend> = Box::new(StubPolkitAgent);
+                    fallback.register()?;
+                    Ok(fallback)
+                }
+            }
+        }
+    }
 }
 
 async fn prepare_socket(path: &Path) -> Result<()> {
@@ -218,5 +260,19 @@ mod tests {
         let response = dispatch(Command::Quit, &state, &shutdown_tx);
         assert!(response.success);
         assert!(shutdown_rx.try_recv().is_ok());
+    }
+
+    #[test]
+    fn auto_backend_falls_back_to_stub_for_bad_object_path() {
+        let config = Config {
+            socket_path: PathBuf::from("/tmp/garcard-test.sock"),
+            socket_mode: 0o600,
+            agent_backend: AgentBackendMode::Auto,
+            polkit_object_path: "invalid path".to_string(),
+            locale: "C".to_string(),
+        };
+
+        let backend = init_backend(&config).expect("auto mode should fall back");
+        assert_eq!(backend.name(), "stub-polkit-agent");
     }
 }

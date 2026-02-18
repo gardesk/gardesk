@@ -20,3 +20,5 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dirs = "5"
 toml = "0.8"
+zbus = "4"
+nix = { version = "0.29", features = ["user"] }

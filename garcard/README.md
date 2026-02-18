@@ -18,5 +18,8 @@ Environment overrides:
 1. `GARCARD_SOCKET`
 2. `GARCARD_SOCKET_MODE`
 3. `GARCARD_CONFIG`
+4. `GARCARD_AGENT_BACKEND`
+5. `GARCARD_POLKIT_OBJECT_PATH`
+6. `GARCARD_LOCALE`
 
 See `examples/config.toml` for a starter file.
