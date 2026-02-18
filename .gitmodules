@@ -77,3 +77,7 @@
 	path = garedit
 	url = https://github.com/gardesk/garedit.git
 	branch = trunk
+[submodule "garcard"]
+	path = garcard
+	url = https://github.com/gardesk/garcard.git
+	branch = trunk
