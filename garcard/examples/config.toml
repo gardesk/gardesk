@@ -1,0 +1,10 @@
+# garcard example configuration
+
+# Optional explicit socket path.
+# socket_path = "/tmp/garcard.sock"
+
+# Socket mode in octal string form.
+# Typical values:
+# - 600: owner read/write
+# - 660: owner/group read/write
+socket_mode = "600"
