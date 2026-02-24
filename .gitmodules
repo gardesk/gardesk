@@ -81,3 +81,7 @@
 	path = garcard
 	url = https://github.com/gardesk/garcard.git
 	branch = trunk
+[submodule "garwarp"]
+	path = garwarp
+	url = https://github.com/gardesk/garwarp.git
+	branch = trunk
