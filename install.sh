@@ -1219,7 +1219,7 @@ EOF
 
     echo -e "${GREEN}  ✓ garcard installed successfully${NC}"
     log_info "  Enable daemon: systemctl --user enable --now garcard"
-    log_info "  Control via: garcardctl status|auth-summary|quit"
+    log_info "  Control via: garcardctl status|diagnose|auth-summary|temp-list|quit"
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1601,7 +1601,9 @@ main() {
         echo "  garcard authentication agent:"
         echo "     Enable daemon: systemctl --user enable --now garcard"
         echo "     Query status: garcardctl status"
+        echo "     Inspect diagnostics: garcardctl diagnose"
         echo "     Check sessions: garcardctl auth-summary"
+        echo "     Manage temp auth: garcardctl temp-list|temp-revoke-all"
         echo ""
     fi
 
